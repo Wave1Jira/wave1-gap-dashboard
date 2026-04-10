@@ -1,0 +1,1671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Automation Team Sprint Planning Tracker</title>
+<style>
+:root {
+  --bg:#0f1117; --bg2:#181b24; --bg3:#1e2130; --bg4:#232740;
+  --border:#2a2f45; --border2:#353b52;
+  --text:#e2e6f0; --text2:#8b92a8; --text3:#5a6070;
+  --blue:#4a9eff; --blue-dim:#1a3a5c;
+  --green:#3ecf8e; --green-dim:#133d2a;
+  --yellow:#f5c842; --yellow-dim:#3d3010;
+  --red:#f06060; --red-dim:#3d1515;
+  --purple:#a78bfa; --purple-dim:#2d1f4e;
+  --teal:#22d3ee; --teal-dim:#0e2f38;
+  --orange:#fb923c; --orange-dim:#3d1f05;
+  --accent:#7c3aed;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'SF Pro Display',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:13px}
+
+/* HEADER */
+.header{background:var(--bg2);border-bottom:1px solid var(--border);padding:14px 22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.header-left h1{font-size:16px;font-weight:700;letter-spacing:-.3px}
+.header-left p{font-size:11px;color:var(--text2);margin-top:2px}
+.header-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sprint-pill{background:var(--bg3);border:1px solid var(--border2);border-radius:20px;padding:5px 14px;font-size:11px;font-weight:600;color:var(--text);display:flex;align-items:center;gap:6px}
+.sprint-pill .dot{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0}
+.sprint-pill .range{color:var(--orange)}
+.legend{display:flex;align-items:center;gap:10px;font-size:10px;color:var(--text2)}
+.legend-item{display:flex;align-items:center;gap:4px}
+.ld{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.ld-done{background:var(--green)} .ld-ip{background:var(--yellow)} .ld-bl{background:var(--red)} .ld-td{background:var(--text3)} .ld-ss{background:var(--teal)} .ld-hc{background:var(--purple)}
+.btn-print{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer}
+.btn-print:hover{border-color:var(--orange);color:var(--orange)}
+
+/* GOAL BANNER */
+.goal-banner{background:var(--bg2);border-left:3px solid var(--orange);border-bottom:1px solid var(--border);padding:11px 22px;font-size:12px;color:var(--text2);display:flex;align-items:flex-start;gap:10px}
+.goal-label{color:var(--orange);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;white-space:nowrap;padding-top:1px}
+
+/* TABS */
+.tabs{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 22px;display:flex;overflow-x:auto}
+.tab{padding:10px 16px;font-size:12px;font-weight:500;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;user-select:none}
+.tab:hover{color:var(--text)}
+.tab.active{color:var(--orange);border-bottom-color:var(--orange)}
+.tab .cnt{display:inline-block;background:var(--bg3);border-radius:10px;padding:1px 7px;font-size:10px;margin-left:5px;color:var(--text2)}
+.tab.active .cnt{background:var(--orange-dim);color:var(--orange)}
+
+/* PANELS */
+.panel{display:none;padding:18px 22px}
+.panel.active{display:block}
+
+/* STATS */
+.stats{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;min-width:94px}
+.stat-n{font-size:22px;font-weight:700;line-height:1}
+.stat-l{font-size:10px;color:var(--text2);margin-top:3px;text-transform:uppercase;letter-spacing:.4px}
+.n-blue{color:var(--blue)} .n-green{color:var(--green)} .n-yellow{color:var(--yellow)} .n-red{color:var(--red)} .n-teal{color:var(--teal)} .n-orange{color:var(--orange)} .n-purple{color:var(--purple)}
+
+/* BLOCKER BOX */
+.blocker-box{background:var(--red-dim);border:1px solid var(--red);border-radius:6px;padding:9px 14px;margin-bottom:16px;font-size:12px;line-height:1.5}
+.blocker-box strong{color:var(--red)}
+.info-box{background:var(--teal-dim);border:1px solid var(--teal);border-radius:6px;padding:9px 14px;margin-bottom:16px;font-size:12px;line-height:1.5}
+.info-box strong{color:var(--teal)}
+
+/* SECTION */
+.section{margin-bottom:22px}
+.section-hdr{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);padding:7px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px 6px 0 0;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+
+/* TABLE */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px}
+table{width:100%;border-collapse:collapse}
+th{background:var(--bg3);color:var(--text2);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;user-select:none}
+th.sortable{cursor:pointer}
+th.sortable:hover{color:var(--text)}
+td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:top;font-size:12px}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.025)}
+
+/* CELL TYPES */
+.tid{font-weight:600;color:var(--orange);font-size:12px;white-space:nowrap}
+.tid-pending{font-weight:600;color:var(--text3);font-size:12px;white-space:nowrap}
+.ttl{max-width:300px;word-break:break-word;line-height:1.45}
+.sub{font-size:10px;color:var(--text2);margin-top:2px}
+.notes{font-size:11px;color:var(--text2);max-width:220px;line-height:1.4}
+.asn{font-size:11px;color:var(--text2);white-space:nowrap}
+.sp-val{font-weight:600;color:var(--text);text-align:center}
+.sp-none{color:var(--text3);text-align:center}
+.due-warn{color:var(--yellow);font-size:10px;white-space:nowrap}
+.due-ok{color:var(--text2);font-size:10px;white-space:nowrap}
+
+/* BADGES */
+.badge{display:inline-block;border-radius:4px;padding:2px 7px;font-size:10px;font-weight:600;white-space:nowrap}
+.b-story{background:var(--blue-dim);color:var(--blue)}
+.b-spike{background:var(--purple-dim);color:var(--purple)}
+.b-task{background:var(--teal-dim);color:var(--teal)}
+.b-ss{background:var(--teal-dim);color:var(--teal)}
+.b-hc{background:var(--purple-dim);color:var(--purple)}
+.b-td{background:var(--bg3);color:var(--text2);border:1px solid var(--border2)}
+.b-ip{background:var(--blue-dim);color:var(--blue)}
+.b-ir{background:var(--yellow-dim);color:var(--yellow)}
+.b-done{background:var(--green-dim);color:var(--green)}
+.b-bl{background:var(--red-dim);color:var(--red)}
+.b-hold{background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange)}
+.b-var{background:var(--bg4);color:var(--text2);border:1px solid var(--border2)}
+/* BUCKET BADGES */
+.bkt{display:inline-block;border-radius:3px;padding:2px 7px;font-size:10px;font-weight:600;white-space:nowrap;letter-spacing:.3px}
+.bkt-sprint{background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange)}
+.bkt-ready{background:var(--green-dim);border:1px solid var(--green);color:var(--green)}
+.bkt-refine{background:var(--teal-dim);border:1px solid var(--teal);color:var(--teal)}
+.bkt-pod{background:var(--purple-dim);border:1px solid var(--purple);color:var(--purple)}
+.bkt-intake{background:var(--blue-dim);border:1px solid var(--blue);color:var(--blue)}
+.bkt-edh{background:var(--red-dim);border:1px solid var(--red);color:var(--red)}
+.bkt-biz{background:#261a0e;border:1px solid var(--orange);color:var(--orange)}
+.bkt-backlog{background:var(--bg3);border:1px solid var(--border2);color:var(--text2)}
+
+/* EPIC PILLS */
+.epic{display:inline-block;border-radius:3px;padding:2px 7px;font-size:10px;font-weight:500;white-space:nowrap}
+.e-cd{background:#172233;color:#5ab4ff}     /* Claim Denials */
+.e-340b{background:#172317;color:#5ddc8a}   /* 340B */
+.e-inv{background:#231a38;color:#bb86fc}    /* Invoice Audit */
+.e-mrd{background:#2d1a1a;color:#ff8a8a}    /* Med Record Denial */
+.e-mmg{background:#1a2714;color:#90c97a}    /* MMG OON */
+.e-ubp{background:#261a0e;color:#ffb366}    /* UBP */
+.e-him{background:#1a1a2d;color:#a78bfa}    /* HIM */
+.e-ss{background:#0e2f38;color:#22d3ee}     /* Steady State */
+.e-em{background:#1f1520;color:#e879f9}     /* E&M */
+.e-exc{background:#2a1a0e;color:#fb923c}    /* Exception Handling */
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.filter-row label{font-size:11px;color:var(--text2);white-space:nowrap}
+.search-box{background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:6px 10px;border-radius:5px;font-size:11px;width:210px}
+.search-box::placeholder{color:var(--text3)}
+.search-box:focus{outline:none;border-color:var(--orange)}
+select{background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:5px 8px;border-radius:5px;font-size:11px;cursor:pointer}
+select:focus{outline:none;border-color:var(--orange)}
+.ticket-count{margin-left:auto;font-size:11px;color:var(--text2)}
+
+/* CALENDAR */
+.cal-note{font-size:12px;color:var(--text2);background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--orange);border-radius:6px;padding:10px 14px;margin-bottom:16px;line-height:1.6}
+.cal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-bottom:24px}
+.cal-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:14px}
+.cal-card.active-sprint{border-color:var(--orange)}
+.cal-card h3{font-size:12px;font-weight:600;margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.cal-card p{font-size:11px;color:var(--text2);line-height:1.65}
+.cal-sub{font-size:10px;color:var(--text3);margin-top:5px}
+
+/* BACKLOG FLOW */
+.flow-section-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--text2);margin:24px 0 12px}
+.flow-section-title:first-child{margin-top:0}
+.flow-wrap{display:flex;align-items:stretch;gap:0;margin-bottom:20px;overflow-x:auto}
+.flow-bucket{flex:1;min-width:155px;background:var(--bg2);border:1px solid var(--border);border-right:none;padding:14px 12px}
+.flow-bucket:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0}
+.flow-bucket:first-child{border-radius:8px 0 0 8px}
+.flow-bucket.hold-bucket{border-color:var(--yellow);background:var(--yellow-dim)}
+.flow-bucket.blocked-bucket{border-color:var(--red);background:var(--red-dim)}
+.flow-bucket.sprint-bucket{border-color:var(--orange);background:var(--orange-dim)}
+.fb-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
+.c-blue{color:var(--blue)} .c-green{color:var(--green)} .c-yellow{color:var(--yellow)} .c-red{color:var(--red)} .c-purple{color:var(--purple)} .c-teal{color:var(--teal)} .c-text{color:var(--text2)} .c-orange{color:var(--orange)}
+.fb-owner{font-size:10px;color:var(--text3);margin-bottom:8px;font-style:italic}
+.fb-rule{font-size:11px;color:var(--text2);line-height:1.5;margin-bottom:5px}
+.fb-rule strong{color:var(--text)}
+.fb-arrow{display:flex;align-items:center;justify-content:center;padding:0 4px;color:var(--text3);font-size:20px;flex-shrink:0;align-self:center}
+.fb-tag{display:inline-block;background:var(--bg3);border:1px solid var(--border2);border-radius:3px;padding:1px 6px;font-size:10px;color:var(--text2);margin:2px 2px 0 0}
+.fb-tag.warn{background:var(--red-dim);border-color:var(--red);color:var(--red)}
+.rule-box{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:12px 16px;margin-bottom:10px;font-size:11px;line-height:1.65;color:var(--text2)}
+.rule-box .rule-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.rule-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:5px}
+.rule-row:last-child{margin-bottom:0}
+.rule-icon{flex-shrink:0}
+
+/* CAPACITY TABLE */
+.cap-wrap{border:1px solid var(--border);border-radius:8px;overflow:hidden;margin-bottom:20px}
+.cap-table{width:100%;border-collapse:collapse}
+.cap-table th{background:var(--bg3);color:var(--text2);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:7px 12px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.cap-table td{padding:9px 12px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:middle}
+.cap-table tr:last-child td{border-bottom:none}
+.cap-table tr:hover td{background:rgba(255,255,255,.02)}
+.cap-bar-wrap{width:120px;background:var(--bg3);border-radius:3px;height:7px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px}
+.cap-bar{height:7px;border-radius:3px}
+.cap-lo{background:var(--green)} .cap-med{background:var(--yellow)} .cap-hi{background:var(--red)}
+.sprint-cur td{background:rgba(251,146,60,.06)}
+.sprint-cur .sp-label{color:var(--orange);font-weight:600}
+.target-chip{display:inline-block;border-radius:3px;padding:1px 7px;font-size:10px;margin:1px 2px}
+.tc-open{background:var(--green-dim);border:1px solid var(--green);color:var(--green)}
+.tc-warn{background:var(--yellow-dim);border:1px solid var(--yellow);color:var(--yellow)}
+.tc-hold{background:var(--bg3);border:1px solid var(--border2);color:var(--text2)}
+
+/* ROLLOVER */
+.ro-sel{background:var(--bg3);border:1px solid var(--border2);color:var(--text2);padding:3px 6px;border-radius:4px;font-size:11px;cursor:pointer;width:130px}
+.ro-sel:focus{outline:none;border-color:var(--orange)}
+.ro-done{background:var(--green-dim)!important;border-color:var(--green)!important;color:var(--green)!important}
+.ro-sp2{background:var(--yellow-dim)!important;border-color:var(--yellow)!important;color:var(--yellow)!important}
+.ro-hold{background:var(--orange-dim)!important;border-color:var(--orange)!important;color:var(--orange)!important}
+.ro-bl{background:var(--red-dim)!important;border-color:var(--red)!important;color:var(--red)!important}
+.ro-cl{background:var(--green-dim)!important;border-color:var(--green)!important;color:var(--green)!important}
+
+/* STANDUP BANNER */
+.standup-bar{background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--teal);border-radius:6px;padding:10px 16px;margin-bottom:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:11px;color:var(--text2)}
+.standup-bar strong.sd-label{color:var(--teal);font-size:10px;text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;margin-right:4px}
+.sd-item{display:flex;align-items:center;gap:5px}
+.sd-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+
+/* DAILY UPDATES */
+.upd-meta{font-size:11px;color:var(--text2);margin-bottom:14px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.upd-meta strong{color:var(--text)}
+.upd-how{background:var(--bg2);border:1px solid var(--border2);border-left:3px solid var(--teal);border-radius:6px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.6}
+.upd-how strong{color:var(--teal);font-size:10px;text-transform:uppercase;letter-spacing:.6px}
+.upd-date-hdr{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text2);padding:7px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:6px 6px 0 0;display:flex;align-items:center;gap:8px;margin-top:16px}
+.upd-date-hdr:first-of-type{margin-top:0}
+.upd-table-wrap{border:1px solid var(--border);border-top:none;border-radius:0 0 6px 6px;overflow-x:auto;margin-bottom:4px}
+.upd-table{width:100%;border-collapse:collapse}
+.upd-table th{background:var(--bg3);color:var(--text2);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:6px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.upd-table td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:top}
+.upd-table tr:last-child td{border-bottom:none}
+.upd-table tr:hover td{background:rgba(255,255,255,.02)}
+.upd-yesterday{color:var(--green);font-size:11px}
+.upd-today{color:var(--blue);font-size:11px}
+.upd-blocker{color:var(--red);font-size:11px}
+.upd-next{color:var(--yellow);font-size:11px}
+.upd-empty{color:var(--text3);font-size:11px;font-style:italic}
+
+/* RIDAC */
+.ridac-tabs{display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap}
+.ridac-tab{padding:6px 14px;font-size:11px;font-weight:500;background:var(--bg2);border:1px solid var(--border2);border-radius:20px;cursor:pointer;color:var(--text2);transition:all .15s}
+.ridac-tab:hover{color:var(--text)}
+.ridac-tab.active{color:var(--orange);border-color:var(--orange);background:var(--orange-dim)}
+.ridac-panel{display:none}
+.ridac-panel.active{display:block}
+.ridac-add-row{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;align-items:center}
+.ridac-input{background:var(--bg2);border:1px solid var(--border2);color:var(--text);padding:6px 10px;border-radius:5px;font-size:11px;flex:1;min-width:120px}
+.ridac-input:focus{outline:none;border-color:var(--orange)}
+.ridac-btn{background:var(--orange-dim);border:1px solid var(--orange);color:var(--orange);padding:6px 14px;border-radius:5px;font-size:11px;cursor:pointer;white-space:nowrap;font-weight:600}
+.ridac-btn:hover{background:var(--orange);color:var(--bg)}
+.ridac-btn-del{background:var(--red-dim);border:1px solid var(--red);color:var(--red);padding:3px 8px;border-radius:4px;font-size:10px;cursor:pointer}
+.ridac-tbl-wrap{border:1px solid var(--border);border-radius:6px;overflow-x:auto}
+.ridac-tbl{width:100%;border-collapse:collapse}
+.ridac-tbl th{background:var(--bg3);color:var(--text2);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;padding:7px 10px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap}
+.ridac-tbl td{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12px;vertical-align:top}
+.ridac-tbl tr:last-child td{border-bottom:none}
+.ridac-tbl tr:hover td{background:rgba(255,255,255,.02)}
+.ridac-tbl td[contenteditable]{outline:none;cursor:text}
+.ridac-tbl td[contenteditable]:focus{background:rgba(251,146,60,.06);border-radius:2px}
+.r-high{color:var(--red)} .r-med{color:var(--yellow)} .r-low{color:var(--green)} .r-open{color:var(--red)} .r-prog{color:var(--yellow)} .r-closed{color:var(--green)}
+.ridac-stat{display:inline-block;border-radius:3px;padding:2px 7px;font-size:10px;font-weight:600}
+.rs-open{background:var(--red-dim);color:var(--red)} .rs-prog{background:var(--yellow-dim);color:var(--yellow)} .rs-closed{background:var(--green-dim);color:var(--green)}
+.ridac-empty{color:var(--text3);font-size:12px;font-style:italic;padding:20px 12px;text-align:center}
+@media print{.btn-print,.tabs,.filter-row{display:none!important}.panel{display:block!important;padding:0}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>🤖 Automation Team Sprint Planning Tracker</h1>
+    <p>Digital Enterprise Agility · Montefiore Einstein · Automation Scrum Team</p>
+  </div>
+  <div class="header-right">
+    <div class="sprint-pill">
+      <span class="dot"></span>
+      AUTO-FY26-Q2-SP1 &nbsp;·&nbsp; <span class="range">8 Apr – 21 Apr, 2026 · 19 items</span>
+    </div>
+    <div class="legend">
+      <div class="legend-item"><div class="ld ld-done"></div>Done</div>
+      <div class="legend-item"><div class="ld ld-ip"></div>In Progress</div>
+      <div class="legend-item"><div class="ld ld-bl"></div>Blocked</div>
+      <div class="legend-item"><div class="ld ld-ss"></div>Steady State</div>
+      <div class="legend-item"><div class="ld ld-hc"></div>HyperCare</div>
+      <div class="legend-item"><div class="ld ld-td"></div>To Do</div>
+    </div>
+    <button class="btn-print" onclick="window.print()">⎙ Print</button>
+  </div>
+</div>
+
+<!-- SPRINT GOAL -->
+<div class="goal-banner">
+  <span class="goal-label">Sprint Goal</span>
+  <span>Advance automation coverage across revenue cycle and clinical operations by progressing active automations (Implant Audit, MRD Business Exception, UBP) and completing log check story validation across RCM, Medical Records, Provider Enrollment, Outpatient E&amp;M, Hospital Billing, and Pharmacy 340B.</span>
+</div>
+
+<!-- TABS -->
+<div class="tabs">
+  <div class="tab active" onclick="showTab('sprint',this)">Sprint View <span class="cnt" id="tab-sprint-cnt">19</span></div>
+  <div class="tab" onclick="showTab('backlog',this)">Backlog Reference <span class="cnt">80+</span></div>
+  <div class="tab" onclick="showTab('flow',this)">Backlog Flow &amp; Capacity</div>
+  <div class="tab" onclick="showTab('calendar',this)">Sprint Calendar</div>
+  <div class="tab" onclick="showTab('updates',this)">Daily Updates</div>
+  <div class="tab" onclick="showTab('ridac',this)">RIDAC</div>
+</div>
+
+<!-- ═══════════ SPRINT VIEW ═══════════ -->
+<div id="panel-sprint" class="panel active">
+
+  <div class="stats">
+    <div class="stat"><div class="stat-n n-orange" id="stat-total">19</div><div class="stat-l">Total Stories</div></div>
+    <div class="stat"><div class="stat-n n-green" id="stat-done">0</div><div class="stat-l">Done</div></div>
+    <div class="stat"><div class="stat-n n-yellow" id="stat-ip">10</div><div class="stat-l">In Progress</div></div>
+    <div class="stat"><div class="stat-n n-blue" id="stat-ir">3</div><div class="stat-l">In Review</div></div>
+    <div class="stat"><div class="stat-n n-teal" id="stat-ss">9</div><div class="stat-l">Steady State / HC</div></div>
+    <div class="stat"><div class="stat-n n-purple" id="stat-dev">2</div><div class="stat-l">Dev Stories (Levi)</div></div>
+    <div class="stat"><div class="stat-n n-red" id="stat-td">2</div><div class="stat-l">To Do</div></div>
+    <div class="stat"><div class="stat-n" style="color:var(--orange)" id="stat-due">Apr 21</div><div class="stat-l">Sprint End</div></div>
+  </div>
+
+  <!-- ── DAILY EXECUTIVE SUMMARY ── -->
+  <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:14px 18px;margin-bottom:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+
+    <!-- Sprint health -->
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--text2);margin-bottom:8px">📊 Sprint Health · SP1 Day 3 of 10</div>
+      <div style="font-size:12px;line-height:1.9;color:var(--text)">
+        <span style="color:var(--yellow)">●</span> <strong>11 In Progress</strong> &nbsp;
+        <span style="color:var(--blue)">●</span> <strong>3 In Review</strong> &nbsp;
+        <span style="color:var(--text3)">●</span> <strong>3 To Do</strong> &nbsp;
+        <span style="color:var(--green)">●</span> <strong>0 Done</strong><br>
+        <span style="color:var(--text2);font-size:11px">Sprint ends <strong style="color:var(--orange)">Apr 21</strong> · 8 days remaining</span>
+      </div>
+    </div>
+
+    <!-- Needs attention -->
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--red);margin-bottom:8px">⚠️ Needs Attention</div>
+      <div style="font-size:11px;line-height:1.8;color:var(--text2)">
+        <span style="color:var(--yellow)">→</span> <strong style="color:var(--text)">AUTO-995 &amp; AUTO-996</strong> (Shiva) — still <em>To Do</em>, sprint ends Apr 21<br>
+        <span style="color:var(--yellow)">→</span> <strong style="color:var(--text)">AUTO-988</strong> (Kristian) — still <em>To Do</em>, needs to move to In Progress<br>
+        <span style="color:var(--yellow)">→</span> <strong style="color:var(--text)">AUTO-895</strong> (Levi) — <em>To Do</em>, follows AUTO-892 completion<br>
+        <span style="color:var(--red)">→</span> <strong style="color:var(--text)">Overdue PO items</strong> — AUTO-726, 727, 852, 853 past Mar 31 due date
+      </div>
+    </div>
+
+    <!-- Upcoming -->
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--teal);margin-bottom:8px">📅 Upcoming</div>
+      <div style="font-size:11px;line-height:1.8;color:var(--text2)">
+        <span style="color:var(--teal)">→</span> Backlog Refinement — <strong style="color:var(--text)">~Apr 18 · Fri 10:30 AM</strong><br>
+        <span style="color:var(--teal)">→</span> Sprint Retro — <strong style="color:var(--text)">Apr 21 · 11:30 AM</strong><br>
+        <span style="color:var(--teal)">→</span> SP2 Planning — <strong style="color:var(--text)">Apr 22 · 9:00 AM</strong><br>
+        <span style="color:var(--text2);font-size:11px">SP2 source: 10 Sprint Ready items (Implant Audit)</span>
+      </div>
+    </div>
+
+    <!-- Open actions -->
+    <div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--purple);margin-bottom:8px">📋 Open Actions</div>
+      <div style="font-size:11px;line-height:1.8;color:var(--text2)">
+        <span style="color:var(--purple)">→</span> Joao off-team: reassign <strong style="color:var(--text)">AUTO-595, 597, 599, 650</strong><br>
+        <span style="color:var(--purple)">→</span> AUTO-708 biz hold: confirm Q2 status with Kay<br>
+        <span style="color:var(--purple)">→</span> 18 Ext Dep Hold items — review blockers at Refinement<br>
+        <span style="color:var(--purple)">→</span> WA v1.3 still to finalize: HyperCare standard, bucket mapping
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── SHIVA RAM PINNINTI — Steady State / Logs ── -->
+  <div class="section">
+    <div class="section-hdr">👤 Shiva Ram Pinninti — Developer (Consultant) / Steady State &amp; Logs
+      <span class="badge b-ss" style="margin-left:4px">7 In Progress</span>
+      <span class="badge b-td" style="margin-left:4px">2 To Do</span>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Ticket</th><th>Title</th><th>Type</th><th>Epic</th><th>Status</th><th>SP</th><th>Due</th><th>Backlog Bucket</th><th>Rollover?</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tid">AUTO-990</span></td>
+          <td class="ttl">RCM Logs Check</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. Logs review for RCM automation runs.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-991</span></td>
+          <td class="ttl">Multiple Bill Area Logs Check</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. Multi-bill area exception log monitoring.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-992</span></td>
+          <td class="ttl">Medical Records Denial (MRD) Logs Check</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. MRD automation exception log review.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-993</span></td>
+          <td class="ttl">Provider Enrollment Claims Edit Logs Check</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. Provider enrollment claims edit automation log check.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-994</span></td>
+          <td class="ttl">Outpatient E&amp;M Logs Check</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-em">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. Outpatient E&amp;M automation exception log monitoring.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-997</span></td>
+          <td class="ttl">Locating an Auth Logs Check</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. Auth locating automation exception log review. Selector stability being monitored.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-998</span></td>
+          <td class="ttl">Pharmacy 340B Logs Check</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-340b">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. 340B Pharmacy automation exception log monitoring.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-995</span></td>
+          <td class="ttl">Hospital Billing: Provider Enrollment Claim Edits
+            <div class="sub">Epic: 2026 Q1 DACOE Steady State Support</div>
+          </td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-td">To Do</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. Hospital Billing provider enrollment claim edit automation — To Do.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-996</span></td>
+          <td class="ttl">Orchestrator Health Check Automation
+            <div class="sub">Epic: 2026 Q1 DACOE Steady State Support</div>
+          </td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State</span></td>
+          <td><span class="badge b-td">To Do</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Assigned to Shiva. Orchestrator health check automation — To Do.</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- ── KRISTIAN ROCA — MRD / Claim Denials / SS ── -->
+  <div class="section">
+    <div class="section-hdr">👤 Kristian Roca — Senior Developer (FTE) / MRD &amp; Claim Denials
+      <span class="badge b-hc" style="margin-left:4px">1 HyperCare</span>
+      <span class="badge b-ip" style="margin-left:4px">1 In Progress</span>
+      <span class="badge b-ir" style="margin-left:4px">3 In Review</span>
+      <span class="badge b-td" style="margin-left:4px">1 To Do</span>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Ticket</th><th>Title</th><th>Type</th><th>Epic</th><th>Status</th><th>SP</th><th>Due</th><th>Backlog Bucket</th><th>Rollover?</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tid">AUTO-985</span></td>
+          <td class="ttl">MRD Enhancement — UMR Business Exception</td>
+          <td><span class="badge b-story">Story</span></td>
+          <td><span class="epic e-mrd">MRD – Medical Record Denial (Exception Enhancement)</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-ok">—</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">MRD enhancement for UMR portal business exception handling. In Progress — assigned KR.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-1001</span></td>
+          <td class="ttl">MMC Claim Denial Phase 2 — HyperCare
+            <div class="sub">Epic: Hospital Billing: Claim Denial Submission Phase 2</div>
+          </td>
+          <td><span class="badge b-hc">HyperCare</span></td>
+          <td><span class="epic e-cd">Hospital Billing: Claim Denial Phase 2</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">MMC Claim Denial Phase 2 HyperCare. Previously AUTO-922 scope — Aetna/Anthem stabilized. Humana and remaining payers continuing hypercare.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-986</span></td>
+          <td class="ttl">No Show Encounter Pop-up</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State Support</span></td>
+          <td><span class="badge b-ir">In Review</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-ok">—</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Steady state support — no show encounter pop-up exception. In Review.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-987</span></td>
+          <td class="ttl">Break the Glass Scenario — Convert to BRE</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State Support</span></td>
+          <td><span class="badge b-ir">In Review</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-ok">—</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Break the glass scenario — conversion to BRE. In Review.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-989</span></td>
+          <td class="ttl">Pop-up Indicating that the Patient is Deceased</td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State Support</span></td>
+          <td><span class="badge b-ir">In Review</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-ok">—</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Patient deceased pop-up scenario handling. In Review.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-988</span></td>
+          <td class="ttl">Pop-up Indicating that the Session Cannot Be Edited and Charges/Updates Are in Progress
+            <div class="sub">Epic: 2026 Q1 DACOE Steady State Support</div>
+          </td>
+          <td><span class="badge b-ss">Steady State</span></td>
+          <td><span class="epic e-ss">2026 Q1 DACOE Steady State Support</span></td>
+          <td><span class="badge b-td">To Do</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-ok">—</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Session cannot be edited / charges in progress pop-up scenario. To Do — assigned KR.</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- ── LEVI SEYBERT — Implant Audit Dev ── -->
+  <div class="section">
+    <div class="section-hdr">👤 Levi Seybert — Senior Developer (FTE) / Implant Audit Attachment
+      <span class="badge b-story" style="margin-left:4px">2 Dev Stories</span>
+      <span class="badge b-td" style="margin-left:4px">1 To Do</span>
+      <span class="badge b-ip" style="margin-left:4px">1 In Progress</span>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Ticket</th><th>Title</th><th>Type</th><th>Epic</th><th>Status</th><th>SP</th><th>Due</th><th>Backlog Bucket</th><th>Rollover?</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tid">AUTO-892</span></td>
+          <td class="ttl">Build_Create ROI Batch and Import Patients</td>
+          <td><span class="badge b-story">Story</span></td>
+          <td><span class="epic e-inv">Implant Audit Attachment</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-val">5</td>
+          <td class="due-ok">—</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">5 story points. Implant Audit — building ROI batch creation and patient import. In Progress — assigned LS.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-895</span></td>
+          <td class="ttl">Build_Extract Supply Numbers from Epic</td>
+          <td><span class="badge b-story">Story</span></td>
+          <td><span class="epic e-inv">Implant Audit Attachment</span></td>
+          <td><span class="badge b-td">To Do</span></td>
+          <td class="sp-val">3</td>
+          <td class="due-ok">—</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">3 story points. Implant Audit — extract supply numbers from Epic. To Do — assigned LS. Likely follows AUTO-892.</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- ── FENIL GANDHI — UBP Automations ── -->
+  <div class="section">
+    <div class="section-hdr">👤 Fenil Gandhi — Developer (Consultant) / UBP Automations
+      <span class="badge b-hc" style="margin-left:4px">1 HyperCare</span>
+      <span class="badge b-story" style="margin-left:4px">1 Dev Story</span>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Ticket</th><th>Title</th><th>Type</th><th>Epic</th><th>Status</th><th>SP</th><th>Due</th><th>Backlog Bucket</th><th>Rollover?</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tid">AUTO-1000</span></td>
+          <td class="ttl">UBP Enhancement — HyperCare</td>
+          <td><span class="badge b-hc">HyperCare</span></td>
+          <td><span class="epic e-ubp">UBP Enhancements (Credit + Agilitas)</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">UBP Enhancement hypercare — Credit + Agilitas epic. In Progress — assigned FG. Production validation in progress from prior sprint work.</td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-999</span></td>
+          <td class="ttl">UBP Real Estate — Con Edison / Direct Energy Document Understanding Phase (1.0)</td>
+          <td><span class="badge b-story">Story</span></td>
+          <td><span class="epic e-ubp">Utility Bills Payment Bot (Phase 2) – Real Estate</span></td>
+          <td><span class="badge b-ip">In Progress</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-warn">Apr 21</td>
+          <td><span class="bkt bkt-sprint">Active Sprint</span></td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 SP2 Clone</option><option value="hold">⏸ Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">UBP Real Estate Phase 2 — Con Edison / Direct Energy document understanding model. Phase 1.0. In Progress — assigned FG.</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- ── AUTO-708 BUSINESS HOLD ── -->
+  <div class="section">
+    <div class="section-hdr" style="border-color:var(--orange)">⏸ AUTO-708 — Q2 Business Hold
+      <span class="badge b-hold" style="margin-left:4px">Business Hold</span>
+    </div>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Ticket</th><th>Title</th><th>Type</th><th>Epic</th><th>Status</th><th>SP</th><th>Due</th><th>Backlog Bucket</th><th>Rollover?</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tid" style="color:var(--orange)">AUTO-708</span></td>
+          <td class="ttl">PB Medical Record Denials Phase 2 — Implementation
+            <div class="sub">On Q2 business hold — not in active sprint</div>
+          </td>
+          <td><span class="badge b-story">Story</span></td>
+          <td><span class="epic e-mrd">Med Record Denial</span></td>
+          <td><span class="badge b-hold">Biz Hold</span></td>
+          <td class="sp-none">—</td>
+          <td class="due-ok">—</td>
+          <td><select class="ro-sel" onchange="colorRo(this)"><option value="">— Select —</option><option value="cl">✅ Close Sprint</option><option value="sp2">🔄 Reactivate Q3</option><option value="hold" selected>⏸ Biz Hold</option><option value="bl">🔴 Blocked</option></select></td>
+          <td class="notes">Placed on Q2 business hold. Business currently reviewing / evaluating scope. SM to monitor. Pull back into backlog when business provides green light. Owner: Blaine Masters (PO). Escalate if hold extends beyond Q2.</td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+</div><!-- /panel-sprint -->
+
+<!-- ═══════════ BACKLOG REFERENCE ═══════════ -->
+<div id="panel-backlog" class="panel">
+  <div class="filter-row">
+    <label>SEARCH</label>
+    <input class="search-box" id="bl-search" placeholder="ticket, title, assignee, epic..." oninput="filterBacklog()">
+    <label>BUCKET</label>
+    <select id="bl-bucket" onchange="filterBacklog()">
+      <option value="">All</option>
+      <option>Active Sprint</option>
+      <option>Sprint Ready</option>
+      <option>Team Refinement</option>
+      <option>PO Design</option>
+      <option>Intake / Discovery</option>
+      <option>Ext Dep Hold</option>
+      <option>Biz Hold</option>
+      <option>Backlog</option>
+    </select>
+    <label>STATUS</label>
+    <select id="bl-status" onchange="filterBacklog()">
+      <option value="">All</option>
+      <option>To Do</option><option>In Progress</option><option>In Review</option><option>Done</option><option>Blocked</option><option>Biz Hold</option>
+    </select>
+    <label>EPIC</label>
+    <select id="bl-epic" onchange="filterBacklog()">
+      <option value="">All</option>
+      <option>Claim Denials</option><option>340B Pharmacy</option><option>Invoice Audit</option><option>Implant Audit Attachment</option><option>Med Record Denial</option><option>MMG OON</option><option>UBP</option><option>HIM</option><option>Steady State</option><option>Specialty Pharmacy</option>
+    </select>
+    <label>ASSIGNEE</label>
+    <select id="bl-assignee" onchange="filterBacklog()">
+      <option value="">All</option>
+      <option>Levi Seybert</option>
+      <option>Kristian Roca</option>
+      <option>Shiva Ram Pinninti</option>
+      <option>Fenil Gandhi</option>
+      <option>Nidhi Mittal</option>
+      <option>Kalayer Winn</option>
+      <option>Ryan Pena</option>
+      <option>Purity Otieno</option>
+      <option>Blaine Masters</option>
+      <option>Vinitha Tadepalli</option>
+      <option>Nancy Collins</option>
+    </select>
+    <span class="ticket-count" id="bl-count">76 tickets</span>
+  </div>
+  <div class="tbl-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th class="sortable" onclick="sortBacklog('ticket')">TICKET ↕</th>
+          <th class="sortable" onclick="sortBacklog('title')">TITLE ↕</th>
+          <th class="sortable" onclick="sortBacklog('bucket')">BUCKET ↕</th>
+          <th class="sortable" onclick="sortBacklog('status')">STATUS ↕</th>
+          <th class="sortable" onclick="sortBacklog('assignee')">ASSIGNEE ↕</th>
+          <th>EPIC</th>
+          <th class="sortable" onclick="sortBacklog('sp')">SP ↕</th>
+          <th>NOTES</th>
+        </tr>
+      </thead>
+      <tbody id="bl-tbody"></tbody>
+    </table>
+  </div>
+</div><!-- /panel-backlog -->
+
+<!-- ═══════════ BACKLOG FLOW & CAPACITY ═══════════ -->
+<div id="panel-flow" class="panel">
+
+  <p class="flow-section-title">Automation Team Backlog Buckets — Working Agreement v1.3 (Nancy Collins, Apr 2026)</p>
+
+  <!-- Main flow: 6 buckets per WA -->
+  <div class="flow-wrap">
+    <div class="flow-bucket">
+      <div class="fb-label c-text">① Intake / Discovery</div>
+      <div class="fb-owner">Owner: PO or Requestor · EM, PO, KW, RP</div>
+      <div class="fb-rule"><strong>Capture demand and acknowledge intake without committing capacity.</strong> Initial request submitted for Automation work. Includes MRD, utility automations, or operational requests. Entry criteria: minimal information acceptable. No sizing, sequencing, or delivery commitment.</div>
+      <div style="margin-top:8px"><span class="fb-tag">19 items live</span><span class="fb-tag">No sprint</span><span class="fb-tag">⚠ 4 overdue Mar 31</span></div>
+    </div>
+    <div class="fb-arrow">›</div>
+    <div class="flow-bucket">
+      <div class="fb-label c-purple">② Product Owner Design</div>
+      <div class="fb-owner">Owner: PO (Purity, Ryan, Vinitha) · EM oversight</div>
+      <div class="fb-rule"><strong>Determine whether work is viable and ready for team refinement.</strong> Activities: validating business intent and rules · assessing technical feasibility (Bots, RDP, APIs) · identifying access needs and environment readiness · surfacing dependencies, risks, external constraints · PDD/SDD replacing bucket.</div>
+      <div class="fb-rule" style="margin-top:4px">Exit: Clear delivery approach identified · dependencies documented · item is ready for Team Refinement.</div>
+      <div style="margin-top:8px"><span class="fb-tag">15 items live</span><span class="fb-tag">6 In Progress</span><span class="fb-tag">2 Blocked</span><span class="fb-tag">2 In Review</span></div>
+    </div>
+    <div class="fb-arrow">›</div>
+    <div class="flow-bucket">
+      <div class="fb-label c-teal">③ Team Refinement</div>
+      <div class="fb-owner">Owner: Dev (LS, SP) · Nidhi tech lead · SM facilitates</div>
+      <div class="fb-rule"><strong>Prepare work for sprint eligibility.</strong> Activities: decomposing work into logical components (recorder, logic, exceptions, scheduling) · validating test data, RPA artifacts, vendor/system access · clarifying assumptions, edge cases, failure handling · estimating stories and aligning to team capacity.</div>
+      <div class="fb-rule" style="margin-top:4px">Exit: DoR met · stories sized, understood, actionable · eligible to move to Ready.</div>
+      <div style="margin-top:8px"><span class="fb-tag">3 items live</span><span class="fb-tag">AUTO-901, 907, 908</span><span class="fb-tag">Implant Audit</span></div>
+    </div>
+    <div class="fb-arrow">›</div>
+    <div class="flow-bucket">
+      <div class="fb-label c-green">④ Sprint Ready</div>
+      <div class="fb-owner">Owner: PO confirms · SM validates · Kay final review</div>
+      <div class="fb-rule"><strong>Work is fully refined and approved for sprint assignment.</strong> Workflow, access, dependencies, and acceptance criteria are confirmed. Item is eligible to be assigned and committed during Sprint Planning.</div>
+      <div style="margin-top:8px"><span class="fb-tag">10 items live</span><span class="fb-tag">All Implant Audit</span><span class="fb-tag">DoR met ✓</span><span class="fb-tag">SP2 source</span></div>
+    </div>
+    <div class="fb-arrow">›</div>
+    <div class="flow-bucket sprint-bucket">
+      <div class="fb-label c-orange">⑤ Sprint</div>
+      <div class="fb-owner">Owner: Dev (Levi, Kristian, Fenil, Shiva) · SM tracks</div>
+      <div class="fb-rule"><strong>To Do → In Progress → In Review → Done.</strong> SS/HC stories cloned each sprint. Dev stories pulled from Sprint Ready. No new stories added mid-sprint without 16th Minute discussion + SM approval.</div>
+      <div class="fb-rule" style="color:var(--red);font-size:10px;margin-top:6px">⚠ Blocked mid-sprint = document reason, next checkpoint in Jira comments. Escalate at 16th Minute if 24–48h unresolved.</div>
+      <div style="margin-top:8px"><span class="fb-tag">19 items active</span><span class="fb-tag">SP1 Apr 8–21</span></div>
+    </div>
+  </div>
+
+  <!-- Side buckets -->
+  <div style="display:flex;gap:12px;margin-bottom:24px;flex-wrap:wrap">
+    <div class="flow-bucket" style="flex:1;min-width:280px;border-radius:8px;border:1px solid var(--red);background:var(--red-dim)">
+      <div class="fb-label c-red">📦 External Dependency Hold</div>
+      <div class="fb-owner">Owner: PO tags · SM tracks · Kay/Nidhi informed · Reviewed every Refinement</div>
+      <div class="fb-rule"><strong>Work cannot proceed due to external dependencies outside the team's control</strong> (vendor delays, access issues, business decisions, third-party systems). Used for ALL work effectively on hold.</div>
+      <div class="fb-rule" style="margin-top:4px">A block reason + next review checkpoint must be documented in Jira comments.</div>
+      <div style="margin-top:8px"><span class="fb-tag warn">18 items live</span><span class="fb-tag warn">17 Blocked · 2 In Progress</span></div>
+    </div>
+    <div class="flow-bucket" style="flex:1;min-width:280px;border-radius:8px;border:1px solid var(--orange);background:var(--orange-dim)">
+      <div class="fb-label c-orange">⏸ Business Hold</div>
+      <div class="fb-owner">Owner: PO flags · SM tracks · Kay informed</div>
+      <div class="fb-rule"><strong>Business decision required before work can proceed.</strong> Story removed from sprint until business provides explicit green light.</div>
+      <div class="fb-rule">Current: <strong style="color:var(--orange)">AUTO-708</strong> — PB Medical Record Denials Phase 2. Monitor Q2. PO (Blaine/Kay) to provide update at next 1:1.</div>
+    </div>
+    <div class="flow-bucket" style="flex:1;min-width:280px;border-radius:8px;border:1px solid var(--text3);background:var(--bg3)">
+      <div class="fb-label c-text">📂 Backlog</div>
+      <div class="fb-owner">Owner: SM + PO · Low urgency</div>
+      <div class="fb-rule"><strong>7 items unrefined.</strong> Not yet scoped or prioritized. Includes RCM PB MRD Phase 2 items and MMG OON discovery items. "Create sprint" available when ready.</div>
+      <div style="margin-top:8px"><span class="fb-tag">AUTO-681, 951, 952, 954, 955, 958, 959</span></div>
+    </div>
+  </div>
+
+  <div class="flow-section-title">Working Agreement v1.3 — Key Rules</div>
+  <div class="rule-box">
+    <div class="rule-title" style="color:var(--orange)">Jira Workflow · Status Definitions (from WA v1.3)</div>
+    <div class="rule-row"><span class="rule-icon">🟦</span><span><strong>To Do</strong> — Refined stories with DoR met, or Epic approved for intake/discovery but not yet started.</span></div>
+    <div class="rule-row"><span class="rule-icon">🟡</span><span><strong>In Progress</strong> — Active development, configuration, or discovery work underway.</span></div>
+    <div class="rule-row"><span class="rule-icon">🟠</span><span><strong>In Review</strong> — Awaiting PM review OR Epic is in Hypercare (development complete; stabilization in progress).</span></div>
+    <div class="rule-row"><span class="rule-icon">🟢</span><span><strong>Done</strong> — Completed/moved to PRD, OR Epic completed Hypercare and transitioned to Steady State.</span></div>
+    <div class="rule-row"><span class="rule-icon">🔴</span><span><strong>Blocked / External Dependency Hold</strong> — Unable to proceed due to outside teams, vendor, access, or business decisions. Block reason + next checkpoint required in Jira comments.</span></div>
+  </div>
+  <div class="rule-box">
+    <div class="rule-title" style="color:var(--orange)">Definition of Done (DoD) · Definition of Ready (DoR)</div>
+    <div class="rule-row"><span class="rule-icon">✅</span><span><strong>Done when:</strong> All AC completed and validated · peer review done · tested in DEV/QA/SIT/UAT as applicable · PM approval received · documentation updated · Epics only: Hypercare complete and bot transitioned to Steady State.</span></div>
+    <div class="rule-row"><span class="rule-icon">📋</span><span><strong>Ready when:</strong> User story in As a / I want / So that format · AC clearly defined, verifiable, testable · linked to Epic · reviewed by team at Refinement or Sprint Planning · dependencies and assumptions identified and documented.</span></div>
+  </div>
+  <div class="rule-box">
+    <div class="rule-title" style="color:var(--orange)">Pulling Work & Sprint Rules</div>
+    <div class="rule-row"><span class="rule-icon">→</span><span>Decisions to pull new work are discussed during <strong>16th-Minute</strong> and confirmed via team consensus at DSU.</span></div>
+    <div class="rule-row"><span class="rule-icon">→</span><span>Once sprint started, <strong>no new stories added</strong> without 16th-Minute discussion or prior SM approval.</span></div>
+    <div class="rule-row"><span class="rule-icon">→</span><span>Discovery/exploratory work may occur without sprint stories, but <strong>must remain visible at Epic level.</strong></span></div>
+    <div class="rule-row"><span class="rule-icon">→</span><span>Stories &gt;8 pts must be split. Bugs are not pointed. Sprint Reviews: only when business-validated, production-ready work exists to demo.</span></div>
+  </div>
+
+  <div class="flow-section-title">Q2 FY2026 Capacity Planning — Automation Team</div>
+  <div class="cap-wrap">
+    <table class="cap-table">
+      <thead><tr><th>Sprint</th><th>Dates</th><th>Days</th><th>SP Committed</th><th>SS/HC Stories</th><th>Dev Stories</th><th>Velocity Est.</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr class="sprint-cur">
+          <td><strong class="sp-label">Q2 SP1</strong></td>
+          <td>Apr 8 – Apr 21</td>
+          <td>10</td>
+          <td>19 stories</td>
+          <td>~9 SS/Logs</td>
+          <td>2 (Levi)</td>
+          <td><div class="cap-bar-wrap"><div class="cap-bar cap-med" style="width:65%"></div></div>65%</td>
+          <td><span class="target-chip tc-warn">Active — 4 in progress · 0 Done</span></td>
+        </tr>
+        <tr>
+          <td><strong>Q2 SP2</strong></td>
+          <td>Apr 22 – May 5</td>
+          <td>10</td>
+          <td>TBD (10 in Ready)</td>
+          <td>~9 (cloned)</td>
+          <td>TBD from Ready</td>
+          <td><div class="cap-bar-wrap"><div class="cap-bar cap-lo" style="width:10%"></div></div>~10%</td>
+          <td><span class="target-chip tc-hold">Plan at SP1 Retro Apr 21</span></td>
+        </tr>
+        <tr>
+          <td><strong>Q2 SP3</strong></td>
+          <td>May 6 – May 19</td>
+          <td>10</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td><div class="cap-bar-wrap"><div class="cap-bar cap-lo" style="width:5%"></div></div>~5%</td>
+          <td><span class="target-chip tc-hold">Plan in SP2 Refinement</span></td>
+        </tr>
+        <tr>
+          <td><strong>Q2 SP4</strong></td>
+          <td>May 20 – Jun 2</td>
+          <td>10</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td><div class="cap-bar-wrap"><div class="cap-bar cap-lo" style="width:5%"></div></div>—</td>
+          <td><span class="target-chip tc-hold">Plan in SP3 Refinement</span></td>
+        </tr>
+        <tr>
+          <td><strong>Q2 SP5</strong></td>
+          <td>Jun 3 – Jun 16</td>
+          <td>10</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td><div class="cap-bar-wrap"><div class="cap-bar cap-lo" style="width:5%"></div></div>—</td>
+          <td><span class="target-chip tc-hold">Plan in SP4 Refinement</span></td>
+        </tr>
+        <tr>
+          <td><strong>Q2 SP6</strong></td>
+          <td>Jun 17 – Jun 30</td>
+          <td>10</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td><div class="cap-bar-wrap"><div class="cap-bar cap-lo" style="width:5%"></div></div>—</td>
+          <td><span class="target-chip tc-hold">Plan in SP5 Refinement</span></td>
+        </tr>
+        <tr>
+          <td><strong>Q3 SP1</strong></td>
+          <td>Jul 1 – Jul 14</td>
+          <td>10</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td>TBD</td>
+          <td><div class="cap-bar-wrap"><div class="cap-bar cap-lo" style="width:5%"></div></div>—</td>
+          <td><span class="target-chip tc-hold">Q3 Planning</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="cal-note" style="border-left-color:var(--yellow)">
+    <strong style="color:var(--yellow)">⚠ Velocity Baseline Note</strong> — Pointing started in Sprint 5/6. Velocity baseline is still being established. Majority of sprint board is steady state / hypercare (cloned). Development stories are growing as Q2 backlog matures. Purity's stories for Invoice Audit are model examples of full lifecycle from Discovery → Impl → Steady State.
+  </div>
+</div><!-- /panel-flow -->
+
+<!-- ═══════════ SPRINT CALENDAR ═══════════ -->
+<div id="panel-calendar" class="panel">
+
+  <div class="cal-note">
+    📅 Q2 FY2026 Automation Team ceremony schedule. 2-week sprint cadence. Stand-ups daily at 9:00 AM ET. Nancy Collins now primary SM (Rick Disher transitioned off Mar 2026). Agile Maturity Assessment conducted end of each month.
+  </div>
+
+  <div class="flow-section-title">Ceremony Schedule</div>
+  <div class="cal-grid" style="grid-template-columns:repeat(auto-fill,minmax(270px,1fr));margin-bottom:28px">
+
+    <div class="cal-card active-sprint">
+      <h3><span style="color:var(--orange)">●</span> Daily Stand-Up</h3>
+      <p><strong>Every sprint day · 9:00 AM ET · 15 min</strong><br>
+      Yesterday / Today / Blockers. All team members. Nancy facilitates. Cameras encouraged. Absent members notify team via Teams channel in advance. RAID log action items documented and published in Confluence post-ceremony.</p>
+      <div class="cal-sub">Mon–Fri · 9:00 AM ET · Per WA v1.3</div>
+    </div>
+
+    <div class="cal-card">
+      <h3>🔄 16th Minute</h3>
+      <p><strong>Thursdays · Post stand-up · Agenda required</strong><br>
+      Extended discussion after stand-up. Decisions to pull new work discussed here and confirmed via team consensus. Scope: timeline changes, cross-functional topics, and work-pulling decisions only. No agenda = skip.</p>
+      <div class="cal-sub">Thursday cadence · 16th Minute · Agenda required</div>
+    </div>
+
+    <div class="cal-card">
+      <h3>🔁 Backlog Refinement</h3>
+      <p><strong>Fridays · 10:30 AM ET · Mid-sprint or earlier if needed</strong><br>
+      Ensures stories are well-defined, estimated, and ready ahead of Sprint Planning. POs (Ryan, Purity, Vinitha, Blaine) bring stories. Nidhi provides tech review. SM facilitates. If no stories are ready, session may be cancelled.<br>
+      <strong>Next: ~Apr 18, 2026</strong></p>
+      <div class="cal-sub">Fridays · 10:30 AM ET · Per WA v1.3</div>
+    </div>
+
+    <div class="cal-card">
+      <h3>🚀 Sprint Planning</h3>
+      <p><strong>First day of each sprint · 9:00 AM ET</strong><br>
+      Combined with stand-up format. SM clones steady state stories. Dev stories pulled from Sprint Ready bucket. Nancy confirms all stories per resource. New stories: team consensus required.<br>
+      <strong>Next: Apr 22 (SP2)</strong></p>
+      <div class="cal-sub">Day 1 of each sprint · 9:00 AM ET · Per WA v1.3</div>
+    </div>
+
+    <div class="cal-card">
+      <h3>🔄 Sprint Retrospective</h3>
+      <p><strong>Last day of sprint · 11:30 AM ET</strong><br>
+      Feedback shared with positive intent. Safe space — discussion stays within Retro unless results in tracked action items. Final summary with participants, key points, and action items posted in Confluence.<br>
+      <strong>Next: Apr 21 (SP1 end)</strong></p>
+      <div class="cal-sub">Last day of sprint · 11:30 AM ET · Per WA v1.3</div>
+    </div>
+
+    <div class="cal-card">
+      <h3>📋 Sprint Review / Demo</h3>
+      <p><strong>Conducted with business during existing standing meetings</strong><br>
+      Not a standalone ceremony. Demo recordings and supporting documentation captured in Confluence for stakeholder visibility. Only when business-validated, production-ready work exists.<br>
+      Per WA v1.3: demos follow current process, outside regular Scrum ceremonies.</p>
+      <div class="cal-sub">Business-driven · Per WA v1.3</div>
+    </div>
+
+    <div class="cal-card">
+      <h3>🗓 Quarterly Planning</h3>
+      <p><strong>Once per quarter · Near quarter transition</strong><br>
+      Reviews and validates Epic-level roadmap alignment, timelines, and reporting accuracy. Not for detailed story creation. Timeline/scope changes that impact the current quarter are surfaced here for leadership visibility.<br>
+      <strong>Next: ~Jul 2026 (Q3)</strong></p>
+      <div class="cal-sub">Quarterly · Epic-level only · Per WA v1.3</div>
+    </div>
+
+    <div class="cal-card" style="border-color:var(--purple-dim)">
+      <h3 style="color:var(--purple)">📊 Agile Maturity</h3>
+      <p>Feb baseline: <strong>2.46 avg — Developing</strong>. March: <strong>2.50 avg — Established</strong>. Assessment conducted end of each month. April assessment due Apr 30.<br>WA v1.3 authored by Nancy Collins. Initial v1.0 by Rick Disher (Jul 2025). Still to finalize: old bucket mapping to pre-refinement, HyperCare standard, visual workflow rollout.</p>
+    </div>
+  </div>
+
+  <div class="flow-section-title">Sprint Cards — Q2 FY2026</div>
+  <div class="cal-grid">
+    <div class="cal-card active-sprint">
+      <h3><span style="color:var(--orange)">●</span> Q2 SP1 — Current Sprint</h3>
+      <p><strong>Apr 8 – Apr 21, 2026 · 19 items</strong><br>
+      Sprint Planning: Apr 8 ✓ · 9:00 AM ET<br>
+      Daily Stand-Up: 9:00 AM ET (15 min)<br>
+      Sprint Retro: Apr 21<br>
+      Sprint Review/Demo: Apr 21 (if work ready)<br>
+      Next SP: SP2 Planning Apr 22 · 9:00 AM ET</p>
+      <div class="cal-sub">19 items · LS, KR, SP, FG · Due Apr 21</div>
+    </div>
+    <div class="cal-card">
+      <h3>📅 Q2 SP2</h3>
+      <p><strong>Apr 22 – May 5, 2026</strong><br>
+      Sprint Planning: Apr 22 · 9:00 AM ET<br>
+      Daily Stand-Up: 9:00 AM ET<br>
+      10 items currently in Sprint Ready bucket<br>
+      Sprint Retro: May 5</p>
+      <div class="cal-sub">10 items in Sprint Ready · Plan at SP1 Retro</div>
+    </div>
+    <div class="cal-card">
+      <h3>📅 Q2 SP3</h3>
+      <p><strong>May 6 – May 19, 2026</strong><br>
+      Sprint Planning: May 6 · 9:00 AM ET<br>
+      Daily Stand-Up: 9:00 AM ET<br>
+      Sprint Retro: May 19</p>
+      <div class="cal-sub">Items TBD at SP2 Refinement</div>
+    </div>
+    <div class="cal-card">
+      <h3>📅 Q2 SP4</h3>
+      <p><strong>May 20 – Jun 2, 2026</strong><br>
+      Sprint Planning: May 20 · 9:00 AM ET<br>
+      Sprint Retro: Jun 2</p>
+      <div class="cal-sub">Items TBD</div>
+    </div>
+    <div class="cal-card">
+      <h3>📅 Q2 SP5</h3>
+      <p><strong>Jun 3 – Jun 16, 2026</strong><br>
+      Sprint Planning: Jun 3 · 9:00 AM ET<br>
+      Sprint Retro: Jun 16</p>
+      <div class="cal-sub">Items TBD</div>
+    </div>
+    <div class="cal-card">
+      <h3>📅 Q2 SP6</h3>
+      <p><strong>Jun 17 – Jun 30, 2026</strong><br>
+      Sprint Planning: Jun 17 · 9:00 AM ET<br>
+      Sprint Retro: Jun 30<br>
+      Several PO Design items have Jun 30 due dates (AUTO-964, AUTO-965 — RCM Coding Denials)</p>
+      <div class="cal-sub">Items TBD · Jun 30 milestones due</div>
+    </div>
+    <div class="cal-card">
+      <h3>📅 Q3 SP1</h3>
+      <p><strong>Jul 1 – Jul 14, 2026</strong><br>
+      Sprint Planning: Jul 1 · 9:00 AM ET<br>
+      Q3 kickoff — new sprint created in Jira</p>
+      <div class="cal-sub">Items TBD · Q3 roadmap</div>
+    </div>
+    <div class="cal-card" style="border-color:var(--yellow-dim)">
+      <h3 style="color:var(--yellow)">📌 SP1 Watch Items</h3>
+      <p>AUTO-726, AUTO-852, AUTO-853, AUTO-727: overdue items with Mar 31 due dates in Intake/Discovery and PO Design — need status update from POs (Emily). AUTO-708 business hold — check Q2 status with Kay/Blaine. Ext Dependency Hold: 18 items, 1 In Progress (AUTO-788), 17 Blocked — review at each Refinement. Sprint Ready: 10 items queued for SP2.</p>
+    </div>
+    <div class="cal-card" style="border-color:var(--red-dim)">
+      <h3 style="color:var(--red)">⚠ Open Action Items</h3>
+      <p>AUTO-995 &amp; AUTO-996 (Shiva): still To Do — need to start before Apr 21.<br>AUTO-988 (KR): still To Do — needs to move to In Progress.<br>AUTO-895 (Levi): To Do after AUTO-892 completes.<br>External Dependency Hold items: review blockers with Kay at next 1:1.<br>Overdue PO Design items (Mar 31): follow up with Emily.</p>
+    </div>
+  </div>
+</div><!-- /panel-calendar -->
+
+<!-- ═══════════ DAILY UPDATES ═══════════ -->
+<div id="panel-updates" class="panel">
+
+  <div class="upd-how">
+    <strong>📋 How to use this tab</strong><br>
+    Drop your stand-up transcription file into Claude and say <em>"update the Automation tracker."</em> Claude will read the transcript and populate yesterday / today / blockers / next steps per ticket for that date. Each session is date-stamped and stacked below — most recent at top. Previous sessions are preserved as a running log for the sprint.
+  </div>
+
+  <div id="upd-log">
+    <!-- ── Apr 10, 2026 · Daily Stand-Up ── -->
+    <div class="upd-date-hdr">
+      <span>📅 Apr 10, 2026 — Daily Stand-Up</span>
+      <span class="badge b-ip" style="margin-left:auto">Q2 SP1 · Day 3 of 10</span>
+    </div>
+    <div class="upd-table-wrap"><table class="upd-table">
+      <thead><tr><th>Ticket / Area</th><th>Owner</th><th style="min-width:180px">Yesterday ✅</th><th style="min-width:180px">Today 🔵</th><th style="min-width:160px">Blockers 🔴</th><th style="min-width:180px">Next Steps 🟡</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="tid">AUTO-892</span><div style="font-size:10px;color:var(--text2)">Levi Seybert</div></td>
+          <td class="asn">Levi Seybert</td>
+          <td><span class="upd-yesterday">—</span></td>
+          <td><span class="upd-today">Build_Create ROI Batch and Import Patients — In Progress. 5 pts.</span></td>
+          <td><span class="upd-empty">None reported</span></td>
+          <td><span class="upd-next">→ AUTO-895 (Extract Supply Numbers, 3 pts) follows once 892 completes.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-985</span><div style="font-size:10px;color:var(--text2)">Kristian Roca</div></td>
+          <td class="asn">Kristian Roca</td>
+          <td><span class="upd-yesterday">—</span></td>
+          <td><span class="upd-today">MRD Enhancement - UMR Business Exception — In Progress.</span></td>
+          <td><span class="upd-empty">None reported</span></td>
+          <td><span class="upd-next">→ Continue UMR exception logic. Update to In Review when ready for biz validation.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-986/987/989</span><div style="font-size:10px;color:var(--text2)">Kristian Roca</div></td>
+          <td class="asn">Kristian Roca</td>
+          <td><span class="upd-yesterday">—</span></td>
+          <td><span class="upd-today">No Show Encounter, Break the Glass, Patient Deceased pop-ups — all In Review.</span></td>
+          <td><span class="upd-empty">None</span></td>
+          <td><span class="upd-next">→ Awaiting business review sign-off to move to Done.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-988</span><div style="font-size:10px;color:var(--text2)">Kristian Roca</div></td>
+          <td class="asn">Kristian Roca</td>
+          <td><span class="upd-yesterday">—</span></td>
+          <td><span class="upd-today">Pop-up — Session Cannot Be Edited — To Do.</span></td>
+          <td><span class="upd-empty">None</span></td>
+          <td><span class="upd-next">→ Move to In Progress. Assess complexity against sprint end Apr 21.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-1001</span><div style="font-size:10px;color:var(--text2)">Kristian Roca</div></td>
+          <td class="asn">Kristian Roca</td>
+          <td><span class="upd-yesterday">—</span></td>
+          <td><span class="upd-today">MMC Claim Denial Phase 2 HyperCare — In Progress. Due Apr 21.</span></td>
+          <td><span class="upd-empty">None reported</span></td>
+          <td><span class="upd-next">→ Continue hypercare monitoring. Report exception counts at stand-up.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-990–994, 997–998</span><div style="font-size:10px;color:var(--text2)">Shiva Ram Pinninti</div></td>
+          <td class="asn">Shiva Ram Pinninti</td>
+          <td><span class="upd-yesterday">—</span></td>
+          <td><span class="upd-today">RCM, Multiple Bill, MRD, Provider Enrollment, E&amp;M, Locating Auth, Pharmacy 340B Logs Checks — all In Progress. Due Apr 21.</span></td>
+          <td><span class="upd-empty">None reported</span></td>
+          <td><span class="upd-next">→ Validate log check stories and move to Done by Apr 21. Begin AUTO-995 &amp; AUTO-996 (currently To Do).</span></td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-999</span><div style="font-size:10px;color:var(--text2)">Fenil Gandhi</div></td>
+          <td class="asn">Fenil Gandhi</td>
+          <td><span class="upd-yesterday">—</span></td>
+          <td><span class="upd-today">UBP Real Estate - Con Edison/Direct Energy Document Understanding Phase 1.0 — In Progress. Due Apr 21. TEST label.</span></td>
+          <td><span class="upd-empty">None reported</span></td>
+          <td><span class="upd-next">→ Continue model training. Demo to be set up once complete.</span></td>
+        </tr>
+        <tr>
+          <td><span class="tid">AUTO-1000</span><div style="font-size:10px;color:var(--text2)">Fenil Gandhi</div></td>
+          <td class="asn">Fenil Gandhi</td>
+          <td><span class="upd-yesterday">—</span></td>
+          <td><span class="upd-today">UBP Enhancement HyperCare — In Progress. Due Apr 21. TEST label.</span></td>
+          <td><span class="upd-empty">None reported</span></td>
+          <td><span class="upd-next">→ Continue hypercare. Validate against UBP Enhancements (Credit + Agilitas) epic.</span></td>
+        </tr>
+      </tbody>
+    </table></div>
+
+  </div><!-- /upd-log -->
+</div><!-- /panel-updates -->
+
+<!-- ═══════════ RIDAC ═══════════ -->
+<div id="panel-ridac" class="panel">
+
+  <div class="ridac-tabs">
+    <div class="ridac-tab active" onclick="showRidac('risks',this)">🔴 Risks <span class="cnt">4</span></div>
+    <div class="ridac-tab" onclick="showRidac('issues',this)">⚠️ Issues <span class="cnt">3</span></div>
+    <div class="ridac-tab" onclick="showRidac('decisions',this)">✅ Decisions <span class="cnt">4</span></div>
+    <div class="ridac-tab" onclick="showRidac('actions',this)">📋 Action Items <span class="cnt">8</span></div>
+    <div class="ridac-tab" onclick="showRidac('changes',this)">🔄 Change Requests <span class="cnt">0</span></div>
+  </div>
+
+  <!-- RISKS -->
+  <div id="ridac-risks" class="ridac-panel active">
+    <div class="ridac-add-row">
+      <input class="ridac-input" id="r-id" placeholder="ID e.g. R-05" style="max-width:80px">
+      <input class="ridac-input" id="r-desc" placeholder="Risk description">
+      <input class="ridac-input" id="r-prob" placeholder="Probability" style="max-width:110px">
+      <input class="ridac-input" id="r-imp" placeholder="Impact" style="max-width:100px">
+      <input class="ridac-input" id="r-owner" placeholder="Owner" style="max-width:140px">
+      <input class="ridac-input" id="r-notes" placeholder="Mitigation / Notes">
+      <button class="ridac-btn" onclick="addRidacRow('risks')">+ Add</button>
+    </div>
+    <div class="ridac-tbl-wrap"><table class="ridac-tbl">
+      <thead><tr><th>ID</th><th>Risk</th><th>Probability</th><th>Impact</th><th>Owner</th><th>Status</th><th>Mitigation / Notes</th><th></th></tr></thead>
+      <tbody id="risks-body">
+        <tr>
+          <td>R-01</td>
+          <td contenteditable="true">AUTO-889 sample file not yet received from Sherad (business) — Invoice Audit dev work cannot begin until file arrives. Sprint may close without meaningful progress on this story.</td>
+          <td><span class="ridac-stat rs-open r-med">Medium</span></td>
+          <td><span class="ridac-stat rs-open r-med">Medium</span></td>
+          <td contenteditable="true">Purity Otieno (PO)</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">Purity to follow up with Sherad AM of 03/13. Levi has repos ready — no blocker on dev side once file arrives.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>R-02</td>
+          <td contenteditable="true">Joao Guimaraes transitioning off Automation team this sprint — risk of incomplete knowledge transfer for MRD / UHC / SIGNA work. Jira access still blocked (AADSTS50105).</td>
+          <td><span class="ridac-stat rs-open r-high">High</span></td>
+          <td><span class="ridac-stat rs-open r-med">Medium</span></td>
+          <td contenteditable="true">Nancy Collins (SM)</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">SM to confirm knowledge transfer sessions before Joao's last day. Kristian completing open MRD work. Jira access: follow up with Kris Traenkner.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>R-03</td>
+          <td contenteditable="true">April Epic update may destabilize production automations — steady state bots dependent on Epic selectors/workflows that may change with the update.</td>
+          <td><span class="ridac-stat rs-open r-high">High</span></td>
+          <td><span class="ridac-stat rs-open r-high">High</span></td>
+          <td contenteditable="true">Shiva Ram Pinninti / Nidhi Mittal</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">Retro 03/10 action: team creating test case documentation for all steady state automations before April update. Joel + Shiva leading. UFR test suite exploration added as follow-on item.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>R-04</td>
+          <td contenteditable="true">AUTO-708 (PB MRD Phase 2) on Q2 business hold indefinitely — risk of delivery gap in Q2 if hold is not revisited with clear timeline.</td>
+          <td><span class="ridac-stat rs-open r-med">Medium</span></td>
+          <td><span class="ridac-stat rs-open r-med">Medium</span></td>
+          <td contenteditable="true">Blaine Masters (PO) / Kay (Sr. PO)</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">SM to monitor. PO (Blaine/Kay) to provide business status update by SP2. Pull back into backlog with clear sprint target when business confirms go-ahead.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- ISSUES -->
+  <div id="ridac-issues" class="ridac-panel">
+    <div class="ridac-add-row">
+      <input class="ridac-input" id="i-id" placeholder="ID e.g. I-04" style="max-width:80px">
+      <input class="ridac-input" id="i-desc" placeholder="Issue description">
+      <input class="ridac-input" id="i-impact" placeholder="Impact" style="max-width:120px">
+      <input class="ridac-input" id="i-owner" placeholder="Owner" style="max-width:140px">
+      <input class="ridac-input" id="i-notes" placeholder="Resolution / Notes">
+      <button class="ridac-btn" onclick="addRidacRow('issues')">+ Add</button>
+    </div>
+    <div class="ridac-tbl-wrap"><table class="ridac-tbl">
+      <thead><tr><th>ID</th><th>Issue</th><th>Impact</th><th>Owner</th><th>Status</th><th>Resolution / Notes</th><th></th></tr></thead>
+      <tbody id="issues-body">
+        <tr>
+          <td>I-01</td>
+          <td contenteditable="true">Joao Guimaraes Jira access blocked — AADSTS50105 / Azure AD block preventing him from updating own stories. SM moving tickets on his behalf.</td>
+          <td><span class="ridac-stat rs-open r-high">High</span></td>
+          <td contenteditable="true">Kris Traenkner / SM</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">SM (Nancy) managing stories for Joao. Ticket opened with Kris. Joao transitioning off team — ensure access resolved or transition complete before exit.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>I-02</td>
+          <td contenteditable="true">Claim Denials Phase 2 EDI file naming mismatch — Epic's bot and Automation bot generating different file naming conventions causing reconciliation errors.</td>
+          <td><span class="ridac-stat rs-open r-med">Medium</span></td>
+          <td contenteditable="true">Kristian Roca / Business</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">Business meeting 03/12 identified issue. Epic-side fix proposed — Epic may change how bot drops EDI files. Kristian monitoring. No immediate dev action required — waiting on Epic team.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>I-03</td>
+          <td contenteditable="true">340B ScriptPro session persistence bug — bot encounters previous session data entry screen on Mozilla Server scripts, preventing login pin entry.</td>
+          <td><span class="ridac-stat rs-open r-med">Medium</span></td>
+          <td contenteditable="true">Shiva Ram Pinninti / Levi Seybert</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">Shiva identified root cause: only affects Mozilla Server scripts. Levi + Shiva pairing session scheduled Mon or Tue week of 03/16 to address.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- DECISIONS -->
+  <div id="ridac-decisions" class="ridac-panel">
+    <div class="ridac-add-row">
+      <input class="ridac-input" id="d-id" placeholder="ID e.g. D-05" style="max-width:80px">
+      <input class="ridac-input" id="d-desc" placeholder="Decision description">
+      <input class="ridac-input" id="d-owner" placeholder="Decision maker" style="max-width:160px">
+      <input class="ridac-input" id="d-date" placeholder="Date" style="max-width:110px">
+      <input class="ridac-input" id="d-notes" placeholder="Rationale / Notes">
+      <button class="ridac-btn" onclick="addRidacRow('decisions')">+ Add</button>
+    </div>
+    <div class="ridac-tbl-wrap"><table class="ridac-tbl">
+      <thead><tr><th>ID</th><th>Decision</th><th>Decision Maker</th><th>Date</th><th>Status</th><th>Rationale / Notes</th><th></th></tr></thead>
+      <tbody id="decisions-body">
+        <tr>
+          <td>D-01</td>
+          <td contenteditable="true">Nancy Collins to take over as full-time Scrum Master for Automation Team. Rick Disher transitioning off to Wave 2 teams.</td>
+          <td contenteditable="true">Kris Traenkner / Rick Disher / Chris</td>
+          <td contenteditable="true" style="color:var(--green)">Mar 5, 2026</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option>Open</option><option>In Progress</option><option selected>Closed</option></select></td>
+          <td contenteditable="true">Rick canceled standing series invites. Nancy sent new series. Official announcement made to team at 03/06 backlog refinement. Rick to remain available 2–3 weeks for transition support.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>D-02</td>
+          <td contenteditable="true">Sprint Review cancelled for Sprint 5 (03/10) — no development work ready to demo. Team agreed no finished product justified a formal review.</td>
+          <td contenteditable="true">Nancy Collins (SM) / Team consensus</td>
+          <td contenteditable="true" style="color:var(--green)">Mar 10, 2026</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option>Open</option><option>In Progress</option><option selected>Closed</option></select></td>
+          <td contenteditable="true">Communicated to team via Teams. Work still under business review and active dev — team agreed skipping was appropriate. Demo readiness = business-validated, production-deployed work.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>D-03</td>
+          <td contenteditable="true">AUTO-708 (PB MRD Phase 2) placed on Q2 business hold — not to be worked until business provides green light.</td>
+          <td contenteditable="true">Kay (Sr. PO) / Business</td>
+          <td contenteditable="true" style="color:var(--yellow)">Q2 2026</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">Story removed from sprint board. SM tracking. PO to provide update when business is ready to proceed.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>D-04</td>
+          <td contenteditable="true">16th Minute to require an agenda going forward — reevaluated to avoid repetition of stand-up content. Scope: timeline changes and cross-functional topics only.</td>
+          <td contenteditable="true">Nancy Collins (SM) / Kay (Sr. PO) / Rick Disher</td>
+          <td contenteditable="true" style="color:var(--green)">Mar 5, 2026</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Closed</option></select></td>
+          <td contenteditable="true">Kay + Nancy + Rick aligned in 1:1. POs to report out only if timeline changes. SM to set agenda before Thursday calls. Individual questions → 1:1 with Kay/Nidhi instead of full-team discussion.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div id="ridac-actions" class="ridac-panel">
+    <div class="ridac-add-row">
+      <input class="ridac-input" id="a-id" placeholder="ID e.g. A-09" style="max-width:80px">
+      <input class="ridac-input" id="a-desc" placeholder="Action item description">
+      <input class="ridac-input" id="a-owner" placeholder="Owner" style="max-width:160px">
+      <input class="ridac-input" id="a-due" placeholder="Due date" style="max-width:110px">
+      <input class="ridac-input" id="a-notes" placeholder="Notes">
+      <button class="ridac-btn" onclick="addRidacRow('actions')">+ Add</button>
+    </div>
+    <div class="ridac-tbl-wrap"><table class="ridac-tbl">
+      <thead><tr><th>ID</th><th>Action Item</th><th>Owner</th><th>Due</th><th>Status</th><th>Notes</th><th></th></tr></thead>
+      <tbody id="actions-body">
+        <tr>
+          <td>A-01</td>
+          <td contenteditable="true">Follow up with Sherad re: sample file for AUTO-889 Invoice Audit build</td>
+          <td contenteditable="true">Purity Otieno</td>
+          <td contenteditable="true" style="color:var(--red)">Mar 13 AM</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td>
+          <td contenteditable="true">Purity to follow up this morning. Levi's repos are ready — unblocked once file arrives.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>A-02</td>
+          <td contenteditable="true">Schedule Levi + Shiva pairing session for 340B ScriptPro session persistence fix</td>
+          <td contenteditable="true">Shiva Ram Pinninti</td>
+          <td contenteditable="true" style="color:var(--yellow)">Mon Mar 16 or Tue Mar 17</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td>
+          <td contenteditable="true">Mozilla Server script issue identified. Levi said either day works. Shiva to send invite.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>A-03</td>
+          <td contenteditable="true">Follow up with Kris Traenkner on Joao Jira access issue (AADSTS50105)</td>
+          <td contenteditable="true">Nancy Collins (SM)</td>
+          <td contenteditable="true" style="color:var(--red)">ASAP</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td>
+          <td contenteditable="true">Joao transitioning off team. Need to confirm access resolution before exit or ensure all stories managed through SM handoff.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>A-04</td>
+          <td contenteditable="true">Confirm knowledge transfer from Joao before final transition date</td>
+          <td contenteditable="true">Nancy Collins (SM) / Nidhi Mittal</td>
+          <td contenteditable="true" style="color:var(--yellow)">Before Joao's last day</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td>
+          <td contenteditable="true">Joao's MRD/UHC/SIGNA work needs documented. Kristian has picked up remaining AUTO-985 work. Ensure no undocumented open threads.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>A-05</td>
+          <td contenteditable="true">Begin Epic update test case documentation for all steady state automations (Retro 03/10 action item)</td>
+          <td contenteditable="true">Shiva Ram Pinninti / Joel / Team</td>
+          <td contenteditable="true" style="color:var(--yellow)">Before April Epic update</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td>
+          <td contenteditable="true">Retro 03/10 consensus. Team agreed test case docs needed before April update. UFR test suite exploration also added as follow-on item. Shiva + Joel leading.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>A-06</td>
+          <td contenteditable="true">Explore UFR test suite for automated test cases (Retro 03/10 suggestion from Shiva)</td>
+          <td contenteditable="true">Shiva Ram Pinninti / Nidhi Mittal</td>
+          <td contenteditable="true" style="color:var(--yellow)">SP2</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td>
+          <td contenteditable="true">Shiva recommended leveraging UFR test suite to create automated test cases for more stable, reliable test setup going forward.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>A-07</td>
+          <td contenteditable="true">Provide update on AUTO-708 (PB MRD Phase 2) business hold status by SP2</td>
+          <td contenteditable="true">Kalayer Winn (Sr. PO) / Blaine Masters</td>
+          <td contenteditable="true" style="color:var(--yellow)">SP2 Sprint Planning</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td>
+          <td contenteditable="true">Business hold status needs clarity. SM to ask Kay for update at next 1:1 or stand-up.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+        <tr>
+          <td>A-08</td>
+          <td contenteditable="true">Review and finalize Working Agreement — paste into Confluence (no versioning). Align team on Jira as single source of truth.</td>
+          <td contenteditable="true">Nancy Collins (SM)</td>
+          <td contenteditable="true" style="color:var(--yellow)">Q2 SP2</td>
+          <td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td>
+          <td contenteditable="true">Nancy confirmed pasting into Confluence without versioning. Aligned with Rick + Kay. Jira working agreement topics: ready bucket standards, sprint pull process, story in sprint = being worked on.</td>
+          <td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td>
+        </tr>
+      </tbody>
+    </table></div>
+  </div>
+
+  <!-- CHANGE REQUESTS -->
+  <div id="ridac-changes" class="ridac-panel">
+    <div class="ridac-add-row">
+      <input class="ridac-input" id="cr-id" placeholder="ID e.g. CR-01" style="max-width:80px">
+      <input class="ridac-input" id="cr-desc" placeholder="Change request description">
+      <input class="ridac-input" id="cr-impact" placeholder="Impact" style="max-width:120px">
+      <input class="ridac-input" id="cr-owner" placeholder="Owner" style="max-width:140px">
+      <input class="ridac-input" id="cr-notes" placeholder="Notes / Approval status">
+      <button class="ridac-btn" onclick="addRidacRow('changes')">+ Add</button>
+    </div>
+    <div class="ridac-tbl-wrap"><table class="ridac-tbl">
+      <thead><tr><th>ID</th><th>Change Request</th><th>Impact</th><th>Owner</th><th>Status</th><th>Notes / Approval</th><th></th></tr></thead>
+      <tbody id="changes-body">
+        <tr><td colspan="7" class="ridac-empty">No change requests logged for this sprint.</td></tr>
+      </tbody>
+    </table></div>
+  </div>
+
+</div><!-- /panel-ridac -->
+
+
+<script>
+// ── TABS ──
+function showTab(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('panel-'+id).classList.add('active');
+  if(id==='backlog') filterBacklog();
+}
+
+// ── ROLLOVER COLOR ──
+function colorRo(sel){
+  sel.classList.remove('ro-done','ro-sp2','ro-hold','ro-bl','ro-cl');
+  if(sel.value==='cl') sel.classList.add('ro-cl');
+  else if(sel.value==='sp2') sel.classList.add('ro-sp2');
+  else if(sel.value==='hold') sel.classList.add('ro-hold');
+  else if(sel.value==='bl') sel.classList.add('ro-bl');
+}
+
+// ── RIDAC TABS ──
+function showRidac(id,el){
+  document.querySelectorAll('.ridac-tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ridac-panel').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('ridac-'+id).classList.add('active');
+}
+
+// ── BACKLOG DATA ──
+const TICKETS=[
+  // ── ACTIVE SPRINT: AUTO-FY26-Q2-SP1 (8 Apr – 21 Apr, 19 items) ──
+  {ticket:'AUTO-892',title:'Build_Create ROI Batch and Import Patients',status:'In Progress',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'5',notes:'Active sprint · Implant Audit Attachment epic · SP1',bucket:'Active Sprint'},
+  {ticket:'AUTO-895',title:'Build_Extract Supply Numbers from Epic',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'3',notes:'Active sprint · Implant Audit Attachment epic · follows AUTO-892',bucket:'Active Sprint'},
+  {ticket:'AUTO-985',title:'MRD Enhancement - UMR Business Exception',status:'In Progress',assignee:'Kristian Roca',epic:'Med Record Denial',sp:'—',notes:'Active sprint · MRD Medical Record Denial (Exception Enhancement)',bucket:'Active Sprint'},
+  {ticket:'AUTO-986',title:'No Show Encounter Pop-up',status:'In Review',assignee:'Kristian Roca',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State Support',bucket:'Active Sprint'},
+  {ticket:'AUTO-987',title:'Break the Glass Scenario - Convert to BRE',status:'In Review',assignee:'Kristian Roca',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State Support',bucket:'Active Sprint'},
+  {ticket:'AUTO-988',title:'Pop-up Indicating That the Session Cannot Be Edited and the Charges/Updates Are in Progress',status:'To Do',assignee:'Kristian Roca',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State Support',bucket:'Active Sprint'},
+  {ticket:'AUTO-989',title:'Pop-up Indicating That the Patient Is Deceased',status:'In Review',assignee:'Kristian Roca',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State Support',bucket:'Active Sprint'},
+  {ticket:'AUTO-990',title:'RCM Logs Check',status:'In Progress',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-991',title:'Multiple Bill Area Logs Check',status:'In Progress',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-992',title:'Medical Records Denial (MRD) Logs Check',status:'In Progress',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-993',title:'Provider Enrollment Claims Edit Logs Check',status:'In Progress',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-994',title:'Outpatient E&M Logs Check',status:'In Progress',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-995',title:'Hospital Billing: Provider Enrollment Claim Edits',status:'To Do',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-996',title:'Orchestrator Health Check Automation',status:'To Do',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-997',title:'Locating an Auth Logs Check',status:'In Progress',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-998',title:'Pharmacy 340B Logs Check',status:'In Progress',assignee:'Shiva Ram Pinninti',epic:'Steady State',sp:'—',notes:'Active sprint · 2026 Q1 DACOE Steady State · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-999',title:'UBP Real Estate - Con Edison / Direct Energy Document Understanding Phase (1.0)',status:'In Progress',assignee:'Fenil Gandhi',epic:'UBP',sp:'—',notes:'Active sprint · TEST label · Utility Bills Payment Bot Phase 2 – Real Estate · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-1000',title:'UBP Enhancement - Hypercare',status:'In Progress',assignee:'Fenil Gandhi',epic:'UBP',sp:'—',notes:'Active sprint · TEST label · UBP Enhancements (Credit + Agilitas) · Due Apr 21',bucket:'Active Sprint'},
+  {ticket:'AUTO-1001',title:'MMC Claim Denial Phase 2 - Hypercare',status:'In Progress',assignee:'Kristian Roca',epic:'Claim Denials',sp:'—',notes:'Active sprint · Hospital Billing: Claim Denial Submission Phase 2 · Due Apr 21',bucket:'Active Sprint'},
+  // ── INTAKE / DISCOVERY (19 items) — from Restricted Board ──
+  {ticket:'AUTO-726',title:'MMG OON Denials : Validate Business Value and Feasibility',status:'In Progress',assignee:'Emily (EM)',epic:'MMG OON',sp:'—',notes:'Intake/Discovery · MMG OON Denials · ⚠ Due Mar 31 (overdue)',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-793',title:'HIM Automate CSN - Process Analysis',status:'In Progress',assignee:'Kalayer Winn',epic:'HIM',sp:'—',notes:'Intake/Discovery · HIM Automate CSN epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-801',title:'Benefits/Savings',status:'To Do',assignee:'Purity Otieno',epic:'HIM',sp:'—',notes:'Intake/Discovery · HIM Automate TJC epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-802',title:'Automation Hub Intake Form',status:'To Do',assignee:'Purity Otieno',epic:'HIM',sp:'—',notes:'Intake/Discovery · HIM Automate TJC epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-803',title:'Application and Access Requirements',status:'To Do',assignee:'Purity Otieno',epic:'HIM',sp:'—',notes:'Intake/Discovery · HIM Automate TJC epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-804',title:'Reporting Expectation',status:'To Do',assignee:'Purity Otieno',epic:'HIM',sp:'—',notes:'Intake/Discovery · HIM Automate TJC epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-807',title:'Benefits/Savings',status:'In Progress',assignee:'Purity Otieno',epic:'HIM',sp:'—',notes:'Intake/Discovery · HIM Automate TJC epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-808',title:'Automation Hub Intake Form',status:'In Progress',assignee:'Purity Otieno',epic:'Implant Audit Attachment',sp:'—',notes:'Intake/Discovery · Implant Audit Attachment epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-809',title:'Application and Access Requirements',status:'In Progress',assignee:'Purity Otieno',epic:'Implant Audit Attachment',sp:'—',notes:'Intake/Discovery · Implant Audit Attachment epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-810',title:'Reporting Expectation',status:'In Progress',assignee:'Purity Otieno',epic:'Implant Audit Attachment',sp:'—',notes:'Intake/Discovery · Implant Audit Attachment epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-816',title:'Submit Automation Hub Idea',status:'To Do',assignee:'Ryan Pena',epic:'Specialty Pharmacy',sp:'—',notes:'Intake/Discovery · Specialty Pharmacy epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-817',title:'Conduct Discovery Session with SMEs',status:'To Do',assignee:'Ryan Pena',epic:'Specialty Pharmacy',sp:'—',notes:'Intake/Discovery · Specialty Pharmacy epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-818',title:'Collect Volume & Effort Data',status:'To Do',assignee:'Ryan Pena',epic:'Specialty Pharmacy',sp:'—',notes:'Intake/Discovery · Specialty Pharmacy epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-819',title:'Build Value Model',status:'To Do',assignee:'Ryan Pena',epic:'Specialty Pharmacy',sp:'—',notes:'Intake/Discovery · Specialty Pharmacy epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-820',title:'Data & System Readiness Assessment',status:'To Do',assignee:'Ryan Pena',epic:'Specialty Pharmacy',sp:'—',notes:'Intake/Discovery · Specialty Pharmacy epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-821',title:'Identify Risks & Exceptions',status:'To Do',assignee:'Ryan Pena',epic:'Specialty Pharmacy',sp:'—',notes:'Intake/Discovery · Specialty Pharmacy epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-822',title:'DACOE / Governance Approval',status:'To Do',assignee:'Ryan Pena',epic:'Specialty Pharmacy',sp:'—',notes:'Intake/Discovery · Specialty Pharmacy epic',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-852',title:'RCM - PB Medical Record Denial - Phase 2: Conduct Automation Discovery',status:'In Progress',assignee:'Emily (EM)',epic:'Med Record Denial',sp:'—',notes:'Intake/Discovery · RCM PB Medical Record Denial · ⚠ Due Mar 31 (overdue)',bucket:'Intake / Discovery'},
+  {ticket:'AUTO-853',title:'RCM - PB Medical Record Denial - Phase 2: Validate Business Value and Feasibility',status:'In Progress',assignee:'Emily (EM)',epic:'Med Record Denial',sp:'—',notes:'Intake/Discovery · RCM PB Medical Record Denial · ⚠ Due Mar 31 (overdue)',bucket:'Intake / Discovery'},
+  // ── PRODUCT OWNER DESIGN (15 items) — from Restricted Board ──
+  {ticket:'AUTO-651',title:'Solution Design - Claim Denial St Luke',status:'To Do',assignee:'Purity Otieno',epic:'Claim Denials',sp:'—',notes:'Product Owner Design · RCM Discovery-St. Luke',bucket:'PO Design'},
+  {ticket:'AUTO-638',title:'PDD Design: Claim Denial St Luke',status:'To Do',assignee:'Purity Otieno',epic:'Claim Denials',sp:'—',notes:'Product Owner Design · RCM Discovery-St. Luke',bucket:'PO Design'},
+  {ticket:'AUTO-724',title:'Discovery/Walk Through PDD - Real Estate',status:'To Do',assignee:'Vinitha Tadepalli',epic:'UBP',sp:'—',notes:'Product Owner Design · Utility Bills Payment Bot',bucket:'PO Design'},
+  {ticket:'AUTO-727',title:'MMG OON Denials : Conduct Automation Discovery',status:'In Progress',assignee:'Emily (EM)',epic:'MMG OON',sp:'—',notes:'Product Owner Design · MMG OON Denials · ⚠ Due Mar 31',bucket:'PO Design'},
+  {ticket:'AUTO-610',title:'PDD - Utility Bills Payment Credit Enhancement',status:'Blocked',assignee:'Vinitha Tadepalli',epic:'UBP',sp:'—',notes:'Product Owner Design · BLOCKED · Utility Bills Payment',bucket:'PO Design'},
+  {ticket:'AUTO-612',title:'PDD - Utility Bills Payment AP/Infor Process',status:'In Review',assignee:'Vinitha Tadepalli',epic:'UBP',sp:'—',notes:'Product Owner Design · In Review · Utility Bills Payment',bucket:'PO Design'},
+  {ticket:'AUTO-677',title:'UBP AP - PDD Approval 1.3',status:'In Review',assignee:'Vinitha Tadepalli',epic:'UBP',sp:'—',notes:'Product Owner Design · In Review · Utility Bills Payment',bucket:'PO Design'},
+  {ticket:'AUTO-697',title:'PDD and SDD Review & Sign-Off – CMS-15003 Automation',status:'Blocked',assignee:'Purity Otieno',epic:'Claim Denials',sp:'—',notes:'Product Owner Design · BLOCKED · Hospital Billing',bucket:'PO Design'},
+  {ticket:'AUTO-815',title:'Update PDD for Required Updates',status:'In Progress',assignee:'Ryan Pena',epic:'340B Pharmacy',sp:'—',notes:'Product Owner Design · Pharmacy 340B 2.0 epic · High priority',bucket:'PO Design'},
+  {ticket:'AUTO-909',title:'Design_Create Process Design Document (PDD)',status:'In Progress',assignee:'Purity Otieno',epic:'Implant Audit Attachment',sp:'—',notes:'Product Owner Design · Implant Audit Attachment epic',bucket:'PO Design'},
+  {ticket:'AUTO-953',title:'MMG OON Denials: Create Process Design Document (PDD)',status:'To Do',assignee:'Unassigned',epic:'MMG OON',sp:'—',notes:'Product Owner Design · MMG OON Denials',bucket:'PO Design'},
+  {ticket:'AUTO-956',title:'RCM - PB Medical Record Denial - Phase 2: Create a Process Design Document (PDD)',status:'To Do',assignee:'Unassigned',epic:'Med Record Denial',sp:'—',notes:'Product Owner Design · RCM PB Medical Record Denial Phase 2',bucket:'PO Design'},
+  {ticket:'AUTO-957',title:'RCM - PB Medical Record Denial - Phase 2: Create a Solution Design Document (SDD)',status:'To Do',assignee:'Unassigned',epic:'Med Record Denial',sp:'—',notes:'Product Owner Design · RCM PB Medical Record Denial Phase 2',bucket:'PO Design'},
+  {ticket:'AUTO-964',title:'RCM - Coding Denials: Conduct Automation Discovery',status:'In Progress',assignee:'Kalayer Winn',epic:'Claim Denials',sp:'—',notes:'Product Owner Design · RCM Coding Denials · Due Jun 30',bucket:'PO Design'},
+  {ticket:'AUTO-965',title:'RCM - Coding Denials: Validate Business Value and Feasibility',status:'In Progress',assignee:'Kalayer Winn',epic:'Claim Denials',sp:'—',notes:'Product Owner Design · RCM Coding Denials · Due Jun 30',bucket:'PO Design'},
+  // ── EXTERNAL DEPENDENCY HOLD (18 items) — from Restricted Board ──
+  {ticket:'AUTO-788',title:'RCM Waystar Claim Status Automation - Conduct Automation Discovery',status:'In Progress',assignee:'Kalayer Winn',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · RCM Waystar Claim Status · Due Sep 30',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-790',title:'RCM Waystar Claim Status Automation - Develop a Business Case',status:'To Do',assignee:'Kalayer Winn',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · RCM Waystar Claim Status · Due Sep 30',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-454',title:'PDD Design: HB CMS 15003 Form',status:'Blocked',assignee:'Purity Otieno',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · Hospital Billing · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-595',title:'Retrieve Invoice from Cardinal Health',status:'Blocked',assignee:'Joao Guimaraes',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · Hospital Billing · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-597',title:'Save Outputs & Notify Business',status:'Blocked',assignee:'Joao Guimaraes',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · Hospital Billing · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-503',title:'Walkthrough of Current State Process',status:'Blocked',assignee:'Ryan Pena',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · eFax Referrals Tracking · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-504',title:'Create PDD for Workflow',status:'Blocked',assignee:'Ryan Pena',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · eFax Referrals Tracking · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-506',title:'DACOE Sign Off for SDD Creation',status:'Blocked',assignee:'Ryan Pena',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · eFax Referrals Tracking · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-714',title:'HIM Simple Visit Coding: Understand Current State',status:'Blocked',assignee:'Kalayer Winn',epic:'HIM',sp:'—',notes:'External Dependency Hold · HIM Autonomous Coding · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-715',title:'HIM Simple Visit Coding: Develop a Business Case',status:'Blocked',assignee:'Kalayer Winn',epic:'HIM',sp:'—',notes:'External Dependency Hold · HIM Autonomous Coding · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-535',title:'Intake - HRWS Training Agent',status:'Blocked',assignee:'Kalayer Winn',epic:'HIM',sp:'—',notes:'External Dependency Hold · HR Systems & Planning · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-540',title:'Design - HRWS Training Agent',status:'Blocked',assignee:'Kalayer Winn',epic:'HIM',sp:'—',notes:'External Dependency Hold · HR Systems & Planning · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-459',title:'Intake/Discovery: Clinical Trial Billing',status:'Blocked',assignee:'Kalayer Winn',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · Clinical Trial Billing · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-460',title:'PDD Design - Clinical Trial Billing',status:'Blocked',assignee:'Kalayer Winn',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · Clinical Trial Billing · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-650',title:'Generate CMS-15003 Form in Epic',status:'Blocked',assignee:'Joao Guimaraes',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · Hospital Billing · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-708',title:'PB Medical Record Denials Phase 2 — Implementation (Q2 Biz Hold)',status:'Biz Hold',assignee:'Blaine Masters',epic:'Med Record Denial',sp:'—',notes:'Q2 Business Hold — not in active sprint. SM monitoring.',bucket:'Biz Hold'},
+  // ── TEAM REFINEMENT (3 items) — Implant Audit Attachment epic ──
+  {ticket:'AUTO-901',title:'Build_Logging & Reporting',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'1',notes:'Team Refinement · Implant Audit Attachment · assigned LS',bucket:'Team Refinement'},
+  {ticket:'AUTO-907',title:'Hypercare / Post-Go-Live Support',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'—',notes:'Team Refinement · Implant Audit Attachment · assigned LS',bucket:'Team Refinement'},
+  {ticket:'AUTO-908',title:'Transition to BAU (Steady Support) Operations',status:'To Do',assignee:'Shiva Ram Pinninti',epic:'Implant Audit Attachment',sp:'—',notes:'Team Refinement · Implant Audit Attachment · assigned SP',bucket:'Team Refinement'},
+  // ── SPRINT READY (10 items) — All Implant Audit Attachment, all assigned LS or NM ──
+  {ticket:'AUTO-893',title:'Build_Retrieve Medical Records and Implant Documentation',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'5',notes:'Sprint Ready · Implant Audit Attachment · DoR met',bucket:'Sprint Ready'},
+  {ticket:'AUTO-896',title:'Build_Retrieve Implant Invoices from Infor',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'5',notes:'Sprint Ready · Implant Audit Attachment · DoR met',bucket:'Sprint Ready'},
+  {ticket:'AUTO-897',title:'Build_Organize Documents',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'3',notes:'Sprint Ready · Implant Audit Attachment · DoR met',bucket:'Sprint Ready'},
+  {ticket:'AUTO-898',title:'Build_Create ZIP Packages',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'2',notes:'Sprint Ready · Implant Audit Attachment · DoR met',bucket:'Sprint Ready'},
+  {ticket:'AUTO-899',title:'Build_Submit Audit Response',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'2',notes:'Sprint Ready · Implant Audit Attachment · DoR met',bucket:'Sprint Ready'},
+  {ticket:'AUTO-902',title:'Testing_Conduct System Integration Testing (SIT)',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'2',notes:'Sprint Ready · Implant Audit Attachment · DoR met',bucket:'Sprint Ready'},
+  {ticket:'AUTO-903',title:'Testing_Conduct UAT for Implant Audit Automation',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'2',notes:'Sprint Ready · Implant Audit Attachment · DoR met',bucket:'Sprint Ready'},
+  {ticket:'AUTO-904',title:'Go-live_Environment & Access Setup',status:'To Do',assignee:'Nidhi Mittal',epic:'Implant Audit Attachment',sp:'1',notes:'Sprint Ready · Implant Audit Attachment · assigned NM',bucket:'Sprint Ready'},
+  {ticket:'AUTO-905',title:'Go-Live_Deployment to Production',status:'To Do',assignee:'Nidhi Mittal',epic:'Implant Audit Attachment',sp:'1',notes:'Sprint Ready · Implant Audit Attachment · assigned NM',bucket:'Sprint Ready'},
+  {ticket:'AUTO-906',title:'Hypercare_Production Monitoring & Alert Setup',status:'To Do',assignee:'Levi Seybert',epic:'Implant Audit Attachment',sp:'1',notes:'Sprint Ready · Implant Audit Attachment · DoR met',bucket:'Sprint Ready'},
+  // ── EXTERNAL DEPENDENCY HOLD — Additional items from screenshots ──
+  {ticket:'AUTO-599',title:'(Human Step): Printing/Mailing & Status Update',status:'Blocked',assignee:'Joao Guimaraes',epic:'Claim Denials',sp:'—',notes:'External Dependency Hold · Hospital Billing · BLOCKED',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-932',title:'MRD - GI Documentation Upload to Payor Portal',status:'In Progress',assignee:'Kristian Roca',epic:'Med Record Denial',sp:'—',notes:'External Dependency Hold · MRD Medical Record · In Progress',bucket:'Ext Dep Hold'},
+  {ticket:'AUTO-934',title:'MRD Enhancement - Selection Based on Latest Processed Date',status:'In Progress',assignee:'Kristian Roca',epic:'Med Record Denial',sp:'—',notes:'External Dependency Hold · MRD Medical Record · In Progress',bucket:'Ext Dep Hold'},
+  // ── BACKLOG (7 items) ──
+  {ticket:'AUTO-681',title:'Design Enhancement SE - BP#1 Medical Record Denial',status:'To Do',assignee:'Kalayer Winn',epic:'Med Record Denial',sp:'—',notes:'Backlog · Unassigned · No epic linked',bucket:'Backlog'},
+  {ticket:'AUTO-951',title:'MMG OON Denials: Identify Risks, Dependencies, and Data Sources',status:'To Do',assignee:'Unassigned',epic:'MMG OON',sp:'—',notes:'Backlog · MMG OON Denials Discovery',bucket:'Backlog'},
+  {ticket:'AUTO-952',title:'MMG OON Denials: Produce Initial Business Case',status:'To Do',assignee:'Unassigned',epic:'MMG OON',sp:'—',notes:'Backlog · MMG OON Denials Discovery',bucket:'Backlog'},
+  {ticket:'AUTO-954',title:'RCM - PB Medical Record Denial - Phase 2: Identify Risks, Dependencies and Data Sources',status:'To Do',assignee:'Unassigned',epic:'Med Record Denial',sp:'—',notes:'Backlog · RCM PB Medical Record Denial Phase 2',bucket:'Backlog'},
+  {ticket:'AUTO-955',title:'RCM - PB Medical Record Denial - Phase 2: Produce Initial Business Case',status:'To Do',assignee:'Unassigned',epic:'Med Record Denial',sp:'—',notes:'Backlog · RCM PB Medical Record Denial Phase 2',bucket:'Backlog'},
+  {ticket:'AUTO-958',title:'PCM - PB Medical Record Denial - Phase 2: Define Success Criteria and Reporting',status:'To Do',assignee:'Unassigned',epic:'Med Record Denial',sp:'—',notes:'Backlog · RCM PB Medical Record Denial Phase 2',bucket:'Backlog'},
+  {ticket:'AUTO-959',title:'PCM - PB Medical Record Denial - Phase 2: Create a UAT Plan',status:'To Do',assignee:'Unassigned',epic:'Med Record Denial',sp:'—',notes:'Backlog · RCM PB Medical Record Denial Phase 2',bucket:'Backlog'},
+];
+
+let sortCol='ticket', sortDir=1;
+function sortBacklog(col){
+  if(sortCol===col) sortDir*=-1; else {sortCol=col;sortDir=1;}
+  filterBacklog();
+}
+
+function filterBacklog(){
+  const q=(document.getElementById('bl-search').value||'').toLowerCase();
+  const st=document.getElementById('bl-status').value;
+  const ep=document.getElementById('bl-epic').value;
+  const as=document.getElementById('bl-assignee').value;
+  const bk=document.getElementById('bl-bucket').value;
+  let rows=TICKETS.filter(t=>{
+    if(q && !t.ticket.toLowerCase().includes(q) && !t.title.toLowerCase().includes(q) && !(t.assignee||'').toLowerCase().includes(q)) return false;
+    if(st && t.status!==st) return false;
+    if(ep && t.epic!==ep) return false;
+    if(as && t.assignee!==as) return false;
+    if(bk && t.bucket!==bk) return false;
+    return true;
+  });
+  rows.sort((a,b)=>{
+    let av=a[sortCol]||'', bv=b[sortCol]||'';
+    return sortDir*(av<bv?-1:av>bv?1:0);
+  });
+  document.getElementById('bl-count').textContent=rows.length+' ticket'+(rows.length!==1?'s':'');
+
+  function epicBadge(e){
+    const map={'Claim Denials':'e-cd','340B Pharmacy':'e-340b','Invoice Audit':'e-inv','Implant Audit Attachment':'e-inv','Med Record Denial':'e-mrd','MMG OON':'e-mmg','UBP':'e-ubp','HIM':'e-him','Exception Handling':'e-exc','Steady State':'e-ss','Specialty Pharmacy':'e-him'};
+    return `<span class="epic ${map[e]||''}">${e||'—'}</span>`;
+  }
+  function statusBadge(s){
+    if(s==='Done') return '<span class="badge b-done">Done</span>';
+    if(s==='In Progress') return '<span class="badge b-ip">In Progress</span>';
+    if(s==='In Review') return '<span class="badge b-ir">In Review</span>';
+    if(s==='Blocked') return '<span class="badge b-bl">Blocked</span>';
+    if(s==='Biz Hold') return '<span class="badge b-hold">Biz Hold</span>';
+    return '<span class="badge b-td">To Do</span>';
+  }
+  function bucketBadge(b){
+    const map={
+      'Active Sprint':'bkt-sprint',
+      'Sprint Ready':'bkt-ready',
+      'Team Refinement':'bkt-refine',
+      'PO Design':'bkt-pod',
+      'Intake / Discovery':'bkt-intake',
+      'Ext Dep Hold':'bkt-edh',
+      'Biz Hold':'bkt-biz',
+      'Backlog':'bkt-backlog'
+    };
+    return `<span class="bkt ${map[b]||'bkt-backlog'}">${b||'Backlog'}</span>`;
+  }
+
+  document.getElementById('bl-tbody').innerHTML=rows.map(t=>`<tr>
+    <td><span class="tid">${t.ticket}</span></td>
+    <td class="ttl" style="max-width:240px">${t.title}</td>
+    <td>${bucketBadge(t.bucket)}</td>
+    <td>${statusBadge(t.status)}</td>
+    <td class="asn">${t.assignee||'—'}</td>
+    <td>${epicBadge(t.epic)}</td>
+    <td class="sp-none" style="text-align:center">${t.sp||'—'}</td>
+    <td class="notes">${t.notes||''}</td>
+  </tr>`).join('');
+}
+
+// ── RIDAC ADD ROW ──
+function addRidacRow(type){
+  const tbody=document.getElementById(type+'-body');
+  // Remove empty message row if present
+  const empty=tbody.querySelector('.ridac-empty');
+  if(empty) empty.closest('tr').remove();
+
+  if(type==='risks'){
+    const id=document.getElementById('r-id').value||'R-?';
+    const desc=document.getElementById('r-desc').value||'';
+    const prob=document.getElementById('r-prob').value||'—';
+    const imp=document.getElementById('r-imp').value||'—';
+    const owner=document.getElementById('r-owner').value||'';
+    const notes=document.getElementById('r-notes').value||'';
+    tbody.insertAdjacentHTML('beforeend',`<tr><td>${id}</td><td contenteditable="true">${desc}</td><td contenteditable="true">${prob}</td><td contenteditable="true">${imp}</td><td contenteditable="true">${owner}</td><td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option>Open</option><option>In Progress</option><option>Closed</option></select></td><td contenteditable="true">${notes}</td><td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`);
+    ['r-id','r-desc','r-prob','r-imp','r-owner','r-notes'].forEach(id=>document.getElementById(id).value='');
+  } else if(type==='issues'){
+    const id=document.getElementById('i-id').value||'I-?';
+    const desc=document.getElementById('i-desc').value||'';
+    const imp=document.getElementById('i-impact').value||'—';
+    const owner=document.getElementById('i-owner').value||'';
+    const notes=document.getElementById('i-notes').value||'';
+    tbody.insertAdjacentHTML('beforeend',`<tr><td>${id}</td><td contenteditable="true">${desc}</td><td contenteditable="true">${imp}</td><td contenteditable="true">${owner}</td><td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option>Open</option><option>In Progress</option><option>Closed</option></select></td><td contenteditable="true">${notes}</td><td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`);
+    ['i-id','i-desc','i-impact','i-owner','i-notes'].forEach(id=>document.getElementById(id).value='');
+  } else if(type==='decisions'){
+    const id=document.getElementById('d-id').value||'D-?';
+    const desc=document.getElementById('d-desc').value||'';
+    const owner=document.getElementById('d-owner').value||'';
+    const date=document.getElementById('d-date').value||'';
+    const notes=document.getElementById('d-notes').value||'';
+    tbody.insertAdjacentHTML('beforeend',`<tr><td>${id}</td><td contenteditable="true">${desc}</td><td contenteditable="true">${owner}</td><td contenteditable="true">${date}</td><td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option>Open</option><option>In Progress</option><option selected>Closed</option></select></td><td contenteditable="true">${notes}</td><td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`);
+    ['d-id','d-desc','d-owner','d-date','d-notes'].forEach(id=>document.getElementById(id).value='');
+  } else if(type==='actions'){
+    const id=document.getElementById('a-id').value||'A-?';
+    const desc=document.getElementById('a-desc').value||'';
+    const owner=document.getElementById('a-owner').value||'';
+    const due=document.getElementById('a-due').value||'';
+    const notes=document.getElementById('a-notes').value||'';
+    tbody.insertAdjacentHTML('beforeend',`<tr><td>${id}</td><td contenteditable="true">${desc}</td><td contenteditable="true">${owner}</td><td contenteditable="true">${due}</td><td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option selected>Open</option><option>In Progress</option><option>Done</option></select></td><td contenteditable="true">${notes}</td><td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`);
+    ['a-id','a-desc','a-owner','a-due','a-notes'].forEach(id=>document.getElementById(id).value='');
+  } else if(type==='changes'){
+    const id=document.getElementById('cr-id').value||'CR-?';
+    const desc=document.getElementById('cr-desc').value||'';
+    const imp=document.getElementById('cr-impact').value||'—';
+    const owner=document.getElementById('cr-owner').value||'';
+    const notes=document.getElementById('cr-notes').value||'';
+    tbody.insertAdjacentHTML('beforeend',`<tr><td>${id}</td><td contenteditable="true">${desc}</td><td contenteditable="true">${imp}</td><td contenteditable="true">${owner}</td><td><select class="ridac-input" style="font-size:10px;padding:2px 5px"><option>Open</option><option>In Progress</option><option>Closed</option></select></td><td contenteditable="true">${notes}</td><td><button class="ridac-btn-del" onclick="this.closest('tr').remove()">✕</button></td></tr>`);
+    ['cr-id','cr-desc','cr-impact','cr-owner','cr-notes'].forEach(id=>document.getElementById(id).value='');
+  }
+}
+
+// Init
+document.addEventListener('DOMContentLoaded',()=>{
+  filterBacklog();
+  // color pre-selected rollover dropdowns
+  document.querySelectorAll('.ro-sel').forEach(s=>{if(s.value) colorRo(s);});
+});
+</script>
+</body>
+</html>
