@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Jira Work Type Hierarchy | Wave 1 Gap Assessment</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0e14;
+    --surface: #111820;
+    --surface2: #18232f;
+    --border: rgba(255,255,255,0.07);
+
+    /* Jira Work Type Colors — official-ish palette */
+    --epic:     #8b5cf6;
+    --epic-bg:  rgba(139,92,246,0.12);
+    --story:    #22c55e;
+    --story-bg: rgba(34,197,94,0.10);
+    --subtask:  #3b82f6;
+    --subtask-bg: rgba(59,130,246,0.10);
+    --spike:    #f59e0b;
+    --spike-bg: rgba(245,158,11,0.10);
+    --bug:      #ef4444;
+    --bug-bg:   rgba(239,68,68,0.10);
+
+    /* Severity */
+    --crit: #ef4444;
+    --warn: #f59e0b;
+    --ok:   #22c55e;
+
+    --gold: #c9a84c;
+    --white: #f0ece3;
+    --muted: #6b7f96;
+
+    --line-color: rgba(255,255,255,0.12);
+    --connector: rgba(139,92,246,0.35);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--white);
+    font-family: 'Syne', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Subtle grid background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  body::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 0%, rgba(139,92,246,0.07) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page { position: relative; z-index: 1; max-width: 1320px; margin: 0 auto; padding: 40px 32px 80px; }
+
+  /* HEADER */
+  .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 24px;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .header-tag {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--epic);
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+
+  h1 {
+    font-family: 'Lora', serif;
+    font-size: clamp(22px, 3vw, 34px);
+    font-weight: 500;
+    line-height: 1.2;
+    color: var(--white);
+  }
+
+  h1 em { font-style: italic; color: var(--epic); }
+
+  .header-right {
+    text-align: right;
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 2;
+  }
+  .header-right strong { color: var(--white); }
+
+  /* LEGEND ROW */
+  .legend-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+    align-items: center;
+  }
+
+  .legend-row .legend-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 8px;
+    font-weight: 600;
+  }
+
+  .wt-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    border: 1px solid;
+    cursor: default;
+  }
+
+  .wt-epic    { color: var(--epic);    background: var(--epic-bg);    border-color: rgba(139,92,246,0.3); }
+  .wt-story   { color: var(--story);   background: var(--story-bg);   border-color: rgba(34,197,94,0.3); }
+  .wt-subtask { color: var(--subtask); background: var(--subtask-bg); border-color: rgba(59,130,246,0.3); }
+  .wt-spike   { color: var(--spike);   background: var(--spike-bg);   border-color: rgba(245,158,11,0.3); }
+  .wt-bug     { color: var(--bug);     background: var(--bug-bg);     border-color: rgba(239,68,68,0.3); }
+
+  .sev-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 9px;
+    border-radius: 3px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .sev-crit { background: rgba(239,68,68,0.15); color: var(--crit); }
+  .sev-warn { background: rgba(245,158,11,0.15); color: var(--warn); }
+  .sev-ok   { background: rgba(34,197,94,0.15);  color: var(--ok); }
+
+  .sev-spacer { width: 1px; height: 20px; background: var(--border); margin: 0 8px; }
+
+  /* HIERARCHY DIAGRAM — main container */
+  .hierarchy {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* LEVEL ROWS */
+  .level-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    position: relative;
+  }
+
+  /* VERTICAL CONNECTOR LINES */
+  .level-row::before {
+    content: '';
+    position: absolute;
+    left: 24px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--connector);
+    opacity: 0.5;
+  }
+
+  .level-row:first-child::before { top: 50%; }
+  .level-row:last-child::before  { bottom: 50%; }
+
+  /* EPIC ROW */
+  .epic-row {
+    margin-bottom: 0;
+  }
+
+  .epic-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: 20px 24px;
+    background: var(--epic-bg);
+    border: 1px solid rgba(139,92,246,0.3);
+    border-radius: 12px 12px 0 0;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    position: relative;
+    width: 100%;
+  }
+
+  .epic-header:hover { background: rgba(139,92,246,0.18); border-color: rgba(139,92,246,0.5); }
+
+  .epic-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 6px;
+    background: var(--epic);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 800;
+    color: white;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .epic-meta { flex: 1; }
+
+  .epic-id {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--epic);
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+
+  .epic-title {
+    font-family: 'Lora', serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 6px;
+    line-height: 1.3;
+  }
+
+  .epic-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .epic-tags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+
+  .epic-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
+    flex-shrink: 0;
+    min-width: 120px;
+  }
+
+  .epic-score {
+    font-family: 'Lora', serif;
+    font-size: 28px;
+    font-weight: 500;
+  }
+  .epic-score.crit { color: var(--crit); }
+  .epic-score.warn { color: var(--warn); }
+  .epic-score.ok   { color: var(--ok); }
+  .epic-score-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+
+  .chevron {
+    font-size: 12px;
+    color: var(--muted);
+    transition: transform 0.25s;
+    margin-top: 4px;
+    flex-shrink: 0;
+  }
+  .epic-header.open .chevron { transform: rotate(180deg); }
+
+  /* CHILDREN CONTAINER */
+  .children-wrap {
+    border: 1px solid rgba(139,92,246,0.2);
+    border-top: none;
+    border-radius: 0 0 12px 12px;
+    overflow: hidden;
+    display: none;
+    margin-bottom: 24px;
+  }
+  .children-wrap.open { display: block; }
+
+  /* STORY CARD */
+  .story-card {
+    display: grid;
+    grid-template-columns: 3px 44px 1fr auto;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    transition: background 0.15s;
+    cursor: pointer;
+  }
+
+  .story-card:last-child { border-bottom: none; }
+  .story-card:hover { background: rgba(255,255,255,0.025); }
+
+  .story-accent { background: var(--story); }
+  .subtask-accent { background: var(--subtask); }
+  .spike-accent { background: var(--spike); }
+  .bug-accent { background: var(--bug); }
+
+  .story-type-col {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 0;
+  }
+
+  .type-icon {
+    width: 26px;
+    height: 26px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+  .type-story   { background: var(--story-bg);   color: var(--story);   border: 1px solid rgba(34,197,94,0.3); }
+  .type-subtask { background: var(--subtask-bg); color: var(--subtask); border: 1px solid rgba(59,130,246,0.3); }
+  .type-spike   { background: var(--spike-bg);   color: var(--spike);   border: 1px solid rgba(245,158,11,0.3); }
+  .type-bug     { background: var(--bug-bg);     color: var(--bug);     border: 1px solid rgba(239,68,68,0.3); }
+
+  .story-body {
+    padding: 14px 16px;
+  }
+
+  .story-header-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+    flex-wrap: wrap;
+  }
+
+  .story-id {
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .story-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--white);
+    line-height: 1.4;
+  }
+
+  .story-detail {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+
+  .story-voice {
+    font-size: 11px;
+    color: rgba(240,236,227,0.5);
+    font-style: italic;
+    margin-top: 6px;
+    padding: 6px 10px;
+    background: rgba(255,255,255,0.03);
+    border-left: 2px solid rgba(255,255,255,0.1);
+    border-radius: 0 4px 4px 0;
+    line-height: 1.4;
+  }
+
+  .story-voice .voice-src {
+    font-style: normal;
+    color: var(--muted);
+    font-size: 10px;
+    letter-spacing: 0.5px;
+  }
+
+  .story-meta-col {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+    min-width: 130px;
+  }
+
+  .respondent-count {
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+  .respondent-count span { color: var(--white); font-weight: 600; }
+
+  /* EXPAND hint */
+  .expand-hint {
+    padding: 10px 24px;
+    background: rgba(139,92,246,0.06);
+    font-size: 11px;
+    color: var(--muted);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* SCORE SUMMARY ROW */
+  .score-summary {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 1px;
+    background: var(--border);
+    margin-bottom: 40px;
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .score-cell {
+    background: var(--surface);
+    padding: 16px;
+    text-align: center;
+  }
+
+  .score-cell .sc-label {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .score-cell .sc-val {
+    font-family: 'Lora', serif;
+    font-size: 32px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .score-cell .sc-sub {
+    font-size: 10px;
+    color: var(--muted);
+  }
+
+  /* TOOLTIP */
+  [data-tip] { position: relative; }
+  [data-tip]:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1e2d3e;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 11px;
+    color: var(--white);
+    white-space: nowrap;
+    max-width: 260px;
+    white-space: normal;
+    z-index: 200;
+    pointer-events: none;
+  }
+
+  /* SEPARATOR */
+  .section-sep {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    font-weight: 700;
+    padding: 8px 0 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .section-sep::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* INTRO PANEL */
+  .intro-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 40px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+  }
+
+  .intro-col h3 {
+    font-family: 'Lora', serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 12px;
+  }
+
+  .intro-col ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .intro-col li {
+    font-size: 12px;
+    color: var(--muted);
+    display: flex;
+    gap: 8px;
+    line-height: 1.5;
+  }
+
+  .intro-col li::before {
+    content: '→';
+    color: var(--epic);
+    flex-shrink: 0;
+    font-weight: 700;
+  }
+
+  /* ANIMATE IN */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+  }
+  .fade-up.in { opacity: 1; transform: none; }
+
+  @media (max-width: 800px) {
+    .score-summary { grid-template-columns: repeat(3, 1fr); }
+    .intro-panel { grid-template-columns: 1fr; }
+    .story-card { grid-template-columns: 3px 40px 1fr; }
+    .story-meta-col { display: none; }
+    .epic-stats { display: none; }
+    .page { padding: 24px 16px 60px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header fade-up">
+    <div>
+      <div class="header-tag">Wave 1 Gap Assessment · Digital Enterprise Agility</div>
+      <h1>Jira <em>Work Type Hierarchy</em><br>Gap Findings</h1>
+    </div>
+    <div class="header-right">
+      <strong>26 Respondents</strong> · 5 Survey Roles<br>
+      <strong>188 Jira-related</strong> rated responses<br>
+      <strong>Overall Jira Avg:</strong> 2.96 / 5.0<br>
+      Montefiore Einstein · April 2026
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend-row fade-up">
+    <span class="legend-label">Work Types</span>
+    <span class="wt-badge wt-epic">⬟ Epic</span>
+    <span class="wt-badge wt-story">▶ Story</span>
+    <span class="wt-badge wt-subtask">◆ Sub-task</span>
+    <span class="wt-badge wt-spike">⚡ Spike</span>
+    <span class="wt-badge wt-bug">✕ Bug</span>
+    <span class="sev-spacer"></span>
+    <span class="legend-label">Gap Severity</span>
+    <span class="sev-badge sev-crit">● Critical ≤ 2.5</span>
+    <span class="sev-badge sev-warn">● Watch 2.5–3.5</span>
+    <span class="sev-badge sev-ok">● Stable > 3.5</span>
+  </div>
+
+  <!-- SCORE SUMMARY -->
+  <div class="score-summary fade-up">
+    <div class="score-cell">
+      <div class="sc-label">Jira Best Practices</div>
+      <div class="sc-val" style="color:var(--warn)">2.92</div>
+      <div class="sc-sub">⚠ Watch</div>
+    </div>
+    <div class="score-cell">
+      <div class="sc-label">Jira Dashboards</div>
+      <div class="sc-val" style="color:var(--warn)">3.04</div>
+      <div class="sc-sub">⚠ Watch</div>
+    </div>
+    <div class="score-cell">
+      <div class="sc-label">Release Mgmt (Versions)</div>
+      <div class="sc-val" style="color:var(--crit)">2.30</div>
+      <div class="sc-sub">🔴 Critical</div>
+    </div>
+    <div class="score-cell">
+      <div class="sc-label">Jira Workflow Fit</div>
+      <div class="sc-val" style="color:var(--warn)">2.83</div>
+      <div class="sc-sub">⚠ Watch</div>
+    </div>
+    <div class="score-cell">
+      <div class="sc-label">Story Points / Sprints</div>
+      <div class="sc-val" style="color:var(--ok)">4.00</div>
+      <div class="sc-sub">✓ Stable</div>
+    </div>
+  </div>
+
+  <!-- CONTEXT PANEL -->
+  <div class="intro-panel fade-up">
+    <div class="intro-col">
+      <h3>How to read this diagram</h3>
+      <ul>
+        <li>Each <strong>Epic</strong> represents a distinct Jira gap theme identified from survey data</li>
+        <li>Stories, Sub-tasks, Spikes, and Bugs are <strong>recommended Jira work items</strong> to address each gap</li>
+        <li>Work types follow Montefiore's established Jira hierarchy: Epic → Story → Sub-task</li>
+        <li>Spikes are time-boxed investigation items; Bugs represent process defects to remediate</li>
+        <li>Click any Epic header to expand or collapse its child work items</li>
+      </ul>
+    </div>
+    <div class="intro-col">
+      <h3>Survey signal → Jira action model</h3>
+      <ul>
+        <li>Each gap finding is sourced from rated questions (avg score) and/or open-text themes</li>
+        <li>Respondent quotes are attached directly to the relevant Story or Bug</li>
+        <li>Gap severity determines story priority: Critical gaps → immediate backlog, Watch → next quarter</li>
+        <li>This hierarchy is ready to be imported or manually created in Jira as a Gap Remediation project</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════
+       HIERARCHY
+  ════════════════════════════════════════════════ -->
+  <div class="section-sep">Jira Gap Remediation · Work Breakdown Structure</div>
+  <div class="hierarchy" id="hierarchy"></div>
+
+</div><!-- /page -->
+
+<script>
+const EPICS = [
+  {
+    id: 'JGAP-01',
+    icon: 'E1',
+    title: 'Jira Workflow & Board Configuration',
+    desc: 'Current workflow states do not align with the real delivery lifecycle; teams across roles report the workflow does not fit non-dev work patterns. Scrum is the enforced default where Kanban/Scrumban would better serve optimization teams.',
+    score: 2.83,
+    sev: 'warn',
+    respondents: 14,
+    tags: ['Workflow', 'Scrum vs Kanban', 'Board Config'],
+    children: [
+      {
+        type: 'story', id: 'JGAP-01-001',
+        title: 'Define and document alternate board configurations for non-dev teams (Scrumban/Kanban)',
+        detail: 'Evaluate and pilot Scrumban/Kanban for DSCH scheduling and enhancement-focused workstreams. Document when Scrum vs Kanban vs Scrumban is appropriate by team type.',
+        sev: 'warn', respondents: 6,
+        voice: '"Scrum fits best with Dev/Coding teams (ie Automation), it doesn\'t work as well for optimization and enhancement teams (Scheduling, Access, Pt Comms)." — Amanda Brownson, Agile TM',
+      },
+      {
+        type: 'story', id: 'JGAP-01-002',
+        title: 'Expand Jira workflow to support full delivery lifecycle states',
+        detail: 'Add or map workflow states for: Discovery → Intake → Refinement → Build → Testing → Go-Live → Hypercare → Steady State. Current workflow ends at Done with no post-dev visibility.',
+        sev: 'crit', respondents: 4,
+        voice: '"Better alignment between Jira workflow and real delivery lifecycle (Discovery → Build → Go-live → Hypercare → Steady State)." — Nancy Collins, SM',
+      },
+      {
+        type: 'subtask', id: 'JGAP-01-002a',
+        title: 'Map existing statuses to new lifecycle states in both DSCH and Automation projects',
+        detail: 'Cross-reference current New→Refining→Ready→To Do→In Progress→In Review→Done against full lifecycle; identify gaps.',
+        sev: 'warn', respondents: 2,
+        voice: null,
+      },
+      {
+        type: 'spike', id: 'JGAP-01-SP1',
+        title: 'Spike: Evaluate Scrumban transition for DSCH Scheduling sub-team',
+        detail: 'Time-boxed investigation (1 sprint): research Jira Scrumban setup, WIP limits (3–4), MWF cadence model. Produce recommendation doc with pros/cons for SM and PO review.',
+        sev: 'warn', respondents: 3,
+        voice: '"Scrumban (please! at least pilot it and see how it goes? 🙏)" — Amanda Brownson, Agile TM',
+      },
+      {
+        type: 'bug', id: 'JGAP-01-BUG1',
+        title: 'Bug: Blocked/In Review cannot transition directly to Done — forces regression to In Progress',
+        detail: 'Workflow defect: transition rules require items in Blocked or In Review to return to In Progress before reaching Done. This creates artificial churn and inflates cycle time metrics.',
+        sev: 'crit', respondents: 2,
+        voice: '"It would be nice to go from In Review or Blocked to Done. And not have to go back to In Progress." — Madeline Vogel, PBO',
+      },
+    ]
+  },
+  {
+    id: 'JGAP-02',
+    icon: 'E2',
+    title: 'Backlog Management & Intake Process',
+    desc: 'No standardized backlog segmentation, no formal intake process in Jira, and no capacity-aware sprint planning view. Teams maintain parallel backlogs in spreadsheets, OneNote, and PPT because Jira backlog is too undifferentiated.',
+    score: 2.78,
+    sev: 'warn',
+    respondents: 11,
+    tags: ['Backlog', 'Intake', 'Capacity', 'Sprint Planning'],
+    children: [
+      {
+        type: 'story', id: 'JGAP-02-001',
+        title: 'Implement backlog segmentation model: Product Evaluation vs Ready vs Committed',
+        detail: 'Create label or custom field scheme to differentiate backlog tiers. "Backlog" is currently too vague — delivery teams cannot distinguish items under product evaluation from items ready to pull into a sprint.',
+        sev: 'crit', respondents: 4,
+        voice: '"Current state \'backlog\' is too vague and broad and we are using wonky work-arounds to make sure the delivery team focuses only on what is relevant." — Emily Kuhn, PBO',
+      },
+      {
+        type: 'story', id: 'JGAP-02-002',
+        title: 'Design standardized Jira intake process to replace spreadsheet/email intake',
+        detail: 'Use Jira Collector or a linked Confluence form to route enhancement requests, operational asks, and product ideas directly into the backlog with appropriate metadata (type, priority, requestor, team).',
+        sev: 'warn', respondents: 5,
+        voice: '"Custom intake process for enhancement requests, backlogs in spreadsheets." — Emily Kuhn, PBO',
+      },
+      {
+        type: 'subtask', id: 'JGAP-02-002a',
+        title: 'Configure Jira Collector in Confluence for each team\'s intake channel',
+        detail: 'Mehran Doustan specifically requested Jira Collector. Brian Murtha requested Confluence Jira Collector deployment. Configure per team (Automation, DSCH) and test intake-to-backlog flow.',
+        sev: 'warn', respondents: 2,
+        voice: '"It would be great to have Jira Collector so that we can get all of the requests via a form vs. now (via email, phone, text, Teams, etc.)" — Mehran Doustan, SM',
+      },
+      {
+        type: 'story', id: 'JGAP-02-003',
+        title: 'Enable capacity-aware sprint planning view in Jira',
+        detail: 'Multiple respondents from different roles requested an ADO-style capacity view showing story points assigned per person vs. maximum capacity per sprint. Evaluate Jira plans configuration or custom dashboard to surface this.',
+        sev: 'warn', respondents: 4,
+        voice: '"This person has 12 story points assigned out of a maximum of 10 — letting everyone know this person probably should not take more work." — Ethan Piper, Agile TM',
+      },
+      {
+        type: 'spike', id: 'JGAP-02-SP1',
+        title: 'Spike: Evaluate Jira Plans for cross-team roadmap and capacity visibility',
+        detail: 'Time-boxed investigation: assess whether Jira Plans can replace roadmap PPT decks, enable capacity tracking across sprints, and provide leadership-level project status (not just sprint/epic status).',
+        sev: 'warn', respondents: 3,
+        voice: '"We keep our roadmaps in PPT slide decks and have no system of record to store them." — Kristofor Traenkner, SVO',
+      },
+      {
+        type: 'spike', id: 'JGAP-02-SP2',
+        title: 'Spike: Evaluate Investigation/Spike story templates for pre-sprint sizing',
+        detail: 'Teams at Mayo Clinic used investigation tasks before pulling work into sprints. Assess adding a formal Spike template in Jira so analysis work is tracked (not done via email) and sizing is more accurate.',
+        sev: 'warn', respondents: 2,
+        voice: '"If someone is doing the work, it should be tracked in Jira and not via email." — Jacqueline Bacon, Agile TM',
+      },
+    ]
+  },
+  {
+    id: 'JGAP-03',
+    icon: 'E3',
+    title: 'Reporting, Dashboards & Metrics Visibility',
+    desc: 'Dashboard usage scored 3.04/5.0 and reporting is a top frustration across leadership and delivery roles. Teams manually extract sprint data into PPT and SPM weekly. Leadership needs project-level status, not sprint/epic status.',
+    score: 3.04,
+    sev: 'warn',
+    respondents: 15,
+    tags: ['Dashboards', 'Reporting', 'Metrics', 'SPM Integration'],
+    children: [
+      {
+        type: 'story', id: 'JGAP-03-001',
+        title: 'Standardize Jira dashboard templates for Automation and DSCH teams',
+        detail: 'Create governance-approved dashboard templates showing: velocity, commitment vs delivery, sprint burndown, cycle time. Prevent ad-hoc filter/dashboard changes that break existing reports.',
+        sev: 'warn', respondents: 7,
+        voice: '"Improved dashboard standardization and reporting consistency." — Nancy Collins, SM',
+      },
+      {
+        type: 'subtask', id: 'JGAP-03-001a',
+        title: 'Document dashboard governance: who can create, edit, delete shared dashboards/filters',
+        detail: 'Changes to shared filters break reporting across teams. Define owner roles and change-request process for shared Jira filters and dashboards.',
+        sev: 'warn', respondents: 3,
+        voice: '"Changes to filters/dashboards impacting reporting accuracy." — Nancy Collins, SM',
+      },
+      {
+        type: 'story', id: 'JGAP-03-002',
+        title: 'Build project-level status view for SVO/leadership (above sprint and epic)',
+        detail: 'Leadership asks about Projects, not sprints or epics. Create a Jira dashboard or Confluence status page that maps epic progress to project/demand-level status for weekly leadership reporting.',
+        sev: 'crit', respondents: 5,
+        voice: '"We are asked about the status of Projects, not about the status of Sprints or Epics or Stories." — Charlie Colbert, SVO',
+      },
+      {
+        type: 'spike', id: 'JGAP-03-SP1',
+        title: 'Spike: Assess Jira ↔ SPM integration options for status sync',
+        detail: 'Stacy Stacey and Kris Traenkner both identified SPM/Jira duplication as a top pain point. Investigate bi-directional sync, webhook, or manual mapping to eliminate weekly manual status transfer from Jira to SPM.',
+        sev: 'crit', respondents: 4,
+        voice: '"Right now my biggest frustration is on Jira\'s query language limitations and what we don\'t know about SPM and Jira can work together." — Kristofor Traenkner, SVO',
+      },
+      {
+        type: 'spike', id: 'JGAP-03-SP2',
+        title: 'Spike: Evaluate nested JQL / hierarchy query options for cross-space reporting',
+        detail: 'Kris Traenkner specifically requested the ability to nest queries and explore the hierarchy across Jira spaces. Assess Advanced Roadmaps, Jira Query Language improvements, or custom automation rules.',
+        sev: 'warn', respondents: 2,
+        voice: '"Improving reporting so that it can nest queries and explore the hierarchy across spaces." — Kristofor Traenkner, SVO',
+      },
+      {
+        type: 'bug', id: 'JGAP-03-BUG1',
+        title: 'Bug: No archived/searchable view of completed stories after sprint closure',
+        detail: 'Completed stories are removed from active board views after sprint close. There is no easily discoverable archive. Teams clone stories instead of carrying them forward to preserve metrics — creating data integrity issues.',
+        sev: 'warn', respondents: 3,
+        voice: '"Past completed stories are removed after a period of time but should be searchable and archived somewhere." — Amanda Brownson, Agile TM',
+      },
+    ]
+  },
+  {
+    id: 'JGAP-04',
+    icon: 'E4',
+    title: 'Jira Best Practices & Governance Documentation',
+    desc: 'Best practices scored 2.92/5.0 with Pillar Leadership at a low 2.50. No documented Jira standards accessible to all users. Teams revert to shadow systems because Jira expectations are unclear and unenforced.',
+    score: 2.92,
+    sev: 'warn',
+    respondents: 18,
+    tags: ['Best Practices', 'Documentation', 'Governance', 'Training'],
+    children: [
+      {
+        type: 'story', id: 'JGAP-04-001',
+        title: 'Publish comprehensive Jira best practices guide on Confluence (all teams)',
+        detail: 'Create a centrally accessible, role-specific Jira best practices guide covering: story writing standards, acceptance criteria format, workflow transitions, label governance, sprint hygiene, and dashboard usage. Must be maintained and versioned.',
+        sev: 'crit', respondents: 9,
+        voice: '"Clear, documented Jira best practices across teams (not just tool training)." — Nancy Collins, SM',
+      },
+      {
+        type: 'subtask', id: 'JGAP-04-001a',
+        title: 'Create Jira quick-reference card per role (PO, SM, Dev, BA)',
+        detail: 'Role-specific 1-pagers: what each role is responsible for in Jira, which fields to fill, how to write ACs, how to update status. Lower barrier to consistent usage.',
+        sev: 'warn', respondents: 5,
+        voice: '"People seem to have different understandings of how scrum works in Montefiore." — SungSoo Han, PBO',
+      },
+      {
+        type: 'subtask', id: 'JGAP-04-001b',
+        title: 'Define and publish approved Jira work item templates (Story, Task, Bug, Spike)',
+        detail: 'Story templates reduce overhead of story creation. Respondents noted ADO had templates that made submission easier. Replicate this in Jira using description templates or Jira automation pre-fill.',
+        sev: 'warn', respondents: 3,
+        voice: '"ADO had templates for the story so it was easier for everyone to submit stories." — Jacqueline Bacon, Agile TM',
+      },
+      {
+        type: 'story', id: 'JGAP-04-002',
+        title: 'Establish and enforce Jira label governance to prevent label sprawl',
+        detail: 'Uncontrolled labels are making it harder to find tickets and creating filter/dashboard noise. Define allowed label taxonomy, remove orphan labels, and add a request process for new labels.',
+        sev: 'warn', respondents: 3,
+        voice: '"The labels are making things harder now to find things because there\'s too much overlap." — Emily Stebbins, PBO',
+      },
+      {
+        type: 'story', id: 'JGAP-04-003',
+        title: 'Add ability for Product/POs to delete or archive backlog items created in error',
+        detail: 'Currently tickets cannot be deleted from backlog. This causes clutter, confusion, and workarounds (e.g., moving to Done with a note). Implement archive policy or enable delete permission for PO role.',
+        sev: 'warn', respondents: 2,
+        voice: '"The ability to delete items from the backlog that are no longer needed or created by mistake." — Henry Figueroa, Agile TM',
+      },
+      {
+        type: 'bug', id: 'JGAP-04-BUG1',
+        title: 'Bug: Jira/SNOW account deactivation breaks Jira access with no self-service recovery path',
+        detail: 'Contract renewals with delayed processing cause Jira access loss. No automated reactivation or self-service path exists. Users must re-escalate through channels to regain access, creating delivery delays.',
+        sev: 'warn', respondents: 2,
+        voice: '"My contract was renewed with a delay — but now it seems I\'m locked out of Jira and have to go back through channels to get back in." — Edward Masters, PBO',
+      },
+    ]
+  },
+  {
+    id: 'JGAP-05',
+    icon: 'E5',
+    title: 'Release Management & Go-Live Tracking',
+    desc: 'Jira Versions/Release Management is the lowest-scored Jira question at 2.30/5.0 — a critical gap. Post-development activities (approvals, go-live, hypercare) are not tracked in Jira. Release status lives in email, PPT, and SNOW.',
+    score: 2.30,
+    sev: 'crit',
+    respondents: 9,
+    tags: ['Versions', 'Release', 'Go-Live', 'Hypercare', 'SNOW'],
+    children: [
+      {
+        type: 'story', id: 'JGAP-05-001',
+        title: 'Implement standardized Jira Versions usage for all production releases',
+        detail: 'Define the standard for creating and naming Versions in Jira for go-live tracking. Map Versions to sprints and delivery milestones. Integrate with SNOW CHG process to reduce duplicate tracking.',
+        sev: 'crit', respondents: 5,
+        voice: '"Standardized use of Jira Versions (Release Management) for go-live tracking." — Nancy Collins, SM',
+      },
+      {
+        type: 'story', id: 'JGAP-05-002',
+        title: 'Define Jira tracking model for post-development stages: Approval → Go-Live → Hypercare',
+        detail: 'After code is built, there are untracked activities in approvals, go-live readiness, and hypercare. Create a standard for how these are represented in Jira — whether via sub-tasks, workflow states, or linked issues.',
+        sev: 'crit', respondents: 4,
+        voice: '"Difficulty tracking post-development activities (approvals, go-live, hypercare)." — Nancy Collins, SM',
+      },
+      {
+        type: 'spike', id: 'JGAP-05-SP1',
+        title: 'Spike: Evaluate SNOW ↔ Jira CHG/CMT integration to eliminate EBRB change control overhead',
+        detail: 'The current EBRB + SNOW + CMT change control process creates extreme duplicate entry. One analyst reported 40 minutes to update a single ticket. Assess a Jira-native or integrated CHG workflow that eliminates the EBRB spreadsheet.',
+        sev: 'crit', respondents: 3,
+        voice: '"Get rid of the EBRB entirely. Keep the test script portion but that\'s the only piece needed." — Amanda Brownson, Agile TM',
+      },
+      {
+        type: 'spike', id: 'JGAP-05-SP2',
+        title: 'Spike: Assess code commit/branch integration with Jira for Automation team',
+        detail: 'Rick Disher identified a future-state opportunity to commit and check in code using Jira along with branches. Evaluate Jira + GitHub/Bitbucket integration for Automation team development workflow.',
+        sev: 'warn', respondents: 2,
+        voice: '"Possibly getting to a place in the future where code is committed and checked in using JIRA along with branches." — Rick Disher, SM',
+      },
+      {
+        type: 'bug', id: 'JGAP-05-BUG1',
+        title: 'Bug: Non-dev work (go-live, approvals, hypercare) is not visible in Jira sprint scope',
+        detail: 'Sprint capacity is committed without accounting for post-development activities. This causes sprint overrun and metrics distortion. Work happens but is not tracked — making velocity and commitment vs delivery metrics unreliable.',
+        sev: 'crit', respondents: 5,
+        voice: '"Limited visibility into full delivery lifecycle beyond sprint execution." — Nancy Collins, SM',
+      },
+    ]
+  },
+  {
+    id: 'JGAP-06',
+    icon: 'E6',
+    title: 'Cross-Team Dependencies & SNOW Integration',
+    desc: 'Teams report inability to track cross-team dependencies in Jira. SNOW/Jira duplication is a top complaint. Operational ticket work (SNOW) is not represented in Jira boards, making team capacity appear artificially low.',
+    score: 2.83,
+    sev: 'warn',
+    respondents: 10,
+    tags: ['Dependencies', 'SNOW', 'Integration', 'Cross-team'],
+    children: [
+      {
+        type: 'story', id: 'JGAP-06-001',
+        title: 'Define dependency tracking model in Jira using linked issues and blocked status',
+        detail: 'Establish a documented standard for how cross-team dependencies are captured in Jira: Blocks/Blocked by links, dependency labels, and visibility in sprint planning. Teams currently manage dependencies via side-chats.',
+        sev: 'warn', respondents: 5,
+        voice: '"Inability to track cross-team dependencies (e.g. pending operational decisions, training updates, or core team updates)." — Lehar Blair, Agile TM',
+      },
+      {
+        type: 'story', id: 'JGAP-06-002',
+        title: 'Resolve Jira vs SNOW work tracking for operational/ticket-heavy teams',
+        detail: 'Teams with high SNOW ticket volume (Cyber Ops, Henry Figueroa\'s team) are not logging operational work in Jira because double-entry is untenable. Define a policy for when work is Jira-tracked vs SNOW-only, and how it appears in capacity.',
+        sev: 'warn', respondents: 4,
+        voice: '"Most of our work involves operations/tickets and it is not ideal to log ticket work in two different places (Jira/SNOW)." — Henry Figueroa, Agile TM',
+      },
+      {
+        type: 'spike', id: 'JGAP-06-SP1',
+        title: 'Spike: Assess ServiceNow ↔ Jira integration for ticket-to-story visibility',
+        detail: 'Multiple respondents cited SNOW/Jira as a primary duplication pain point. Investigate available integration: Jira automation rules on SNOW webhook, bi-directional link, or at minimum a read-only sync for operational visibility.',
+        sev: 'warn', respondents: 4,
+        voice: '"A ServiceNow integration with Jira would assist in not having to duplicate efforts in working tickets." — Henry Figueroa, Agile TM',
+      },
+      {
+        type: 'subtask', id: 'JGAP-06-001a',
+        title: 'Add cross-team dependency flag and review to sprint planning ceremony checklist',
+        detail: 'Add a standing agenda item to sprint planning: identify all cross-team dependencies for the incoming sprint, create linked Jira items with owning team and target resolution date.',
+        sev: 'warn', respondents: 3,
+        voice: null,
+      },
+      {
+        type: 'bug', id: 'JGAP-06-BUG1',
+        title: 'Bug: Fabric/Montefiore dual-board overlap creates duplicate story tracking for DSCH',
+        detail: 'DSCH work appears on both the Fabric Jira board and the Montefiore DSCH Scrum project simultaneously. While acknowledged as intentional (unique partnership), this creates reporting inconsistency and should be formally documented with a deduplication strategy.',
+        sev: 'warn', respondents: 2,
+        voice: '"There is still some overlap between things entered onto the Fabric JIRA board and also has entries for Monte on the DSCH Scrum JIRA project." — Rick Disher, SM',
+      },
+    ]
+  },
+];
+
+// ===================================================
+// RENDER
+// ===================================================
+function scoreColor(s, sev) {
+  if (sev === 'crit') return 'crit';
+  if (sev === 'warn') return 'warn';
+  return 'ok';
+}
+
+function sevBadge(sev) {
+  const labels = { crit: '🔴 Critical', warn: '⚠ Watch', ok: '✓ Stable' };
+  return `<span class="sev-badge sev-${sev}">${labels[sev]}</span>`;
+}
+
+function typeLabel(type) {
+  const map = { story: 'S', subtask: '◆', spike: '⚡', bug: '✕' };
+  return map[type] || 'S';
+}
+
+function typeName(type) {
+  return { story: 'Story', subtask: 'Sub-task', spike: 'Spike', bug: 'Bug' }[type] || type;
+}
+
+function buildHierarchy() {
+  const container = document.getElementById('hierarchy');
+
+  EPICS.forEach((epic, ei) => {
+    const wrap = document.createElement('div');
+    wrap.className = 'fade-up';
+    wrap.style.animationDelay = `${ei * 0.07}s`;
+
+    const hasChildren = epic.children && epic.children.length;
+
+    wrap.innerHTML = `
+      <div class="epic-header" id="epic-hdr-${ei}" onclick="toggleEpic(${ei})">
+        <div class="epic-icon">${epic.icon}</div>
+        <div class="epic-meta">
+          <div class="epic-id">${epic.id} · Epic</div>
+          <div class="epic-title">${epic.title}</div>
+          <div class="epic-desc">${epic.desc}</div>
+          <div class="epic-tags">
+            ${sevBadge(epic.sev)}
+            ${epic.tags.map(t => `<span style="font-size:10px; color:var(--muted); background:rgba(255,255,255,0.05); padding:2px 8px; border-radius:3px; letter-spacing:0.5px;">${t}</span>`).join('')}
+          </div>
+        </div>
+        <div class="epic-stats">
+          <div class="epic-score ${scoreColor(epic.score, epic.sev)}">${epic.score.toFixed(2)}</div>
+          <div class="epic-score-label">avg score</div>
+          <div style="font-size:11px; color:var(--muted); margin-top:4px">${epic.respondents} respondents</div>
+        </div>
+        ${hasChildren ? '<div class="chevron">▼</div>' : ''}
+      </div>
+
+      <div class="children-wrap" id="epic-children-${ei}">
+        ${(epic.children || []).map((child, ci) => `
+          <div class="story-card">
+            <div class="${child.type}-accent"></div>
+            <div class="story-type-col">
+              <div class="type-icon type-${child.type}" title="${typeName(child.type)}">${typeLabel(child.type)}</div>
+            </div>
+            <div class="story-body">
+              <div class="story-header-row">
+                <span class="story-id">${child.id}</span>
+                <span class="wt-badge wt-${child.type}" style="padding:2px 8px; font-size:10px">${typeName(child.type)}</span>
+                ${sevBadge(child.sev)}
+              </div>
+              <div class="story-title">${child.title}</div>
+              <div class="story-detail">${child.detail}</div>
+              ${child.voice ? `<div class="story-voice">${child.voice}</div>` : ''}
+            </div>
+            <div class="story-meta-col">
+              <div class="respondent-count"><span>${child.respondents}</span> respondents</div>
+              ${sevBadge(child.sev)}
+            </div>
+          </div>
+        `).join('')}
+        <div class="expand-hint">
+          ↑ ${epic.children ? epic.children.length : 0} work items · ${epic.children ? epic.children.filter(c=>c.type==='story').length : 0} Stories · ${epic.children ? epic.children.filter(c=>c.type==='subtask').length : 0} Sub-tasks · ${epic.children ? epic.children.filter(c=>c.type==='spike').length : 0} Spikes · ${epic.children ? epic.children.filter(c=>c.type==='bug').length : 0} Bugs
+        </div>
+      </div>
+    `;
+    container.appendChild(wrap);
+  });
+}
+
+function toggleEpic(i) {
+  const hdr = document.getElementById(`epic-hdr-${i}`);
+  const children = document.getElementById(`epic-children-${i}`);
+  const isOpen = children.classList.contains('open');
+  children.classList.toggle('open', !isOpen);
+  hdr.classList.toggle('open', !isOpen);
+}
+
+// ===================================================
+// INIT
+// ===================================================
+window.addEventListener('load', () => {
+  buildHierarchy();
+
+  // Animate in
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('in'); });
+  }, { threshold: 0.05 });
+  document.querySelectorAll('.fade-up').forEach(el => io.observe(el));
+
+  // Auto-open first epic
+  setTimeout(() => toggleEpic(0), 300);
+});
+</script>
+</body>
+</html>
