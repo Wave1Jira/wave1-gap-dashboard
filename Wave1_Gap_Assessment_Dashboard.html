@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wave 1 Gap Assessment Results | Digital Enterprise Agility</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy: #0d1b2a;
+    --navy-mid: #1b2f45;
+    --navy-light: #253d54;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --gold-pale: #f5e9c8;
+    --teal: #2aa7a0;
+    --teal-light: #4dc8c0;
+    --red: #c94f4f;
+    --red-light: #e87a7a;
+    --amber: #d4872a;
+    --green: #3a9e6e;
+    --green-light: #5cc490;
+    --white: #f7f4ee;
+    --white-soft: #ede9e0;
+    --text-dim: #8fa5bc;
+    --border: rgba(201,168,76,0.2);
+    --cat-comm: #2aa7a0;
+    --cat-train: #c9a84c;
+    --cat-jira: #7b6bd4;
+    --cat-gov: #c94f4f;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--navy);
+    color: var(--white);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 50% at 10% 20%, rgba(42,167,160,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60% 40% at 90% 80%, rgba(201,168,76,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container { position: relative; z-index: 1; max-width: 1400px; margin: 0 auto; padding: 0 32px 60px; }
+
+  /* HEADER */
+  header {
+    padding: 40px 0 32px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .header-left .eyebrow {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(24px, 3vw, 38px);
+    color: var(--white);
+    line-height: 1.15;
+  }
+
+  header h1 em {
+    font-style: italic;
+    color: var(--gold-light);
+  }
+
+  .header-meta {
+    text-align: right;
+    font-size: 12px;
+    color: var(--text-dim);
+    line-height: 1.8;
+  }
+
+  .header-meta strong { color: var(--white); font-weight: 500; }
+
+  /* KPI STRIP */
+  .kpi-strip {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+    margin-bottom: 36px;
+  }
+
+  .kpi {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 18px;
+    transition: transform 0.2s, border-color 0.2s;
+  }
+
+  .kpi:hover { transform: translateY(-2px); border-color: var(--gold); }
+
+  .kpi .kpi-val {
+    font-family: 'DM Serif Display', serif;
+    font-size: 36px;
+    color: var(--gold-light);
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+
+  .kpi .kpi-label {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .kpi .kpi-sub {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 32px;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar { display: none; }
+
+  .tab-btn {
+    background: none;
+    border: none;
+    padding: 12px 20px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+    transition: color 0.2s, border-color 0.2s;
+    letter-spacing: 0.5px;
+  }
+
+  .tab-btn:hover { color: var(--white); }
+  .tab-btn.active { color: var(--gold-light); border-bottom-color: var(--gold); }
+
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* SECTION TITLES */
+  .section-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px;
+    color: var(--white);
+    margin-bottom: 20px;
+  }
+  .section-title span {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--text-dim);
+    margin-left: 12px;
+    vertical-align: middle;
+  }
+
+  /* CATEGORY BADGES */
+  .cat-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .cat-comm { background: rgba(42,167,160,0.15); color: var(--cat-comm); }
+  .cat-train { background: rgba(201,168,76,0.15); color: var(--cat-train); }
+  .cat-jira { background: rgba(123,107,212,0.15); color: var(--cat-jira); }
+  .cat-gov { background: rgba(201,79,79,0.15); color: var(--cat-gov); }
+
+  /* SCORE BAR */
+  .score-bar-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .score-bar {
+    flex: 1;
+    height: 6px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .score-label {
+    font-size: 13px;
+    font-weight: 600;
+    min-width: 32px;
+    text-align: right;
+  }
+
+  /* SCORE COLORS */
+  .score-red { background: var(--red); }
+  .score-amber { background: var(--amber); }
+  .score-green { background: var(--green); }
+
+  /* HEATMAP TABLE */
+  .heatmap-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+
+  .heatmap-table th {
+    padding: 10px 12px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .heatmap-table td {
+    padding: 11px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+
+  .heatmap-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  .score-cell {
+    width: 50px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    border-radius: 6px;
+    padding: 5px 8px;
+  }
+
+  .score-5 { background: rgba(58,158,110,0.25); color: #5cc490; }
+  .score-4 { background: rgba(58,158,110,0.15); color: #82d4ac; }
+  .score-3 { background: rgba(212,135,42,0.2); color: #e8a94a; }
+  .score-2 { background: rgba(201,79,79,0.2); color: #e87a7a; }
+  .score-1 { background: rgba(201,79,79,0.35); color: #ff9696; }
+  .score-na { background: rgba(255,255,255,0.05); color: var(--text-dim); font-size: 11px; }
+
+  /* GRID LAYOUTS */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+
+  /* CARD */
+  .card {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .card-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: 20px;
+  }
+
+  /* RADAR / BAR CHART */
+  .category-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .cat-card {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cat-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+  .cat-card.comm::before { background: var(--cat-comm); }
+  .cat-card.train::before { background: var(--cat-train); }
+  .cat-card.jira::before { background: var(--cat-jira); }
+  .cat-card.gov::before { background: var(--cat-gov); }
+
+  .cat-card .cat-name {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--text-dim);
+    margin-bottom: 12px;
+  }
+  .cat-card .cat-score {
+    font-family: 'DM Serif Display', serif;
+    font-size: 42px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .comm .cat-score { color: var(--cat-comm); }
+  .train .cat-score { color: var(--cat-train); }
+  .jira .cat-score { color: #9d93e0; }
+  .gov .cat-score { color: var(--cat-gov); }
+
+  .cat-card .cat-status {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+  }
+  .status-gap { color: var(--red-light); }
+  .status-watch { color: var(--amber); }
+  .status-ok { color: var(--green-light); }
+
+  .cat-card .cat-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+  .cat-card .cat-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+  }
+  .comm .cat-bar-fill { background: var(--cat-comm); }
+  .train .cat-bar-fill { background: var(--cat-train); }
+  .jira .cat-bar-fill { background: #7b6bd4; }
+  .gov .cat-bar-fill { background: var(--cat-gov); }
+
+  .cat-card .cat-respondents {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  /* PRIORITY LIST */
+  .priority-list { display: flex; flex-direction: column; gap: 10px; }
+
+  .priority-item {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: 48px 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    transition: border-color 0.2s;
+  }
+  .priority-item:hover { border-color: rgba(201,168,76,0.4); }
+
+  .priority-rank {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: var(--gold);
+    text-align: center;
+    opacity: 0.6;
+  }
+
+  .priority-content .priority-q {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--white);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+
+  .priority-content .priority-detail {
+    font-size: 11px;
+    color: var(--text-dim);
+  }
+
+  .priority-score-wrap { text-align: center; }
+  .priority-score {
+    font-family: 'DM Serif Display', serif;
+    font-size: 24px;
+    display: block;
+  }
+  .priority-score-sub { font-size: 10px; color: var(--text-dim); }
+
+  /* OPEN TEXT */
+  .open-text-grid { display: flex; flex-direction: column; gap: 12px; }
+
+  .open-text-item {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-left: 3px solid;
+    border-radius: 0 10px 10px 0;
+    padding: 14px 16px;
+  }
+  .open-text-item.comm { border-left-color: var(--cat-comm); }
+  .open-text-item.jira { border-left-color: #7b6bd4; }
+  .open-text-item.train { border-left-color: var(--cat-train); }
+  .open-text-item.gov { border-left-color: var(--cat-gov); }
+
+  .open-text-item .ot-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 8px;
+    flex-wrap: wrap;
+  }
+
+  .ot-name { font-size: 12px; font-weight: 600; color: var(--gold-light); }
+  .ot-role { font-size: 11px; color: var(--text-dim); }
+
+  .ot-text {
+    font-size: 13px;
+    color: var(--white-soft);
+    line-height: 1.6;
+    font-style: italic;
+  }
+
+  /* FILTER ROW */
+  .filter-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-dim);
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .filter-btn:hover { color: var(--white); border-color: rgba(255,255,255,0.3); }
+  .filter-btn.active { background: var(--gold); color: var(--navy); border-color: var(--gold); }
+
+  /* RESPONDENT TABLE */
+  .resp-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .resp-table th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    border-bottom: 1px solid var(--border);
+  }
+  .resp-table td {
+    padding: 10px 14px;
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    vertical-align: middle;
+  }
+  .resp-table tr:hover td { background: rgba(255,255,255,0.03); }
+
+  /* TOOLTIP */
+  .tooltip-wrap { position: relative; }
+  .tooltip-wrap:hover .tooltip-box { opacity: 1; pointer-events: auto; }
+  .tooltip-box {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--navy-light);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: var(--white);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 100;
+    max-width: 280px;
+    white-space: normal;
+    text-align: left;
+  }
+
+  /* LEGEND */
+  .legend {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    padding: 12px 16px;
+    background: rgba(255,255,255,0.03);
+    border-radius: 8px;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+
+  /* JIRA ITEMS SECTION */
+  .jira-grid { display: flex; flex-direction: column; gap: 12px; }
+  .jira-item {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 16px;
+    align-items: center;
+  }
+  .jira-item-question { font-size: 13px; font-weight: 500; margin-bottom: 4px; }
+  .jira-item-detail { font-size: 12px; color: var(--text-dim); }
+
+  /* SCROLL ANIMATION */
+  .fade-in { opacity: 0; transform: translateY(16px); transition: opacity 0.5s, transform 0.5s; }
+  .fade-in.visible { opacity: 1; transform: none; }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .kpi-strip { grid-template-columns: repeat(3, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .category-overview { grid-template-columns: repeat(2, 1fr); }
+    .priority-item { grid-template-columns: 36px 1fr; }
+    .priority-score-wrap { display: none; }
+  }
+
+  @media (max-width: 600px) {
+    .kpi-strip { grid-template-columns: 1fr 1fr; }
+    .category-overview { grid-template-columns: 1fr 1fr; }
+    .container { padding: 0 16px 40px; }
+    header { flex-direction: column; align-items: flex-start; }
+    .header-meta { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="fade-in">
+    <div class="header-left">
+      <div class="eyebrow">Digital Enterprise Agility · Montefiore Einstein</div>
+      <h1>Wave 1 <em>Gap Assessment</em> Results</h1>
+    </div>
+    <div class="header-meta">
+      <strong>Assessment Period:</strong> March–April 2026<br>
+      <strong>Surveys Administered:</strong> 5 Role-Based Surveys<br>
+      <strong>Total Respondents:</strong> 26 &nbsp;|&nbsp; <strong>Total Responses:</strong> 409<br>
+      <strong>Prepared by:</strong> Nancy Collins, Portfolio Manager
+    </div>
+  </header>
+
+  <!-- KPI STRIP -->
+  <div class="kpi-strip fade-in">
+    <div class="kpi">
+      <div class="kpi-val">26</div>
+      <div class="kpi-label">Total Respondents</div>
+      <div class="kpi-sub">Across 5 survey roles</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">2.87</div>
+      <div class="kpi-label">Overall Avg Score</div>
+      <div class="kpi-sub">Scale of 1–5 (Watch territory)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">4</div>
+      <div class="kpi-label">Gap Categories</div>
+      <div class="kpi-sub">Jira · Governance · Comm · Training</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">2.64</div>
+      <div class="kpi-label">Lowest Category</div>
+      <div class="kpi-sub">Governance (critical gap)</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-val">89</div>
+      <div class="kpi-label">Open-Text Responses</div>
+      <div class="kpi-sub">Qualitative signal captured</div>
+    </div>
+  </div>
+
+  <!-- TABS -->
+  <div class="tabs fade-in">
+    <button class="tab-btn active" onclick="showTab('overview')">📊 Overview</button>
+    <button class="tab-btn" onclick="showTab('heatmap')">🌡 Full Heatmap</button>
+    <button class="tab-btn" onclick="showTab('jira')">🔧 Jira Deep Dive</button>
+    <button class="tab-btn" onclick="showTab('comm')">📣 Communication</button>
+    <button class="tab-btn" onclick="showTab('training')">🎓 Training</button>
+    <button class="tab-btn" onclick="showTab('governance')">🏛 Governance</button>
+    <button class="tab-btn" onclick="showTab('voice')">💬 Voice of the Team</button>
+    <button class="tab-btn" onclick="showTab('respondents')">👥 Respondents</button>
+  </div>
+
+  <!-- ===== TAB: OVERVIEW ===== -->
+  <div id="tab-overview" class="tab-panel active">
+
+    <div class="category-overview fade-in">
+      <!-- Communication -->
+      <div class="cat-card comm">
+        <div class="cat-name">Communication</div>
+        <div class="cat-score">3.11</div>
+        <div class="cat-status status-watch">⚠ Watch</div>
+        <div class="cat-bar"><div class="cat-bar-fill" style="width:62%"></div></div>
+        <div class="cat-respondents">98 rated responses · 5 roles</div>
+      </div>
+      <!-- Training -->
+      <div class="cat-card train">
+        <div class="cat-name">Training</div>
+        <div class="cat-score">3.52</div>
+        <div class="cat-status status-watch">⚠ Watch</div>
+        <div class="cat-bar"><div class="cat-bar-fill" style="width:70%"></div></div>
+        <div class="cat-respondents">38 rated responses · 3 roles</div>
+      </div>
+      <!-- Jira -->
+      <div class="cat-card jira">
+        <div class="cat-name">Jira</div>
+        <div class="cat-score">2.96</div>
+        <div class="cat-status status-watch">⚠ Watch</div>
+        <div class="cat-bar"><div class="cat-bar-fill" style="width:59%"></div></div>
+        <div class="cat-respondents">188 rated responses · 5 roles</div>
+      </div>
+      <!-- Governance -->
+      <div class="cat-card gov">
+        <div class="cat-name">Governance</div>
+        <div class="cat-score">2.64</div>
+        <div class="cat-status status-gap">🔴 Critical Gap</div>
+        <div class="cat-bar"><div class="cat-bar-fill" style="width:53%"></div></div>
+        <div class="cat-respondents">85 rated responses · 5 roles</div>
+      </div>
+    </div>
+
+    <div class="grid-2 fade-in">
+      <!-- Priority Gaps -->
+      <div>
+        <div class="section-title">Top Priority Gaps <span>Lowest scoring questions across all roles</span></div>
+        <div class="priority-list">
+          <div class="priority-item">
+            <div class="priority-rank">01</div>
+            <div class="priority-content">
+              <div class="priority-q">Metric definitions are consistent across teams</div>
+              <div class="priority-detail"><span class="cat-badge cat-gov">Governance</span></div>
+            </div>
+            <div class="priority-score-wrap"><span class="priority-score" style="color:#e87a7a">2.12</span><span class="priority-score-sub">avg</span></div>
+          </div>
+          <div class="priority-item">
+            <div class="priority-rank">02</div>
+            <div class="priority-content">
+              <div class="priority-q">SVO governance model is well understood</div>
+              <div class="priority-detail"><span class="cat-badge cat-gov">Governance</span></div>
+            </div>
+            <div class="priority-score-wrap"><span class="priority-score" style="color:#e87a7a">2.26</span><span class="priority-score-sub">avg</span></div>
+          </div>
+          <div class="priority-item">
+            <div class="priority-rank">03</div>
+            <div class="priority-content">
+              <div class="priority-q">Team uses Jira Dashboards effectively</div>
+              <div class="priority-detail"><span class="cat-badge cat-jira">Jira</span></div>
+            </div>
+            <div class="priority-score-wrap"><span class="priority-score" style="color:#e8a94a">2.62</span><span class="priority-score-sub">avg</span></div>
+          </div>
+          <div class="priority-item">
+            <div class="priority-rank">04</div>
+            <div class="priority-content">
+              <div class="priority-q">Jira best practices are well known &amp; documented</div>
+              <div class="priority-detail"><span class="cat-badge cat-jira">Jira</span></div>
+            </div>
+            <div class="priority-score-wrap"><span class="priority-score" style="color:#e8a94a">2.71</span><span class="priority-score-sub">avg</span></div>
+          </div>
+          <div class="priority-item">
+            <div class="priority-rank">05</div>
+            <div class="priority-content">
+              <div class="priority-q">Agile transformation communications are clear &amp; timely</div>
+              <div class="priority-detail"><span class="cat-badge cat-comm">Communication</span></div>
+            </div>
+            <div class="priority-score-wrap"><span class="priority-score" style="color:#e8a94a">2.74</span><span class="priority-score-sub">avg</span></div>
+          </div>
+          <div class="priority-item">
+            <div class="priority-rank">06</div>
+            <div class="priority-content">
+              <div class="priority-q">Team confident in meeting goals based on today's metrics</div>
+              <div class="priority-detail"><span class="cat-badge cat-gov">Governance</span></div>
+            </div>
+            <div class="priority-score-wrap"><span class="priority-score" style="color:#e8a94a">2.76</span><span class="priority-score-sub">avg</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- By Role Summary -->
+      <div>
+        <div class="section-title">Score by Role <span>Category averages per respondent group</span></div>
+        <div class="card">
+          <div id="role-summary-chart"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ===== TAB: FULL HEATMAP ===== -->
+  <div id="tab-heatmap" class="tab-panel">
+    <div class="section-title">Complete Survey Heatmap <span>All rated questions × All respondents</span></div>
+
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#5cc490"></div> 5 – Strongly Agree</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#82d4ac"></div> 4 – Agree</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e8a94a"></div> 3 – Neutral</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#e87a7a"></div> 2 – Disagree</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ff9696"></div> 1 – Strongly Disagree</div>
+      <div class="legend-item"><div class="legend-dot" style="background:rgba(255,255,255,0.08)"></div> N/A</div>
+    </div>
+
+    <div style="overflow-x:auto">
+      <table class="heatmap-table" id="heatmap-table">
+        <thead>
+          <tr>
+            <th style="min-width:320px">Question</th>
+            <th>Category</th>
+            <th style="min-width:80px">Avg Score</th>
+            <th>Pillar<br>Leadership</th>
+            <th>SVO<br>Leadership</th>
+            <th>Agile Team<br>Member</th>
+            <th>Product Backlog<br>Owner</th>
+            <th>Scrum<br>Master</th>
+          </tr>
+        </thead>
+        <tbody id="heatmap-body">
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ===== TAB: JIRA ===== -->
+  <div id="tab-jira" class="tab-panel">
+    <div class="section-title">Jira Deep Dive <span>Usage, adoption, and workflow gaps</span></div>
+
+    <div class="grid-2" style="margin-bottom:32px">
+      <div class="card">
+        <div class="card-title">Jira Scores by Question</div>
+        <div id="jira-bar-chart"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">Jira Scores by Role</div>
+        <div id="jira-role-chart"></div>
+      </div>
+    </div>
+
+    <div class="section-title">Top Jira Improvement Requests <span>Themes from open-text responses</span></div>
+    <div class="jira-grid" id="jira-requests">
+    </div>
+
+    <div class="section-title" style="margin-top:32px">Jira Challenges Cited <span>Direct feedback from respondents</span></div>
+    <div class="jira-grid" id="jira-challenges">
+    </div>
+  </div>
+
+  <!-- ===== TAB: COMMUNICATION ===== -->
+  <div id="tab-comm" class="tab-panel">
+    <div class="section-title">Communication Assessment <span>Clarity, timeliness, and tailoring of agile transformation messaging</span></div>
+    <div class="grid-2" style="margin-bottom:28px">
+      <div class="card">
+        <div class="card-title">Communication Scores by Question</div>
+        <div id="comm-bar-chart"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">By Role</div>
+        <div id="comm-role-chart"></div>
+      </div>
+    </div>
+    <div class="section-title">Communication Gaps – Key Observations</div>
+    <div class="open-text-grid" id="comm-observations">
+    </div>
+  </div>
+
+  <!-- ===== TAB: TRAINING ===== -->
+  <div id="tab-training" class="tab-panel">
+    <div class="section-title">Training Assessment <span>Effectiveness of Jira &amp; Agile training from the COE</span></div>
+    <div class="grid-2" style="margin-bottom:28px">
+      <div class="card">
+        <div class="card-title">Training Scores by Question</div>
+        <div id="train-bar-chart"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">By Role</div>
+        <div id="train-role-chart"></div>
+      </div>
+    </div>
+    <div class="section-title">Training Needs Cited by Respondents</div>
+    <div class="open-text-grid" id="training-needs">
+    </div>
+  </div>
+
+  <!-- ===== TAB: GOVERNANCE ===== -->
+  <div id="tab-governance" class="tab-panel">
+    <div class="section-title">Governance Assessment <span>SVO model clarity, metrics consistency, and process documentation</span></div>
+    <div class="grid-2" style="margin-bottom:28px">
+      <div class="card">
+        <div class="card-title">Governance Scores by Question</div>
+        <div id="gov-bar-chart"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">By Role</div>
+        <div id="gov-role-chart"></div>
+      </div>
+    </div>
+    <div class="section-title">Governance Gaps – Key Observations</div>
+    <div class="open-text-grid" id="gov-observations">
+    </div>
+  </div>
+
+  <!-- ===== TAB: VOICE ===== -->
+  <div id="tab-voice" class="tab-panel">
+    <div class="section-title">Voice of the Team <span>Open-text responses organized by category</span></div>
+
+    <div class="filter-row" id="voice-filters">
+      <button class="filter-btn active" onclick="filterVoice('all', this)">All</button>
+      <button class="filter-btn" onclick="filterVoice('jira', this)">Jira</button>
+      <button class="filter-btn" onclick="filterVoice('comm', this)">Communication</button>
+      <button class="filter-btn" onclick="filterVoice('train', this)">Training</button>
+      <button class="filter-btn" onclick="filterVoice('gov', this)">Governance</button>
+    </div>
+
+    <div class="open-text-grid" id="voice-grid">
+    </div>
+  </div>
+
+  <!-- ===== TAB: RESPONDENTS ===== -->
+  <div id="tab-respondents" class="tab-panel">
+    <div class="section-title">Respondent Summary <span>All 26 participants by role and average score</span></div>
+    <div style="overflow-x:auto">
+      <table class="resp-table" id="resp-table">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Survey Role</th>
+            <th>Email</th>
+            <th>Communication Avg</th>
+            <th>Training Avg</th>
+            <th>Jira Avg</th>
+            <th>Governance Avg</th>
+            <th>Overall Avg</th>
+          </tr>
+        </thead>
+        <tbody id="resp-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+// =====================================================
+// DATA
+// =====================================================
+const DATA = {
+  heatmap: [
+    // [question, category, pl, svo, atm, pbo, sm]
+    // Communication
+    ["I understand what is changing and why.", "Communication", null, 3.5, 3.0, null, 3.5],
+    ["Agile transformation updates are clear and timely.", "Communication", 2.5, 3.25, 3.0, 2.78, 3.0],
+    ["I receive enough advance notice about upcoming changes", "Communication", null, 3.25, 3.0, 2.78, 3.25],
+    ["Communications are tailored effectively for different stakeholder groups.", "Communication", 2.5, 3.25, 3.5, 3.44, 3.25],
+    // Training
+    ["I have received effective Jira training from the Agile COE.", "Training", null, null, 3.67, 3.22, 3.67],
+    // Jira
+    ["I have the tools needed to track and analyze metrics effectively in Jira.", "Jira", 2.0, 3.0, 2.6, 2.75, 3.25],
+    ["Montefiore's Jira and Confluence setup supports my day to day workflow.", "Jira", 3.5, 3.0, 2.5, 2.78, 3.5],
+    ["My team uses Jira reports to review sprint performance.", "Jira", 2.5, null, null, null, 3.0],
+    ["My team effectively uses Jira plans to lay out our work.", "Jira", 2.5, 2.25, null, 3.0, 3.5],
+    ["My team makes effective use of Jira Dashboards.", "Jira", 2.5, 2.75, 2.5, 2.56, 3.0],
+    ["I feel that Jira best practices are well known and documented.", "Jira", 2.5, 3.25, 2.33, 2.56, 3.0],
+    ["The defined Jira workflow meets my team's needs.", "Jira", null, 3.5, null, 2.78, 3.25],
+    ["My team consistently updates Jira Work Items throughout the sprint.", "Jira", null, null, null, 3.56, 3.25],
+    ["My team uses Jira Versions / Release Management.", "Jira", null, null, null, 2.56, 2.5],
+    ["My team effectively uses story points for estimation in Jira.", "Jira", null, null, null, null, 3.75],
+    ["My team effectively runs two week sprints in Jira.", "Jira", null, null, null, null, 3.5],
+    // Governance
+    ["Metric definitions are consistent across teams.", "Governance", 2.0, 2.5, null, null, 2.25],
+    ["I am confident in team's ability to meet current goals (metrics).", "Governance", 3.5, 2.5, 2.5, 2.33, 3.0],
+    ["I have the tools to track and analyze metrics effectively.", "Governance", 2.0, 2.75, 2.5, 2.75, 3.25],
+    ["I have a strong understanding of the SVO governance model.", "Governance", 2.17, 2.75, 2.0, 2.11, 3.5],
+    ["Runbooks/Confluence pages are up to date and easy to follow.", "Governance", 2.5, null, 2.5, 3.0, 2.75],
+    ["My scrum master effectively removes roadblocks and drives agile.", "Governance", 2.5, null, 2.75, 3.25, null],
+  ],
+
+  jiraQuestions: [
+    { q: "Jira best practices are well known & documented", scores: [2.5, 3.25, 2.33, 2.56, 3.0], avg: 2.73 },
+    { q: "Team makes effective use of Jira Dashboards", scores: [2.5, 2.75, 2.5, 2.56, 3.0], avg: 2.66 },
+    { q: "Team uses Jira Versions / Release Management", scores: [null, null, null, 2.56, 2.5], avg: 2.53 },
+    { q: "Team effectively uses Jira plans", scores: [2.5, 2.25, null, 3.0, 3.5], avg: 2.81 },
+    { q: "Jira workflow meets team needs", scores: [null, 3.5, null, 2.78, 3.25], avg: 3.18 },
+    { q: "Team consistently updates Jira Work Items", scores: [null, null, null, 3.56, 3.25], avg: 3.41 },
+    { q: "Jira setup supports day to day workflow", scores: [3.5, 3.0, 2.5, 2.78, 3.5], avg: 3.06 },
+    { q: "Have tools to track metrics effectively in Jira", scores: [2.0, 3.0, 2.6, 2.75, 3.25], avg: 2.72 },
+  ],
+
+  jiraRequests: [
+    { theme: "Capacity & Sprint Planning", detail: "Visual capacity management showing story points per person vs. maximum (requested by multiple Agile TM and PBO respondents)", names: "Jacqueline Bacon, Ethan Piper", cat: "jira" },
+    { theme: "Bulk Edit / Import Capability", detail: "Ability to edit multiple items at once, import CSV to create stories/tasks, move multiple items simultaneously", names: "Mehran Doustan", cat: "jira" },
+    { theme: "Jira Collector / Form Intake", detail: "Intake via form instead of email, phone, Teams — centralized request capture", names: "Mehran Doustan", cat: "jira" },
+    { theme: "Backlog Segmentation", detail: "Custom status fields to separate 'Backlog: under evaluation' vs 'Backlog: ready to go' — current backlog view is too broad", names: "Emily Kuhn", cat: "jira" },
+    { theme: "Reporting & Hierarchy Navigation", detail: "Nested queries, hierarchy visibility across spaces, project-level status views (not just sprints/epics)", names: "Kristofor Traenkner, Charlie Colbert", cat: "jira" },
+    { theme: "Standardized Release Management", detail: "Consistent use of Jira Versions for go-live tracking; better alignment of Jira workflow with full delivery lifecycle", names: "Nancy Collins, Rick Disher", cat: "jira" },
+    { theme: "Story Import Functionality", detail: "Ability to import stories from external sources to reduce duplicate entry", names: "Brian Murtha", cat: "jira" },
+  ],
+
+  jiraChallenges: [
+    { text: "Scrum workflow doesn't translate well for optimization/enhancement teams (DSCH). Scrumban or Kanban would be a better fit.", name: "Amanda Brownson", role: "Agile Team Member", cat: "jira" },
+    { text: "Double documentation, writing user stories for non-user-experience tasks, spending too much time discussing how to use Jira.", name: "Kelly Tausk", role: "Agile Team Member", cat: "jira" },
+    { text: "No single system of record from idea through delivery — disparate systems (Jira, SPM, PPT roadmaps) are not productive.", name: "Daniel Fasano", role: "Product Backlog Owner", cat: "jira" },
+    { text: "Inconsistent usage across teams; limited visibility into full delivery lifecycle beyond sprint execution; over-reliance on manual updates.", name: "Nancy Collins", role: "Scrum Master", cat: "jira" },
+    { text: "Team doesn't access Jira consistently, so muscle memory for navigation never develops.", name: "Yanira Jaime", role: "Scrum Master", cat: "jira" },
+    { text: "ADO (Azure DevOps) felt easier to access with less overhead, templates helped — missing that structure in Jira.", name: "Jacqueline Bacon", role: "Agile Team Member", cat: "jira" },
+  ],
+
+  commObservations: [
+    { text: "Agile transformation updates are not clear or timely enough — received 2.74/5.0 average, lowest among SVO leadership (3.25) and Pillar Leadership (2.5).", name: "Survey Analysis", role: "Cross-role", cat: "comm" },
+    { text: "I understand what is changing and why — but most teams are only Neutral (3.0). Pillar Leadership stands out with Agree (3.5).", name: "Survey Analysis", role: "Cross-role", cat: "comm" },
+    { text: "Communications are not tailored effectively for different stakeholder groups. Agile Team Members are the most satisfied (3.5) but PBO respondents average only 3.44.", name: "Survey Analysis", role: "Cross-role", cat: "comm" },
+    { text: "There may be a fear that without ceremonies or daily huddles you lose transparency. Engineers are communicating with PMs every day — the method changes, the communication doesn't stop.", name: "Amanda Brownson", role: "Agile Team Member", cat: "comm" },
+    { text: "Unplanned work comes in and disrupts planned sprint work. I've encouraged teams to direct requests to the Portfolio Lead but this needs clearer communication channels.", name: "Charlie Colbert", role: "SVO Leadership", cat: "comm" },
+  ],
+
+  trainingNeeds: [
+    { text: "Training has been primarily conceptual — what to do, not how to do it in practice. Need 'day in the life of a Product Owner' style immersion and interactive forums.", name: "Emily Kuhn", role: "Product Backlog Owner", cat: "train" },
+    { text: "Product Owners and team members need formal training; Scrum Master training was sufficient for me but others are underserved.", name: "Mehran Doustan", role: "Scrum Master", cat: "train" },
+    { text: "I learned Jira as I went. Asked Scrum Masters to train new users as they joined but that never happened. Need ceremonies training, working agreement review, and SM role clarity.", name: "Amanda Brownson", role: "Agile Team Member", cat: "train" },
+    { text: "Needs a hands-on Jira sandbox environment for practice — is there a non-PRD test instance where people can create stories and get comfortable on their own time?", name: "Ethan Piper", role: "Agile Team Member", cat: "train" },
+    { text: "Training should be centered around Product Owners/Managers, not Scrum Masters. SM training was a third repetition for me across certifications, required Percipio, and Accenture sessions.", name: "Yanira Jaime", role: "Scrum Master", cat: "train" },
+    { text: "Requested training areas: Advanced Jira reporting & dashboards, metrics standardization, backlog refinement lifecycle, dependency management, release/go-live management in Agile frameworks.", name: "Nancy Collins", role: "Scrum Master", cat: "train" },
+  ],
+
+  govObservations: [
+    { text: "SVO governance model is poorly understood — 2.26/5.0 average. Agile Team Members scored lowest at 2.0. Scrum Masters understand best at 3.5.", name: "Survey Analysis", role: "Cross-role", cat: "gov" },
+    { text: "Metric definitions are not consistent across teams — lowest-scoring question overall at 2.12. This makes cross-team reporting and sprint velocity comparisons unreliable.", name: "Survey Analysis", role: "Cross-role", cat: "gov" },
+    { text: "No system of record for roadmaps — kept in PPT decks with no governance. Status reports, SPM, and Jira are all duplicating data in different directions.", name: "Kristofor Traenkner", role: "SVO Leadership", cat: "gov" },
+    { text: "Scrum doesn't fit teams that don't control the development lifecycle (e.g., Provider Directory vendor-dependent work). Governance model needs to account for non-dev delivery patterns.", name: "Steven Battisti", role: "Product Backlog Owner", cat: "gov" },
+    { text: "The change control process (EBRB + SNOW + CMT) creates enormous duplicate entry overhead. One analyst spent 40 minutes on a single ticket update. This is a governance failure.", name: "Amanda Brownson", role: "Agile Team Member", cat: "gov" },
+  ],
+
+  voiceAll: [
+    { text: "Scrum > Scrumban/Kanban: 3–4 WIP limit, MWF Huddle. Ceremonies are 5–8 hours each sprint for one team — double if you're on two. This isn't sustainable.", name: "Amanda Brownson", role: "Agile Team Member", cat: "jira" },
+    { text: "There are too many disconnected tools: EBRB, ServiceNow, Jira, CMT — sometimes putting the same info in 3 places. We need consolidation.", name: "Kelly Tausk", role: "Agile Team Member", cat: "gov" },
+    { text: "I more experience 17 places for documentation. If someone is doing the work, it should be tracked in Jira — not via email.", name: "Jacqueline Bacon", role: "Agile Team Member", cat: "jira" },
+    { text: "Training has been very conceptual. We need 'day in the life of a PO' style learning — interactive forums, mock scenarios, peer-teaching.", name: "Emily Kuhn", role: "Product Backlog Owner", cat: "train" },
+    { text: "Jira and SPM aren't fully integrated. Having to maintain roadmap status in both PPT and SPM and Jira is a significant source of duplication.", name: "Stacy Stacey", role: "SVO Leadership", cat: "jira" },
+    { text: "Resource ambiguity for key roles (scrum masters, product owners, product managers) is a top risk to meeting current goals.", name: "Witti Naval", role: "SVO Leadership", cat: "gov" },
+    { text: "Jira plan training is the most requested improvement from SVO Leadership — we need to use Jira plans to lay out cross-team work effectively.", name: "Witti Naval", role: "SVO Leadership", cat: "jira" },
+    { text: "Backlog management process is unclear. No standardized prioritization. Decisions are not being documented. How should strategic direction be captured?", name: "Lehar Blair", role: "Agile Team Member", cat: "gov" },
+    { text: "Jira's query language limitations and the unknowns around SPM+Jira integration are biggest frustrations. Reporting that can nest queries and explore hierarchy would be transformative.", name: "Kristofor Traenkner", role: "SVO Leadership", cat: "jira" },
+    { text: "The scrum master training was sufficient for me. I would recommend that product owners and team members receive formal training first.", name: "Mehran Doustan", role: "Scrum Master", cat: "train" },
+    { text: "Cross-team dependencies with core tech are a persistent surprise — resources identified too late, production deploy issues at the last minute causing timeline shifts.", name: "Daniel Fasano", role: "Product Backlog Owner", cat: "gov" },
+    { text: "Investigation/spike stories should be standard practice before large builds are taken into sprints. This prevents scope surprises and improves sizing accuracy.", name: "Jacqueline Bacon", role: "Agile Team Member", cat: "jira" },
+    { text: "Agile transformation updates need to be clearer and more timely. Teams are operating without sufficient advance notice of upcoming changes.", name: "Survey Analysis", role: "Cross-role pattern", cat: "comm" },
+    { text: "Jira should not require going back to In Progress from In Review or Blocked to reach Done. Workflow flexibility is needed.", name: "Madeline Vogel", role: "Product Backlog Owner", cat: "jira" },
+    { text: "Communications need to be better tailored for different stakeholder groups — a one-size-fits-all approach is not landing effectively.", name: "Survey Analysis", role: "Cross-role pattern", cat: "comm" },
+  ],
+
+  respondents: [
+    { name: "Amy Zaborowski", role: "Pillar Leadership", email: "azaborowsk@montefiore.org", comm: 2.5, train: null, jira: 3.0, gov: 2.5 },
+    { name: "Karry Callanan", role: "Pillar Leadership", email: "kcallana@montefiore.org", comm: 2.5, train: null, jira: 3.5, gov: 2.75 },
+    { name: "George Stein", role: "Pillar Leadership", email: "ghstein@montefiore.org", comm: null, train: null, jira: 3.5, gov: 2.5 },
+    { name: "Witti Naval", role: "SVO Leadership", email: "wnaval@montefiore.org", comm: 3.0, train: null, jira: 2.5, gov: 2.0 },
+    { name: "Charlie Colbert", role: "SVO Leadership", email: "ccolbert@montefiore.org", comm: 3.75, train: null, jira: 3.5, gov: 3.0 },
+    { name: "Stacy Stacey", role: "SVO Leadership", email: "sstacey@montefiore.org", comm: 4.0, train: null, jira: 4.0, gov: 2.5 },
+    { name: "Kristofor Traenkner", role: "SVO Leadership", email: "ktraenkner@montefiore.org", comm: 4.0, train: null, jira: 3.25, gov: 4.0 },
+    { name: "Amanda Brownson", role: "Agile Team Member", email: "abrownson@montefiore.org", comm: 2.5, train: 1.0, jira: 1.5, gov: 1.5 },
+    { name: "Lehar Blair", role: "Agile Team Member", email: "lblair@montefiore.org", comm: 2.75, train: null, jira: 2.25, gov: 2.0 },
+    { name: "Kelly Tausk", role: "Agile Team Member", email: "ktausk@montefiore.org", comm: null, train: null, jira: 2.5, gov: 2.0 },
+    { name: "Jacqueline Bacon", role: "Agile Team Member", email: "jawellingt@montefiore.org", comm: 4.0, train: 4.0, jira: 3.25, gov: 2.75 },
+    { name: "Ethan Piper", role: "Agile Team Member", email: "epiper@montefiore.org", comm: 4.0, train: 5.0, jira: 4.5, gov: 3.5 },
+    { name: "Steven Battisti", role: "Product Backlog Owner", email: "sbattisti@montefiore.org", comm: 2.5, train: null, jira: 2.5, gov: 2.0 },
+    { name: "Daniel Fasano", role: "Product Backlog Owner", email: "dfasano@montefiore.org", comm: 2.5, train: null, jira: 3.0, gov: 2.25 },
+    { name: "Madeline Vogel", role: "Product Backlog Owner", email: "mvogel@montefiore.org", comm: 2.75, train: null, jira: 2.5, gov: 2.0 },
+    { name: "Emily Kuhn", role: "Product Backlog Owner", email: "ekuhn@montefiore.org", comm: 3.5, train: null, jira: 2.75, gov: 2.5 },
+    { name: "Brian Murtha", role: "Product Backlog Owner", email: "bmurtha@montefiore.org", comm: 2.75, train: null, jira: 3.0, gov: 2.5 },
+    { name: "Mehran Doustan", role: "Scrum Master", email: "mdoustan@montefiore.org", comm: 4.0, train: 4.0, jira: 3.5, gov: 3.5 },
+    { name: "Nancy Collins", role: "Scrum Master", email: "ncollins@montefiore.org", comm: 3.5, train: 4.0, jira: 4.0, gov: 4.0 },
+    { name: "Yanira Jaime", role: "Scrum Master", email: "yjaime@montefiore.org", comm: 2.5, train: 3.0, jira: 2.75, gov: 3.25 },
+    { name: "Rick Disher", role: "Scrum Master", email: "rdisher@montefiore.org", comm: 3.0, train: null, jira: 3.0, gov: 3.25 },
+  ]
+};
+
+// =====================================================
+// SCORE COLOR UTILITY
+// =====================================================
+function scoreClass(v) {
+  if (v === null || v === undefined) return 'score-na';
+  if (v >= 4.5) return 'score-5';
+  if (v >= 3.5) return 'score-4';
+  if (v >= 2.5) return 'score-3';
+  if (v >= 1.5) return 'score-2';
+  return 'score-1';
+}
+
+function scoreColor(v) {
+  if (v === null || v === undefined) return 'rgba(255,255,255,0.15)';
+  if (v >= 4.0) return '#3a9e6e';
+  if (v >= 3.5) return '#82b87a';
+  if (v >= 2.5) return '#d4872a';
+  return '#c94f4f';
+}
+
+function fmtScore(v) {
+  if (v === null || v === undefined) return 'N/A';
+  return v.toFixed(2);
+}
+
+// =====================================================
+// HEATMAP
+// =====================================================
+function buildHeatmap() {
+  const tbody = document.getElementById('heatmap-body');
+  const roles = ['Pillar Leadership', 'SVO Leadership', 'Agile Team Member', 'Product Backlog Owner', 'Scrum Master'];
+  
+  DATA.heatmap.forEach(row => {
+    const [q, cat, pl, svo, atm, pbo, sm] = row;
+    const vals = [pl, svo, atm, pbo, sm].filter(v => v !== null && v !== undefined);
+    const avg = vals.length ? vals.reduce((a,b) => a+b, 0) / vals.length : null;
+    
+    const catClass = { Communication: 'cat-comm', Training: 'cat-train', Jira: 'cat-jira', Governance: 'cat-gov' }[cat];
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="font-size:12px; line-height:1.4; max-width:320px">${q}</td>
+      <td><span class="cat-badge ${catClass}">${cat}</span></td>
+      <td><span class="score-cell ${scoreClass(avg)}">${fmtScore(avg)}</span></td>
+      ${[pl, svo, atm, pbo, sm].map(v => `<td><span class="score-cell ${scoreClass(v)}">${fmtScore(v)}</span></td>`).join('')}
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+// =====================================================
+// SVG BAR CHART
+// =====================================================
+function buildBarChart(containerId, items, colorFn) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const max = 5;
+  const barH = 28;
+  const gap = 8;
+  const labelW = 220;
+  const chartW = container.clientWidth - labelW - 60 || 300;
+  const h = items.length * (barH + gap) + 20;
+
+  let svg = `<svg viewBox="0 0 ${labelW + chartW + 60} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;overflow:visible">`;
+  
+  // Grid lines
+  [1,2,3,4,5].forEach(v => {
+    const x = labelW + (v/max)*chartW;
+    svg += `<line x1="${x}" y1="0" x2="${x}" y2="${h-20}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    svg += `<text x="${x}" y="${h-4}" fill="#8fa5bc" font-size="10" text-anchor="middle" font-family="DM Sans">${v}</text>`;
+  });
+
+  items.forEach((item, i) => {
+    const y = i * (barH + gap);
+    const w = (item.avg / max) * chartW;
+    const color = colorFn ? colorFn(item.avg) : scoreColor(item.avg);
+    
+    svg += `<text x="${labelW - 8}" y="${y + barH/2 + 4}" fill="#ede9e0" font-size="11" text-anchor="end" font-family="DM Sans" dominant-baseline="middle">${item.q.length > 32 ? item.q.substr(0,32)+'…' : item.q}</text>`;
+    svg += `<rect x="${labelW}" y="${y}" width="${chartW}" height="${barH}" fill="rgba(255,255,255,0.04)" rx="3"/>`;
+    svg += `<rect x="${labelW}" y="${y}" width="${Math.max(w,4)}" height="${barH}" fill="${color}" rx="3" opacity="0.85"/>`;
+    svg += `<text x="${labelW + w + 6}" y="${y + barH/2 + 4}" fill="#f7f4ee" font-size="12" font-weight="600" font-family="DM Sans" dominant-baseline="middle">${item.avg.toFixed(2)}</text>`;
+  });
+
+  svg += '</svg>';
+  container.innerHTML = svg;
+}
+
+// =====================================================
+// ROLE BAR CHART
+// =====================================================
+function buildRoleChart(containerId, roleData) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const roles = Object.keys(roleData);
+  const barH = 30;
+  const gap = 10;
+  const labelW = 160;
+  const chartW = container.clientWidth - labelW - 60 || 280;
+  const h = roles.length * (barH + gap) + 20;
+
+  let svg = `<svg viewBox="0 0 ${labelW + chartW + 60} ${h}" xmlns="http://www.w3.org/2000/svg" style="width:100%;overflow:visible">`;
+  
+  [1,2,3,4,5].forEach(v => {
+    const x = labelW + (v/5)*chartW;
+    svg += `<line x1="${x}" y1="0" x2="${x}" y2="${h-20}" stroke="rgba(255,255,255,0.06)" stroke-width="1"/>`;
+    svg += `<text x="${x}" y="${h-4}" fill="#8fa5bc" font-size="10" text-anchor="middle" font-family="DM Sans">${v}</text>`;
+  });
+
+  roles.forEach((role, i) => {
+    const v = roleData[role];
+    const y = i * (barH + gap);
+    const w = (v/5)*chartW;
+    svg += `<text x="${labelW - 8}" y="${y + barH/2 + 4}" fill="#ede9e0" font-size="11" text-anchor="end" font-family="DM Sans" dominant-baseline="middle">${role.replace(' Leadership','').replace(' Member','Mbr').replace('Product Backlog','PBO')}</text>`;
+    svg += `<rect x="${labelW}" y="${y}" width="${chartW}" height="${barH}" fill="rgba(255,255,255,0.04)" rx="3"/>`;
+    svg += `<rect x="${labelW}" y="${y}" width="${Math.max(w,4)}" height="${barH}" fill="${scoreColor(v)}" rx="3" opacity="0.85"/>`;
+    svg += `<text x="${labelW + w + 6}" y="${y + barH/2 + 4}" fill="#f7f4ee" font-size="12" font-weight="600" font-family="DM Sans" dominant-baseline="middle">${v.toFixed(2)}</text>`;
+  });
+  svg += '</svg>';
+  container.innerHTML = svg;
+}
+
+// =====================================================
+// ROLE SUMMARY CHART (overview)
+// =====================================================
+function buildRoleSummaryChart() {
+  const roleData = {
+    'Pillar Leadership': 2.72,
+    'SVO Leadership': 3.27,
+    'Agile Team Member': 2.76,
+    'Product Backlog Owner': 2.77,
+    'Scrum Master': 3.26,
+  };
+  buildRoleChart('role-summary-chart', roleData);
+}
+
+// =====================================================
+// OPEN TEXT
+// =====================================================
+function buildOpenText(containerId, items) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = items.map(item => `
+    <div class="open-text-item ${item.cat}">
+      <div class="ot-meta">
+        <span class="ot-name">${item.name}</span>
+        <span class="ot-role">${item.role}</span>
+        <span class="cat-badge cat-${item.cat}" style="font-size:10px">${({comm:'Communication',train:'Training',jira:'Jira',gov:'Governance'})[item.cat]}</span>
+      </div>
+      <div class="ot-text">"${item.text}"</div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// JIRA REQUESTS / CHALLENGES
+// =====================================================
+function buildJiraRequests() {
+  const el = document.getElementById('jira-requests');
+  if (!el) return;
+  el.innerHTML = DATA.jiraRequests.map((r, i) => `
+    <div class="jira-item">
+      <div>
+        <div class="jira-item-question">${r.theme}</div>
+        <div class="jira-item-detail">${r.detail}</div>
+      </div>
+      <div style="font-size:11px; color:var(--text-dim); min-width:120px; text-align:right">${r.names}</div>
+      <span class="cat-badge cat-jira">Jira</span>
+    </div>
+  `).join('');
+}
+
+function buildJiraChallenges() {
+  const el = document.getElementById('jira-challenges');
+  if (!el) return;
+  el.innerHTML = DATA.jiraChallenges.map(c => `
+    <div class="open-text-item jira">
+      <div class="ot-meta">
+        <span class="ot-name">${c.name}</span>
+        <span class="ot-role">${c.role}</span>
+      </div>
+      <div class="ot-text">"${c.text}"</div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// RESPONDENT TABLE
+// =====================================================
+function buildRespondentTable() {
+  const tbody = document.getElementById('resp-body');
+  DATA.respondents.forEach(r => {
+    const overall = [r.comm, r.train, r.jira, r.gov].filter(v => v !== null);
+    const avg = overall.length ? overall.reduce((a,b)=>a+b,0)/overall.length : null;
+    tbody.innerHTML += `
+      <tr>
+        <td style="font-weight:500">${r.name}</td>
+        <td><span style="font-size:11px; color:var(--text-dim)">${r.role}</span></td>
+        <td style="font-size:11px; color:var(--text-dim)">${r.email}</td>
+        <td><span class="score-cell ${scoreClass(r.comm)}">${fmtScore(r.comm)}</span></td>
+        <td><span class="score-cell ${scoreClass(r.train)}">${fmtScore(r.train)}</span></td>
+        <td><span class="score-cell ${scoreClass(r.jira)}">${fmtScore(r.jira)}</span></td>
+        <td><span class="score-cell ${scoreClass(r.gov)}">${fmtScore(r.gov)}</span></td>
+        <td><span class="score-cell ${scoreClass(avg)}" style="font-size:14px">${fmtScore(avg)}</span></td>
+      </tr>`;
+  });
+}
+
+// =====================================================
+// VOICE FILTER
+// =====================================================
+function filterVoice(cat, btn) {
+  document.querySelectorAll('#voice-filters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  const grid = document.getElementById('voice-grid');
+  const items = cat === 'all' ? DATA.voiceAll : DATA.voiceAll.filter(v => v.cat === cat);
+  grid.innerHTML = items.map(item => `
+    <div class="open-text-item ${item.cat}">
+      <div class="ot-meta">
+        <span class="ot-name">${item.name}</span>
+        <span class="ot-role">${item.role}</span>
+        <span class="cat-badge cat-${item.cat}" style="font-size:10px">${({comm:'Communication',train:'Training',jira:'Jira',gov:'Governance'})[item.cat]}</span>
+      </div>
+      <div class="ot-text">"${item.text}"</div>
+    </div>
+  `).join('');
+}
+
+// =====================================================
+// TABS
+// =====================================================
+function showTab(id) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    if (b.getAttribute('onclick') && b.getAttribute('onclick').includes(id)) b.classList.add('active');
+  });
+  // Lazy-render charts on tab open
+  setTimeout(() => renderTabCharts(id), 50);
+}
+
+function renderTabCharts(id) {
+  if (id === 'overview') {
+    buildRoleSummaryChart();
+  }
+  if (id === 'heatmap') {
+    if (!document.getElementById('heatmap-body').children.length) buildHeatmap();
+  }
+  if (id === 'jira') {
+    buildBarChart('jira-bar-chart', DATA.jiraQuestions, scoreColor);
+    buildRoleChart('jira-role-chart', { 'Pillar Leadership': 3.43, 'SVO Leadership': 3.26, 'Agile Team Member': 2.56, 'Product Backlog Owner': 2.91, 'Scrum Master': 3.23 });
+    buildJiraRequests();
+    buildJiraChallenges();
+  }
+  if (id === 'comm') {
+    buildBarChart('comm-bar-chart', [
+      { q: "Updates clear & timely", avg: 2.74 },
+      { q: "Advance notice of changes", avg: 3.07 },
+      { q: "Understand what is changing & why", avg: 3.25 },
+      { q: "Comms tailored by stakeholder", avg: 3.29 },
+    ], scoreColor);
+    buildRoleChart('comm-role-chart', { 'Pillar Leadership': 2.50, 'SVO Leadership': 3.69, 'Agile Team Member': 3.13, 'Product Backlog Owner': 3.00, 'Scrum Master': 3.25 });
+    buildOpenText('comm-observations', DATA.commObservations);
+  }
+  if (id === 'training') {
+    buildBarChart('train-bar-chart', [
+      { q: "Effective Jira training from COE", avg: 3.52 },
+    ], scoreColor);
+    buildRoleChart('train-role-chart', { 'Agile Team Member': 3.67, 'Product Backlog Owner': 3.22, 'Scrum Master': 3.67 });
+    buildOpenText('training-needs', DATA.trainingNeeds);
+  }
+  if (id === 'governance') {
+    buildBarChart('gov-bar-chart', [
+      { q: "Metric definitions consistent", avg: 2.12 },
+      { q: "SVO governance model understood", avg: 2.26 },
+      { q: "Confident in team's ability to meet goals", avg: 2.76 },
+      { q: "Runbooks & Confluence up to date", avg: 2.69 },
+      { q: "SM effectively removes roadblocks", avg: 2.83 },
+    ], scoreColor);
+    buildRoleChart('gov-role-chart', { 'Pillar Leadership': 2.62, 'SVO Leadership': 3.27, 'Agile Team Member': 2.35, 'Product Backlog Owner': 2.44, 'Scrum Master': 3.56 });
+    buildOpenText('gov-observations', DATA.govObservations);
+  }
+  if (id === 'voice') {
+    const existing = document.getElementById('voice-grid');
+    if (!existing.children.length) filterVoice('all', document.querySelector('#voice-filters .filter-btn'));
+  }
+  if (id === 'respondents') {
+    if (!document.getElementById('resp-body').children.length) buildRespondentTable();
+  }
+}
+
+// =====================================================
+// INIT
+// =====================================================
+window.addEventListener('load', () => {
+  // Fade in animations
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  // Render initial tab
+  setTimeout(() => renderTabCharts('overview'), 100);
+});
+</script>
+</body>
+</html>
