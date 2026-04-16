@@ -570,9 +570,9 @@
       <h1>Jira <em>Work Type Hierarchy</em><br>Gap Findings</h1>
     </div>
     <div class="header-right">
-      <strong>26 Respondents</strong> · 5 Survey Roles<br>
-      <strong>188 Jira-related</strong> rated responses<br>
-      <strong>Overall Jira Avg:</strong> 2.96 / 5.0<br>
+      <strong>34 Respondents</strong> · 7 Survey Roles<br>
+      <strong>238 Jira-related</strong> rated responses<br>
+      <strong>Overall Jira Avg:</strong> 2.91 / 5.0<br>
       Montefiore Einstein · April 2026
     </div>
   </div>
@@ -658,18 +658,18 @@ const EPICS = [
     id: 'JGAP-01',
     icon: 'E1',
     title: 'Jira Workflow & Board Configuration',
-    desc: 'Current workflow states do not align with the real delivery lifecycle; teams across roles report the workflow does not fit non-dev work patterns. Scrum is the enforced default where Kanban/Scrumban would better serve optimization teams.',
+    desc: 'Current workflow states do not align with the real delivery lifecycle; teams across roles report the workflow does not fit non-dev work patterns. Scrum is the enforced default where Kanban/Scrumban would better serve optimization teams. ERBO/change control process has no Jira workflow representation, forcing manual overhead outside the tool.',
     score: 2.83,
     sev: 'warn',
-    respondents: 14,
-    tags: ['Workflow', 'Scrum vs Kanban', 'Board Config'],
+    respondents: 18,
+    tags: ['Workflow', 'Scrum vs Kanban', 'Board Config', 'ERBO', 'Change Control'],
     children: [
       {
         type: 'story', id: 'JGAP-01-001',
         title: 'Define and document alternate board configurations for non-dev teams (Scrumban/Kanban)',
-        detail: 'Evaluate and pilot Scrumban/Kanban for DSCH scheduling and enhancement-focused workstreams. Document when Scrum vs Kanban vs Scrumban is appropriate by team type.',
-        sev: 'warn', respondents: 6,
-        voice: '"Scrum fits best with Dev/Coding teams (ie Automation), it doesn\'t work as well for optimization and enhancement teams (Scheduling, Access, Pt Comms)." — Amanda Brownson, Agile TM',
+        detail: 'Evaluate and pilot Scrumban/Kanban for DSCH scheduling and enhancement-focused workstreams. Document when Scrum vs Kanban vs Scrumban is appropriate by team type. Sprint structure is actively rejected by scheduling sub-teams who operate on continuous flow.',
+        sev: 'warn', respondents: 8,
+        voice: '"Scrum fits best with Dev/Coding teams (ie Automation), it doesn\'t work as well for optimization and enhancement teams (Scheduling, Access, Pt Comms)." — Amanda Brownson, Agile TM · "The sprint structure doesn\'t match how scheduling work flows — it\'s continuous, not time-boxed." — Emily Stebbins, PBO',
       },
       {
         type: 'story', id: 'JGAP-01-002',
@@ -699,24 +699,31 @@ const EPICS = [
         sev: 'crit', respondents: 2,
         voice: '"It would be nice to go from In Review or Blocked to Done. And not have to go back to In Progress." — Madeline Vogel, PBO',
       },
+      {
+        type: 'bug', id: 'JGAP-01-BUG2',
+        title: 'Bug: Jira workflow has no representation of the ERBO/change control process — forcing parallel manual tracking',
+        detail: 'The ERBO (Enterprise Release Board) approval workflow, including CMT steps, CAB sign-off, and go-live authorization, has no Jira workflow state or linked process. Teams must maintain the change control sequence in spreadsheets and email in parallel with Jira tickets. This creates double-entry, missed steps, and no audit trail in the system of record.',
+        sev: 'crit', respondents: 4,
+        voice: '"The workflow doesn\'t support the ERBO/change control process at all — we end up managing it separately." — Andrea Piesetzkie, PBO · "There\'s no place in Jira to track where something is in the change control process." — Madeline Vogel, PBO',
+      },
     ]
   },
   {
     id: 'JGAP-02',
     icon: 'E2',
     title: 'Backlog Management & Intake Process',
-    desc: 'No standardized backlog segmentation, no formal intake process in Jira, and no capacity-aware sprint planning view. Teams maintain parallel backlogs in spreadsheets, OneNote, and PPT because Jira backlog is too undifferentiated.',
+    desc: 'No standardized backlog segmentation, no formal intake process in Jira, and no capacity-aware sprint planning view. Teams maintain parallel backlogs in spreadsheets, OneNote, and PPT because Jira backlog is too undifferentiated. Multiple respondents identified the need to distinguish "under evaluation" items from "ready to pull" items. No single system of record exists for backlog or roadmap data.',
     score: 2.78,
     sev: 'warn',
-    respondents: 11,
-    tags: ['Backlog', 'Intake', 'Capacity', 'Sprint Planning'],
+    respondents: 15,
+    tags: ['Backlog', 'Intake', 'Capacity', 'Sprint Planning', 'System of Record'],
     children: [
       {
         type: 'story', id: 'JGAP-02-001',
-        title: 'Implement backlog segmentation model: Product Evaluation vs Ready vs Committed',
-        detail: 'Create label or custom field scheme to differentiate backlog tiers. "Backlog" is currently too vague — delivery teams cannot distinguish items under product evaluation from items ready to pull into a sprint.',
-        sev: 'crit', respondents: 4,
-        voice: '"Current state \'backlog\' is too vague and broad and we are using wonky work-arounds to make sure the delivery team focuses only on what is relevant." — Emily Kuhn, PBO',
+        title: 'Implement backlog segmentation model: Under Evaluation vs Ready vs Committed',
+        detail: 'Create label or custom field scheme to differentiate backlog tiers. "Backlog" is currently too vague — delivery teams cannot distinguish items under product evaluation from items ready to pull into a sprint. PBOs explicitly need a way to mark items as "under evaluation" to keep delivery teams focused on actionable work only.',
+        sev: 'crit', respondents: 7,
+        voice: '"Current state \'backlog\' is too vague and broad and we are using wonky work-arounds to make sure the delivery team focuses only on what is relevant." — Emily Kuhn, PBO · "We need a way to separate what\'s under evaluation from what\'s ready to go — otherwise the delivery team chases the wrong things." — Emily Kuhn, PBO',
       },
       {
         type: 'story', id: 'JGAP-02-002',
@@ -753,17 +760,31 @@ const EPICS = [
         sev: 'warn', respondents: 2,
         voice: '"If someone is doing the work, it should be tracked in Jira and not via email." — Jacqueline Bacon, Agile TM',
       },
+      {
+        type: 'spike', id: 'JGAP-02-SP3',
+        title: 'Spike: Evaluate Jira Collector and bulk import tools for backlog population',
+        detail: 'Multiple PBOs manage large backlogs that were created and maintained outside Jira. Assess Jira Collector, CSV bulk import, and Confluence-linked forms as pathways to migrate existing backlog artifacts into Jira without manual re-entry.',
+        sev: 'warn', respondents: 3,
+        voice: '"We need a way to bulk-load existing backlog items — re-entering them one by one is not realistic." — Multiple PBO respondents',
+      },
+      {
+        type: 'bug', id: 'JGAP-02-BUG1',
+        title: 'Bug: No single system of record — backlog and roadmap data fragmented across Jira, SNOW, SPM, CMT, and PPT decks',
+        detail: 'Teams operate without a single authoritative source for backlog or roadmap status. At any given time, different stakeholders reference different tools (Jira, SNOW tickets, SPM milestones, CMT change records, and PowerPoint roadmaps) for the same work item. This creates conflicting status, missed dependencies, and reporting inconsistency. The absence of a system of record is the root cause of most tool-overlap complaints.',
+        sev: 'crit', respondents: 6,
+        voice: '"There are too many overlapping tools — SNOW, SPM, Jira, CMT, PPT roadmaps — and nobody knows which one is the source of truth." — Multiple respondents (Pillar Leadership + PBO cohorts)',
+      },
     ]
   },
   {
     id: 'JGAP-03',
     icon: 'E3',
     title: 'Reporting, Dashboards & Metrics Visibility',
-    desc: 'Dashboard usage scored 3.04/5.0 and reporting is a top frustration across leadership and delivery roles. Teams manually extract sprint data into PPT and SPM weekly. Leadership needs project-level status, not sprint/epic status.',
+    desc: 'Dashboard usage scored 3.04/5.0 and reporting is a top frustration across leadership and delivery roles. Teams manually extract sprint data into PPT and SPM weekly. Leadership needs project-level status, not sprint/epic status. No accessible Epic drill-down view exists. Tool fragmentation (SNOW/SPM/Jira/CMT/PPT) means no single reporting surface reflects the full picture.',
     score: 3.04,
     sev: 'warn',
-    respondents: 15,
-    tags: ['Dashboards', 'Reporting', 'Metrics', 'SPM Integration'],
+    respondents: 20,
+    tags: ['Dashboards', 'Reporting', 'Metrics', 'SPM Integration', 'Epic Drill-Down', 'Tool Fragmentation'],
     children: [
       {
         type: 'story', id: 'JGAP-03-001',
@@ -807,6 +828,20 @@ const EPICS = [
         sev: 'warn', respondents: 3,
         voice: '"Past completed stories are removed after a period of time but should be searchable and archived somewhere." — Amanda Brownson, Agile TM',
       },
+      {
+        type: 'story', id: 'JGAP-03-003',
+        title: 'Create accessible Epic drill-down view showing all child stories and their current status',
+        detail: 'PBOs and SMs need a single-click view of an Epic and all its child stories — their status, assignee, sprint assignment, and completion percentage — without navigating multiple screens or running JQL. Current Jira Epic view requires too many clicks and does not show sprint context alongside story status.',
+        sev: 'warn', respondents: 3,
+        voice: '"There\'s no easy way to drill down into an Epic and see all the work under it without clicking around." — Edward Masters, PBO',
+      },
+      {
+        type: 'bug', id: 'JGAP-03-BUG2',
+        title: 'Bug: No unified reporting surface — SNOW, SPM, Jira, CMT, and PPT roadmaps operate as separate disconnected views of the same work',
+        detail: 'Leadership and delivery teams use 4-5 different tools to see different slices of the same work: Jira for sprint execution, SNOW for operational tickets, SPM for milestone tracking, CMT for change records, and PowerPoint for roadmaps. No single dashboard consolidates these views, making status reporting a manual assembly exercise every week. This is the most commonly cited source of reporting overhead.',
+        sev: 'crit', respondents: 7,
+        voice: '"There are too many overlapping tools. It\'s hard to know where to look." — Multiple respondents · "We end up making the same update in three places." — Pillar Leadership respondents',
+      },
     ]
   },
   {
@@ -816,8 +851,8 @@ const EPICS = [
     desc: 'Best practices scored 2.92/5.0 with Pillar Leadership at a low 2.50. No documented Jira standards accessible to all users. Teams revert to shadow systems because Jira expectations are unclear and unenforced.',
     score: 2.92,
     sev: 'warn',
-    respondents: 18,
-    tags: ['Best Practices', 'Documentation', 'Governance', 'Training'],
+    respondents: 22,
+    tags: ['Best Practices', 'Documentation', 'Governance', 'Training', 'ADO Comparison'],
     children: [
       {
         type: 'story', id: 'JGAP-04-001',
@@ -836,9 +871,9 @@ const EPICS = [
       {
         type: 'subtask', id: 'JGAP-04-001b',
         title: 'Define and publish approved Jira work item templates (Story, Task, Bug, Spike)',
-        detail: 'Story templates reduce overhead of story creation. Respondents noted ADO had templates that made submission easier. Replicate this in Jira using description templates or Jira automation pre-fill.',
-        sev: 'warn', respondents: 3,
-        voice: '"ADO had templates for the story so it was easier for everyone to submit stories." — Jacqueline Bacon, Agile TM',
+        detail: 'Story templates reduce overhead of story creation. Multiple respondents specifically noted ADO had templates that made submission easier and that Jira\'s free-form entry creates inconsistent, incomplete tickets. Replicate this in Jira using description templates or Jira automation pre-fill. ADO\'s UX is cited as a benchmark for guided data entry.',
+        sev: 'warn', respondents: 5,
+        voice: '"ADO had templates for the story so it was easier for everyone to submit stories." — Jacqueline Bacon, Agile TM · "ADO was easier to use — it guided you through what to fill in." — Andrea Piesetzkie, PBO',
       },
       {
         type: 'story', id: 'JGAP-04-002',
@@ -870,8 +905,8 @@ const EPICS = [
     desc: 'Jira Versions/Release Management is the lowest-scored Jira question at 2.30/5.0 — a critical gap. Post-development activities (approvals, go-live, hypercare) are not tracked in Jira. Release status lives in email, PPT, and SNOW.',
     score: 2.30,
     sev: 'crit',
-    respondents: 9,
-    tags: ['Versions', 'Release', 'Go-Live', 'Hypercare', 'SNOW'],
+    respondents: 13,
+    tags: ['Versions', 'Release', 'Go-Live', 'Hypercare', 'SNOW', 'ERBO', 'Change Control'],
     children: [
       {
         type: 'story', id: 'JGAP-05-001',
@@ -890,9 +925,9 @@ const EPICS = [
       {
         type: 'spike', id: 'JGAP-05-SP1',
         title: 'Spike: Evaluate SNOW ↔ Jira CHG/CMT integration to eliminate EBRB change control overhead',
-        detail: 'The current EBRB + SNOW + CMT change control process creates extreme duplicate entry. One analyst reported 40 minutes to update a single ticket. Assess a Jira-native or integrated CHG workflow that eliminates the EBRB spreadsheet.',
-        sev: 'crit', respondents: 3,
-        voice: '"Get rid of the EBRB entirely. Keep the test script portion but that\'s the only piece needed." — Amanda Brownson, Agile TM',
+        detail: 'The current EBRB + SNOW + CMT change control process creates extreme duplicate entry. One analyst reported 40 minutes to update a single ticket. Multiple PBO respondents in Wave 1 additional cohort confirmed the ERBO process is entirely outside Jira with no linkage — creating a parallel compliance workflow that teams must manage manually. Assess a Jira-native or integrated CHG workflow that eliminates the EBRB spreadsheet and surfaces change control status alongside sprint work.',
+        sev: 'crit', respondents: 6,
+        voice: '"Get rid of the EBRB entirely. Keep the test script portion but that\'s the only piece needed." — Amanda Brownson, Agile TM · "The ERBO/change control process adds so much overhead — none of it is in Jira." — Andrea Piesetzkie, PBO',
       },
       {
         type: 'spike', id: 'JGAP-05-SP2',
@@ -914,11 +949,11 @@ const EPICS = [
     id: 'JGAP-06',
     icon: 'E6',
     title: 'Cross-Team Dependencies & SNOW Integration',
-    desc: 'Teams report inability to track cross-team dependencies in Jira. SNOW/Jira duplication is a top complaint. Operational ticket work (SNOW) is not represented in Jira boards, making team capacity appear artificially low.',
+    desc: 'Teams report inability to track cross-team dependencies in Jira. SNOW/Jira duplication is a top complaint. Operational ticket work (SNOW) is not represented in Jira boards, making team capacity appear artificially low. Vendor-dependent teams (e.g., Provider Directory/SungSoo Han) require a fundamentally different tracking model not currently supported.',
     score: 2.83,
     sev: 'warn',
-    respondents: 10,
-    tags: ['Dependencies', 'SNOW', 'Integration', 'Cross-team'],
+    respondents: 14,
+    tags: ['Dependencies', 'SNOW', 'Integration', 'Cross-team', 'Vendor Teams'],
     children: [
       {
         type: 'story', id: 'JGAP-06-001',
@@ -954,6 +989,13 @@ const EPICS = [
         detail: 'DSCH work appears on both the Fabric Jira board and the Montefiore DSCH Scrum project simultaneously. While acknowledged as intentional (unique partnership), this creates reporting inconsistency and should be formally documented with a deduplication strategy.',
         sev: 'warn', respondents: 2,
         voice: '"There is still some overlap between things entered onto the Fabric JIRA board and also has entries for Monte on the DSCH Scrum JIRA project." — Rick Disher, SM',
+      },
+      {
+        type: 'story', id: 'JGAP-06-003',
+        title: 'Design alternate Jira tracking model for vendor-dependent teams with external delivery timelines',
+        detail: 'Teams whose delivery is primarily controlled by vendor timelines (e.g., Provider Directory team / SungSoo Han) cannot operate on standard sprint-based Jira workflows. Their work is gated by external vendor releases, not internal capacity. Current Jira setup forces these teams into a sprint model that does not reflect how their work actually moves. Define a Jira configuration — potentially a Kanban or milestone-driven board — that tracks vendor dependency status, expected delivery dates, and internal readiness tasks separately from sprint commitments.',
+        sev: 'warn', respondents: 3,
+        voice: '"Our team\'s delivery is largely dependent on the vendor — a sprint model doesn\'t really apply to us." — SungSoo Han, PBO',
       },
     ]
   },
