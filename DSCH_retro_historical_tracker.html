@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSCH — Retrospective Historical Tracker</title>
+<style>
+  :root {
+    --teal: #1F6B75;
+    --teal-dark: #154E55;
+    --teal-light: #E8F4F6;
+    --gold: #C9A84C;
+    --gold-light: #FDF6E3;
+    --gray-header: #2E4057;
+    --bg: #FAFAF7;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+    --text: #1F2937;
+    --text-mute: #6B7280;
+    --green: #16A34A;
+    --green-bg: #DCFCE7;
+    --yellow: #CA8A04;
+    --yellow-bg: #FEF3C7;
+    --red: #DC2626;
+    --red-bg: #FEE2E2;
+    --blue: #2563EB;
+    --blue-bg: #DBEAFE;
+    --purple: #7C3AED;
+    --purple-bg: #EDE9FE;
+    --gray: #6B7280;
+    --gray-bg: #F3F4F6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 14px;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+    color: white;
+    padding: 24px 32px;
+    border-bottom: 4px solid var(--gold);
+  }
+  .header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+  }
+  .header .sub { font-size: 13px; opacity: 0.9; }
+  .header .meta { margin-top: 12px; display: flex; gap: 24px; font-size: 12px; }
+  .header .meta span strong { color: var(--gold); }
+
+  .container { max-width: 1400px; margin: 0 auto; padding: 24px 32px; }
+
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 4px solid var(--teal);
+  }
+  .stat .num { font-size: 24px; font-weight: 700; color: var(--gray-header); }
+  .stat .lbl { font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .stat.proceed { border-left-color: var(--green); }
+  .stat.archive { border-left-color: var(--gray); }
+  .stat.cancel  { border-left-color: var(--red); }
+  .stat.notrel  { border-left-color: var(--purple); }
+  .stat.pending { border-left-color: var(--yellow); }
+
+  .filter-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .filter-bar label {
+    font-size: 12px; font-weight: 600; color: var(--text-mute);
+    text-transform: uppercase; letter-spacing: 0.4px; margin-right: 4px;
+  }
+  .filter-bar select, .filter-bar input {
+    border: 1px solid var(--border); border-radius: 6px;
+    padding: 6px 10px; font-size: 13px; font-family: inherit;
+    background: white; color: var(--text);
+  }
+  .filter-bar input[type="text"] { min-width: 220px; }
+  .filter-bar button {
+    background: var(--teal); color: white; border: none;
+    padding: 7px 14px; border-radius: 6px; font-size: 12px; font-weight: 600;
+    cursor: pointer; text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .filter-bar button:hover { background: var(--teal-dark); }
+  .filter-bar button.secondary { background: white; color: var(--text); border: 1px solid var(--border); }
+  .filter-bar button.secondary:hover { background: var(--gray-bg); }
+
+  .retro-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .retro-header {
+    background: var(--gray-header); color: white;
+    padding: 12px 18px;
+    display: flex; justify-content: space-between; align-items: center;
+    cursor: pointer; user-select: none;
+  }
+  .retro-header:hover { background: #3a4f6e; }
+  .retro-header h2 { font-size: 15px; font-weight: 600; letter-spacing: 0.2px; }
+  .retro-header h2 .date { color: var(--gold); font-weight: 500; margin-right: 8px; }
+  .retro-header .count {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px; border-radius: 12px;
+    font-size: 11px; font-weight: 600;
+  }
+  .retro-context {
+    background: var(--teal-light);
+    padding: 10px 18px;
+    font-size: 12px; color: var(--teal-dark);
+    border-bottom: 1px solid var(--border);
+    font-style: italic;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: #F9FAFB; color: var(--text-mute);
+    text-align: left; padding: 10px 12px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #F3F4F6;
+    vertical-align: top;
+    font-size: 13px;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFAFA; }
+
+  td.id-cell { font-family: 'SF Mono', Monaco, Consolas, monospace; font-size: 12px; font-weight: 600; color: var(--teal); white-space: nowrap; }
+  td.theme-cell { width: 110px; }
+  td.action-cell { line-height: 1.5; }
+  td.owner-cell { font-size: 12px; color: var(--text-mute); white-space: nowrap; }
+  td.status-cell { width: 130px; }
+  td.decision-cell { width: 200px; }
+  td.notes-cell { font-size: 12px; color: var(--text-mute); }
+  td.stream-cell { width: 90px; }
+
+  .theme {
+    display: inline-block; padding: 3px 8px; border-radius: 4px;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .theme.process     { background: #DBEAFE; color: #1E3A8A; }
+  .theme.testing     { background: #FEF3C7; color: #78350F; }
+  .theme.tooling     { background: #E0E7FF; color: #3730A3; }
+  .theme.docs        { background: #D1FAE5; color: #065F46; }
+  .theme.team        { background: #FCE7F3; color: #9D174D; }
+  .theme.governance  { background: #FEE2E2; color: #991B1B; }
+  .theme.tech        { background: #F3E8FF; color: #6B21A8; }
+  .theme.depend      { background: #FFEDD5; color: #9A3412; }
+
+  .stream {
+    display: inline-block; padding: 3px 7px; border-radius: 4px;
+    font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .stream.scheduling { background: #DBEAFE; color: #1E40AF; }
+  .stream.directory  { background: #D1FAE5; color: #065F46; }
+  .stream.both       { background: #F3F4F6; color: #4B5563; }
+
+  .badge {
+    display: inline-block; padding: 4px 9px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.3px;
+  }
+  .badge.completed   { background: var(--green-bg); color: var(--green); }
+  .badge.inprogress  { background: var(--blue-bg); color: var(--blue); }
+  .badge.outstanding { background: var(--yellow-bg); color: var(--yellow); }
+  .badge.deferred    { background: var(--gray-bg); color: var(--gray); }
+
+  .decision-select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 6px;
+    font-size: 12px;
+    font-family: inherit;
+    background: white;
+    cursor: pointer;
+  }
+  .decision-select.proceed { background: var(--green-bg); color: var(--green); border-color: var(--green); font-weight: 600; }
+  .decision-select.archive { background: var(--gray-bg);  color: var(--gray);  border-color: var(--gray);  font-weight: 600; }
+  .decision-select.cancel  { background: var(--red-bg);   color: var(--red);   border-color: var(--red);   font-weight: 600; }
+  .decision-select.notrel  { background: var(--purple-bg);color: var(--purple);border-color: var(--purple);font-weight: 600; }
+  .decision-select.pending { background: var(--yellow-bg);color: var(--yellow);border-color: var(--yellow);font-weight: 600; }
+
+  .team-note {
+    margin-top: 6px; width: 100%;
+    border: 1px solid var(--border); border-radius: 4px;
+    padding: 5px 7px; font-size: 11px; font-family: inherit;
+    background: white; resize: vertical; min-height: 30px;
+  }
+
+  .empty-state {
+    text-align: center; padding: 60px 20px;
+    color: var(--text-mute);
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+  }
+
+  .action-footer {
+    position: sticky; bottom: 0;
+    background: white;
+    border-top: 2px solid var(--teal);
+    padding: 14px 32px;
+    display: flex; justify-content: space-between; align-items: center;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+    margin-top: 24px;
+  }
+  .action-footer .info { font-size: 12px; color: var(--text-mute); }
+  .action-footer .info strong { color: var(--text); }
+  .action-footer .buttons { display: flex; gap: 8px; }
+  .action-footer button {
+    padding: 8px 16px; border-radius: 6px;
+    font-size: 13px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--border);
+    background: white; color: var(--text);
+  }
+  .action-footer button.primary { background: var(--teal); color: white; border-color: var(--teal); }
+  .action-footer button.primary:hover { background: var(--teal-dark); }
+  .action-footer button:hover { background: var(--gray-bg); }
+
+  .legend {
+    display: flex; gap: 16px; align-items: center;
+    font-size: 11px; color: var(--text-mute);
+    margin-bottom: 16px; flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  @media print {
+    .filter-bar, .action-footer, .decision-select, .team-note { display: none; }
+    .retro-section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Digital Provider Scheduling — Retrospective Historical Tracker</h1>
+  <div class="sub">Q1 2026 retrospective action items · Triage view for team review</div>
+  <div class="meta">
+    <span><strong>Owner:</strong> Nancy Collins, Scrum Master</span>
+    <span><strong>Period covered:</strong> Jan 2026 – Apr 2026</span>
+    <span><strong>Streams:</strong> Scheduling · Provider Directory</span>
+    <span><strong>Updated:</strong> <span id="todayDate"></span></span>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="summary" id="summaryStats"></div>
+
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span><strong>Origin Status:</strong></span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Completed</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>In Progress</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--yellow)"></span>Outstanding</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--gray)"></span>Deferred</span>
+  </div>
+
+  <div class="filter-bar">
+    <label>Search:</label>
+    <input type="text" id="searchInput" placeholder="Action, owner, theme...">
+    <label>Origin Status:</label>
+    <select id="statusFilter">
+      <option value="">All</option>
+      <option value="completed">Completed</option>
+      <option value="inprogress">In Progress</option>
+      <option value="outstanding">Outstanding</option>
+      <option value="deferred">Deferred</option>
+    </select>
+    <label>Stream:</label>
+    <select id="streamFilter">
+      <option value="">All</option>
+      <option value="scheduling">Scheduling</option>
+      <option value="directory">Directory</option>
+      <option value="both">Both</option>
+    </select>
+    <label>Theme:</label>
+    <select id="themeFilter">
+      <option value="">All</option>
+      <option value="process">Process</option>
+      <option value="testing">Testing</option>
+      <option value="tooling">Tooling</option>
+      <option value="docs">Documentation</option>
+      <option value="team">Team / Culture</option>
+      <option value="governance">Governance</option>
+      <option value="tech">Technical</option>
+      <option value="depend">External Dependency</option>
+    </select>
+    <label>Team Decision:</label>
+    <select id="decisionFilter">
+      <option value="">All</option>
+      <option value="pending">Pending Review</option>
+      <option value="proceed">Proceed</option>
+      <option value="archive">Archive</option>
+      <option value="cancel">Cancel</option>
+      <option value="notrel">No Longer Relevant</option>
+    </select>
+    <button class="secondary" onclick="resetFilters()">Reset</button>
+    <button class="secondary" onclick="window.print()">🖨 Print View</button>
+  </div>
+
+  <div id="retroContainer"></div>
+
+</div>
+
+<div class="action-footer">
+  <div class="info">
+    <strong id="totalCount">0</strong> total items ·
+    <strong id="pendingCount">0</strong> pending team decision
+  </div>
+  <div class="buttons">
+    <button class="secondary" onclick="exportData()">⬇ Export CSV</button>
+    <button class="secondary" onclick="resetDecisions()">↺ Reset Decisions</button>
+    <button class="primary" onclick="saveLocal()">💾 Save Progress</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  DSCH RETROSPECTIVE DATA — Q1 2026
+//  Sourced from DSPD/DSCH retros, daily stand-up follow-ups, and Working Agreement evolution
+// ═══════════════════════════════════════════════════════════════════
+
+const RETROS = [
+  {
+    id: 'retro-0210',
+    date: 'Feb 10, 2026',
+    name: 'Sprint Retrospective',
+    theme: '💝 Mid-Q1 — Emily-led detailed feedback session',
+    context: 'Emily provided detailed structured feedback covering Fabric ingester escalation timing, backlog bucket clarity, PM review process, and engineering involvement in design. CDE go-live wrapping; MotionPT batch job in progress. Two-stream coordination challenges surfacing.',
+    items: [
+      {
+        id: 'D0210-01',
+        action: 'Reduce Fabric ingester escalation time — current escalation path takes too long when issues arise',
+        owner: 'Sam Han / Brijesh',
+        stream: 'directory',
+        theme: 'depend',
+        status: 'inprogress',
+        notes: 'Pattern continued through Q1. DSCH-1282 Fabric blocked since Feb. DSCH-1317 closed 3/25 after Fabric responded 3/16. Escalation path still informal.'
+      },
+      {
+        id: 'D0210-02',
+        action: 'Clarify backlog bucket definitions — team confused on Pre-Refinement vs Team Refinement vs Ready criteria',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'governance',
+        status: 'completed',
+        notes: 'Resolved via Working Agreement v2.0 (approved 4/17/26). Seven-bucket flow now formalized: New/Intake → Pre-Refinement → Team Refinement → Ready → External Dep Hold → Fabric Discovery → Templates.'
+      },
+      {
+        id: 'D0210-03',
+        action: 'Formalize PM review process — clarify when/how PMs sign off on engineering work',
+        owner: 'Emily Stebbins / Madeline',
+        stream: 'scheduling',
+        theme: 'process',
+        status: 'completed',
+        notes: 'In Review status formalized in WA v2.0: PM owns it, three exit paths (Approved no PRD / Approved with PRD / Changes Required). Documented 3/16 WA update.'
+      },
+      {
+        id: 'D0210-04',
+        action: 'Increase engineering involvement earlier in design phase — engineers feel design decisions made without them',
+        owner: 'Hannah Hadrava / Jacqueline',
+        stream: 'scheduling',
+        theme: 'team',
+        status: 'inprogress',
+        notes: 'Improved through Q2 SP1 — Steven Lewis onboarding included design participation. Cross-stream pattern still developing.'
+      },
+      {
+        id: 'D0210-05',
+        action: 'Address sub-team imbalance — Directory side needs more PO bandwidth (Sam new, learning Fabric)',
+        owner: 'Steve Battisti / Nancy',
+        stream: 'directory',
+        theme: 'team',
+        status: 'inprogress',
+        notes: 'Sam mentorship by Steve continued through Q1. Sam\'s confidence growing per March/April observations. Ongoing development.'
+      }
+    ]
+  },
+  {
+    id: 'retro-0310',
+    date: 'Mar 10, 2026',
+    name: 'Sprint Retrospective',
+    theme: '🎉 MotionPT Go-Live celebration · Q1 wins',
+    context: 'MotionPT went live 3/6 — major team win celebrated. Kudos to Rich (CHG/QA), Amanda (priority communication), Steve (Sam mentorship, Sam\'s birthday). Steady team performance with clear retro takeaways voted to carry forward.',
+    items: [
+      {
+        id: 'D0310-01',
+        action: 'Establish collaborative test script process for new builds — PMs + engineers co-author test scripts',
+        owner: 'Emily / Madeline / Richard',
+        stream: 'scheduling',
+        theme: 'testing',
+        status: 'inprogress',
+        notes: 'Carry-forward retro action #1 (team vote). Started informally on Access PT and Psych builds. Not yet formalized in Working Agreement.'
+      },
+      {
+        id: 'D0310-02',
+        action: 'PMs send tickets ahead of refinement — already happening, continue and reinforce',
+        owner: 'Emily Stebbins / Madeline',
+        stream: 'scheduling',
+        theme: 'process',
+        status: 'completed',
+        notes: 'Carry-forward retro action #2 (team vote). Pattern held through Q1 SP7 and Q2 SP1. PMs consistently pre-staging.'
+      },
+      {
+        id: 'D0310-03',
+        action: 'Celebrate MotionPT go-live wins — recognize Rich (CHG/QA), Amanda (comms), Steve (Sam mentorship)',
+        owner: 'Team',
+        stream: 'both',
+        theme: 'team',
+        status: 'completed',
+        notes: 'Recognition delivered in retro. Amanda\'s contract ended 3/28 — final celebration before transition.'
+      },
+      {
+        id: 'D0310-04',
+        action: 'Resolve Psych Direct Scheduling decision tree pushback from business on scope/templates',
+        owner: 'Richard / Emily',
+        stream: 'scheduling',
+        theme: 'depend',
+        status: 'outstanding',
+        notes: 'Still active in Q2 SP1 retro (Apr 21). Dr. Zonana template structure does not align with standard scheduling — stakeholders unwilling to change. No resolution path visible yet.'
+      },
+      {
+        id: 'D0310-05',
+        action: 'Resolve NEOC Provider Directory widget embed (DSCH-1368) — broken on NEOC website, Fabric escalated',
+        owner: 'Sam Han / Richard',
+        stream: 'directory',
+        theme: 'depend',
+        status: 'completed',
+        notes: 'Resolved by Q2 SP1. Providers confirmed in directory; widget functional. NEOC team alignment achieved.'
+      },
+      {
+        id: 'D0310-06',
+        action: 'Address In-Review → Done swim lane friction — blocked items must go back through In-Review',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'governance',
+        status: 'completed',
+        notes: 'Documented in WA v2.0. Process: Blocked → must return to In-Review before Done. Cleared up team confusion.'
+      }
+    ]
+  },
+  {
+    id: 'retro-0421',
+    date: 'Apr 21, 2026',
+    name: 'Q2 SP1 Sprint Retrospective',
+    theme: '🌷 First retro under new Working Agreement · 4-quadrant structured format',
+    context: 'Q2 SP1 closed with 12 items Done · 8 rolling to SP2 · Commitment reliability 83% (up from 75%). Working Agreement v2.0 (approved 4/17) held up in first sprint. Steven Lewis onboarded smoothly. Reviewer SLA gap surfaced as first WA weakness.',
+    items: [
+      {
+        id: 'D0421-01',
+        action: 'RA-01 — Define reviewer SLA for Fabric export analyses (DSCH-1392 stuck In Review)',
+        owner: 'Nancy + Steve Battisti',
+        stream: 'directory',
+        theme: 'governance',
+        status: 'inprogress',
+        notes: 'Action item from retro. Due Apr 28. To be added to Working Agreement. Reviewer commitment turnaround needed.'
+      },
+      {
+        id: 'D0421-02',
+        action: 'RA-02 — Establish escalation path for Epic/Hyperspace access issues (DSCH-1314 held 3+ sprints)',
+        owner: 'Sam Han + SM',
+        stream: 'directory',
+        theme: 'depend',
+        status: 'outstanding',
+        notes: 'Action item from retro. Due Apr 24. Escalate to Kris Traenkner + leadership. Pattern for future Epic access requests needed.'
+      },
+      {
+        id: 'D0421-03',
+        action: 'RA-03 — Go-live commit-or-move rule: get date commitment or move items to External Dependency Hold',
+        owner: 'Richard + Emily + SPM',
+        stream: 'scheduling',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Action item from retro. Due Apr 22 (SP2 Planning). Applied to DSCH-1343, 1321, 1310 (Psych/Access PT). Reduces blocked-in-sprint pattern.'
+      },
+      {
+        id: 'D0421-04',
+        action: 'RA-04 — Day-5 cutoff rule for late-sprint additions (4 Brijesh items added after Day 4)',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'governance',
+        status: 'inprogress',
+        notes: 'Action item from retro. Due Apr 22. Proposed Working Agreement amendment. Tests corrective rule for sizing inflation.'
+      },
+      {
+        id: 'D0421-05',
+        action: 'RA-05 — Convert Deloitte comms to sub-task instead of gate (DSCH-1283 sat finished waiting on comms)',
+        owner: 'Richard',
+        stream: 'scheduling',
+        theme: 'process',
+        status: 'completed',
+        notes: 'Action item from retro. Due Apr 22. Pattern resolved by reframing comms as in-sprint sub-task rather than external gate.'
+      },
+      {
+        id: 'D0421-06',
+        action: 'Pre-stage Ready bucket by Friday before sprint end (8 items pre-staged this sprint worked well)',
+        owner: 'Emily / Madeline / Sam',
+        stream: 'both',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Pilot for SP2. Worked well in SP1; team to formalize as standing practice if SP2 confirms.'
+      },
+      {
+        id: 'D0421-07',
+        action: 'Investigate initiative visibility model — DSCH-1350 visible in backlog while others blocked off',
+        owner: 'Nancy / Steve Battisti',
+        stream: 'directory',
+        theme: 'tooling',
+        status: 'outstanding',
+        notes: 'Parking lot item raised by Steve. Jira config investigation needed. How do we report on third-party (Jacqueline B + Lehair) work?'
+      },
+      {
+        id: 'D0421-08',
+        action: 'Recognize team wins — Richard\'s 5-closure day (4/18), Brijesh 7 PD closures including MEAC UAT',
+        owner: 'Team',
+        stream: 'both',
+        theme: 'team',
+        status: 'completed',
+        notes: 'Shoutouts delivered in retro. Brijesh, Richard, Steve B (RCA), Steven Lewis (onboarding), Sam Han, Emily & Madeline recognized.'
+      }
+    ]
+  },
+  {
+    id: 'retro-cross-q1',
+    date: 'Jan – Apr 2026',
+    name: 'Cross-Sprint Carry-Over Items',
+    theme: '🔄 Items surfaced in multiple retros / Working Agreement evolution',
+    context: 'Items that emerged across multiple Q1 ceremonies, daily stand-ups, or feed directly from Agile Maturity Assessments (Feb 2.69 → Mar 2.88 Established). Treated as retrospective-class items by the team.',
+    items: [
+      {
+        id: 'DCRO-01',
+        action: 'Begin formal story pointing — establish velocity baseline across both streams',
+        owner: 'Nancy / Team',
+        stream: 'both',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Started Sprint 4 Q1 2026. Two sprints of pointing data by Q2 SP1. Velocity baseline still being built; not enough data for trend score above 2 yet (per Mar maturity assessment).'
+      },
+      {
+        id: 'DCRO-02',
+        action: 'Introduce cross-team dependency tracking ritual (16th Minute or Refinement)',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'depend',
+        status: 'outstanding',
+        notes: 'Carry-over from Feb maturity actions to Mar (still not done per Mar comments). Joao Azure AD block was the live example. Retro action implementation gap noted.'
+      },
+      {
+        id: 'DCRO-03',
+        action: 'Begin SM → PO facilitation handoff for refinement sessions — POs own and execute refinement',
+        owner: 'Emily / Madeline / Sam',
+        stream: 'both',
+        theme: 'team',
+        status: 'inprogress',
+        notes: 'PO independence is the growth path per Feb + Mar maturity comments. Refinement ownership still SM-led. Battisti/Fasano co-facilitation proposed for April.'
+      },
+      {
+        id: 'DCRO-04',
+        action: 'Define "board current" Jira hygiene standard — enforce at stand-up; SM sprint-end audit',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'tooling',
+        status: 'inprogress',
+        notes: 'Mar maturity action. Jira update reminders still ongoing per Mar comments. Caps metrics ceiling at 2.0 until habit established.'
+      },
+      {
+        id: 'DCRO-05',
+        action: 'Assign named owners to every retro action; open next retro with did-we-do-it pass',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Mar maturity action. Implementation gap is team\'s most important internal tension (retro quality 4 vs follow-through 2). This very tracker is the response.'
+      },
+      {
+        id: 'DCRO-06',
+        action: 'Encourage quieter voices to be heard in ceremonies — collaborative model holding at 3',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'team',
+        status: 'inprogress',
+        notes: 'Feb + Mar maturity comment: "team is engaged, however some voices are louder than others." Active facilitation needed.'
+      },
+      {
+        id: 'DCRO-07',
+        action: 'Resolve ~800 provider drop root cause (Amazon/Motion/Access logic rollback)',
+        owner: 'Steve Battisti',
+        stream: 'directory',
+        theme: 'tech',
+        status: 'completed',
+        notes: 'Apr 9 — root cause: ~150 intentional Amazon, ~160 Access + ~263 Motion unintentional. RCA complete by Apr 16. Prevention measures documented.'
+      },
+      {
+        id: 'DCRO-08',
+        action: 'Track multi-quarter Q1 carryover pattern (DSCH-1369, 1349, 1282) — raise as systemic if persistent',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'governance',
+        status: 'inprogress',
+        notes: 'Watch item per Q2 SP1 calendar. Pattern continues — DSCH-1349 Motion PT tree override still active in Q2 SP1.'
+      },
+      {
+        id: 'DCRO-09',
+        action: 'Sprint Review cancellation process formalized (discuss at Sprint Planning, confirm at 16th Minute)',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'governance',
+        status: 'completed',
+        notes: 'Documented in WA 03/16 update. Process clear; cancellations now communicated proactively.'
+      },
+      {
+        id: 'DCRO-10',
+        action: 'DSCH Working Agreement v2.0 — finalize 7-bucket flow, PM/APM ownership, External Dep Hold criteria',
+        owner: 'Nancy Collins',
+        stream: 'both',
+        theme: 'governance',
+        status: 'completed',
+        notes: 'Approved 4/17/26. Authored by Nancy (v2.0) building on Rick\'s v1.0. Integrates 9 proposed updates reviewed by team. Major Q1 deliverable.'
+      },
+      {
+        id: 'DCRO-11',
+        action: 'Brijesh weekly Fabric analysis cadence — recurring story every sprint (analysis + new provider report + pediatric tagging)',
+        owner: 'Brijesh Bhavsar',
+        stream: 'directory',
+        theme: 'process',
+        status: 'completed',
+        notes: 'Established pattern through Q1. Brijesh consistent throughput (7 closures Q2 SP1). Recurring sprint commitment model proven.'
+      },
+      {
+        id: 'DCRO-12',
+        action: 'Amanda transition (contract end 3/28) — knowledge transfer for CDE/MotionPT/Psych work',
+        owner: 'Amanda / Richard / Emily',
+        stream: 'scheduling',
+        theme: 'team',
+        status: 'completed',
+        notes: 'Transition completed. CDE finalized, MotionPT live 3/6, Psych decision tree built. Rich picked up active builds.'
+      }
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════════════════════════════
+const state = {
+  decisions: {},
+  notes: {},
+  collapsed: {}
+};
+
+function initDefaults() {
+  RETROS.forEach(r => {
+    r.items.forEach(it => {
+      if (!state.decisions[it.id]) {
+        if (it.status === 'completed') state.decisions[it.id] = 'archive';
+        else state.decisions[it.id] = 'pending';
+      }
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════════════
+
+function render() {
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  const container = document.getElementById('retroContainer');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const statusF = document.getElementById('statusFilter').value;
+  const streamF = document.getElementById('streamFilter').value;
+  const themeF = document.getElementById('themeFilter').value;
+  const decisionF = document.getElementById('decisionFilter').value;
+
+  container.innerHTML = '';
+  let totalShown = 0;
+
+  RETROS.forEach(retro => {
+    const visibleItems = retro.items.filter(it => {
+      if (search && !(`${it.action} ${it.owner} ${it.notes}`.toLowerCase().includes(search))) return false;
+      if (statusF && it.status !== statusF) return false;
+      if (streamF && it.stream !== streamF) return false;
+      if (themeF && it.theme !== themeF) return false;
+      if (decisionF && state.decisions[it.id] !== decisionF) return false;
+      return true;
+    });
+
+    if (visibleItems.length === 0) return;
+    totalShown += visibleItems.length;
+
+    const section = document.createElement('div');
+    section.className = 'retro-section';
+
+    const isCollapsed = state.collapsed[retro.id];
+
+    section.innerHTML = `
+      <div class="retro-header" onclick="toggleSection('${retro.id}')">
+        <h2><span class="date">${retro.date}</span> · ${retro.name} · ${retro.theme}</h2>
+        <span class="count">${visibleItems.length} of ${retro.items.length} items</span>
+      </div>
+      ${isCollapsed ? '' : `
+      <div class="retro-context">${retro.context}</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:80px">ID</th>
+            <th>Action Item</th>
+            <th style="width:140px">Owner</th>
+            <th style="width:90px">Stream</th>
+            <th style="width:90px">Theme</th>
+            <th style="width:120px">Origin Status</th>
+            <th style="width:200px">Team Decision</th>
+            <th>Notes / Outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${visibleItems.map(it => {
+            const decision = state.decisions[it.id] || 'pending';
+            const note = state.notes[it.id] || '';
+            return `
+            <tr>
+              <td class="id-cell">${it.id}</td>
+              <td class="action-cell">${escapeHtml(it.action)}</td>
+              <td class="owner-cell">${escapeHtml(it.owner)}</td>
+              <td class="stream-cell"><span class="stream ${it.stream}">${streamLabel(it.stream)}</span></td>
+              <td class="theme-cell"><span class="theme ${it.theme}">${themeLabel(it.theme)}</span></td>
+              <td class="status-cell"><span class="badge ${it.status}">${statusLabel(it.status)}</span></td>
+              <td class="decision-cell">
+                <select class="decision-select ${decision}" onchange="setDecision('${it.id}', this.value)">
+                  <option value="pending"   ${decision==='pending'?'selected':''}>⏳ Pending Review</option>
+                  <option value="proceed"   ${decision==='proceed'?'selected':''}>✅ Proceed</option>
+                  <option value="archive"   ${decision==='archive'?'selected':''}>📦 Archive (Done)</option>
+                  <option value="cancel"    ${decision==='cancel'?'selected':''}>❌ Cancel</option>
+                  <option value="notrel"    ${decision==='notrel'?'selected':''}>🚫 No Longer Relevant</option>
+                </select>
+                <textarea class="team-note" placeholder="Team note (optional)..." onchange="setNote('${it.id}', this.value)">${escapeHtml(note)}</textarea>
+              </td>
+              <td class="notes-cell">${escapeHtml(it.notes)}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`}
+    `;
+    container.appendChild(section);
+  });
+
+  if (totalShown === 0) {
+    container.innerHTML = '<div class="empty-state">No items match the current filters.</div>';
+  }
+
+  renderSummary();
+}
+
+function renderSummary() {
+  const all = RETROS.flatMap(r => r.items);
+  const counts = {
+    total: all.length,
+    pending: 0, proceed: 0, archive: 0, cancel: 0, notrel: 0,
+    outstanding: all.filter(i => i.status === 'outstanding').length,
+    inprogress: all.filter(i => i.status === 'inprogress').length,
+    completed: all.filter(i => i.status === 'completed').length,
+    deferred: all.filter(i => i.status === 'deferred').length
+  };
+  all.forEach(i => {
+    const d = state.decisions[i.id] || 'pending';
+    counts[d]++;
+  });
+
+  document.getElementById('summaryStats').innerHTML = `
+    <div class="stat"><div class="num">${counts.total}</div><div class="lbl">Total Items</div></div>
+    <div class="stat" style="border-left-color:var(--green)"><div class="num">${counts.completed}</div><div class="lbl">Completed</div></div>
+    <div class="stat" style="border-left-color:var(--blue)"><div class="num">${counts.inprogress}</div><div class="lbl">In Progress</div></div>
+    <div class="stat" style="border-left-color:var(--yellow)"><div class="num">${counts.outstanding}</div><div class="lbl">Outstanding</div></div>
+    <div class="stat" style="border-left-color:var(--gray)"><div class="num">${counts.deferred}</div><div class="lbl">Deferred</div></div>
+    <div class="stat pending"><div class="num">${counts.pending}</div><div class="lbl">Pending Decision</div></div>
+    <div class="stat proceed"><div class="num">${counts.proceed}</div><div class="lbl">✅ Proceed</div></div>
+    <div class="stat archive"><div class="num">${counts.archive}</div><div class="lbl">📦 Archive</div></div>
+    <div class="stat cancel"><div class="num">${counts.cancel}</div><div class="lbl">❌ Cancel</div></div>
+    <div class="stat notrel"><div class="num">${counts.notrel}</div><div class="lbl">🚫 Not Relevant</div></div>
+  `;
+
+  document.getElementById('totalCount').textContent = counts.total;
+  document.getElementById('pendingCount').textContent = counts.pending;
+}
+
+function themeLabel(t) {
+  return { process:'Process', testing:'Testing', tooling:'Tooling', docs:'Docs', team:'Team', governance:'Gov', tech:'Tech', depend:'Ext Dep' }[t] || t;
+}
+function streamLabel(s) {
+  return { scheduling:'Scheduling', directory:'Directory', both:'Both' }[s] || s;
+}
+function statusLabel(s) {
+  return { completed:'Completed', inprogress:'In Progress', outstanding:'Outstanding', deferred:'Deferred' }[s] || s;
+}
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════════════════════════════
+function setDecision(id, val) { state.decisions[id] = val; render(); }
+function setNote(id, val)     { state.notes[id] = val; }
+function toggleSection(id)    { state.collapsed[id] = !state.collapsed[id]; render(); }
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('statusFilter').value = '';
+  document.getElementById('streamFilter').value = '';
+  document.getElementById('themeFilter').value = '';
+  document.getElementById('decisionFilter').value = '';
+  render();
+}
+
+function resetDecisions() {
+  if (!confirm('Reset all team decisions back to defaults? Notes will be cleared too.')) return;
+  state.decisions = {};
+  state.notes = {};
+  initDefaults();
+  render();
+}
+
+async function saveLocal() {
+  try {
+    await window.storage.set('dsch_retro_tracker_state', JSON.stringify(state));
+    alert('✅ Progress saved. Decisions and notes will persist across sessions.');
+  } catch (e) {
+    alert('Could not save: ' + e.message);
+  }
+}
+
+async function loadLocal() {
+  try {
+    const result = await window.storage.get('dsch_retro_tracker_state');
+    if (result && result.value) {
+      const saved = JSON.parse(result.value);
+      Object.assign(state, saved);
+    }
+  } catch (e) {
+    // first-time use
+  }
+}
+
+function exportData() {
+  const rows = [['Retro Date', 'Retro Name', 'Item ID', 'Action', 'Owner', 'Stream', 'Theme', 'Origin Status', 'Team Decision', 'Team Note', 'Outcome / History']];
+  RETROS.forEach(r => {
+    r.items.forEach(it => {
+      rows.push([
+        r.date, r.name, it.id, it.action, it.owner,
+        streamLabel(it.stream), themeLabel(it.theme),
+        statusLabel(it.status),
+        (state.decisions[it.id] || 'pending'),
+        state.notes[it.id] || '',
+        it.notes
+      ]);
+    });
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `DSCH_Retro_Tracker_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+['searchInput', 'statusFilter', 'streamFilter', 'themeFilter', 'decisionFilter'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+});
+
+(async function init() {
+  initDefaults();
+  await loadLocal();
+  render();
+})();
+</script>
+
+</body>
+</html>
