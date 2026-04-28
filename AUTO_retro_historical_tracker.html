@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Automation Team — Retrospective Historical Tracker</title>
+<style>
+  :root {
+    --teal: #1F6B75;
+    --teal-dark: #154E55;
+    --teal-light: #E8F4F6;
+    --gold: #C9A84C;
+    --gold-light: #FDF6E3;
+    --gray-header: #2E4057;
+    --bg: #FAFAF7;
+    --card: #FFFFFF;
+    --border: #E5E7EB;
+    --text: #1F2937;
+    --text-mute: #6B7280;
+    --green: #16A34A;
+    --green-bg: #DCFCE7;
+    --yellow: #CA8A04;
+    --yellow-bg: #FEF3C7;
+    --red: #DC2626;
+    --red-bg: #FEE2E2;
+    --blue: #2563EB;
+    --blue-bg: #DBEAFE;
+    --purple: #7C3AED;
+    --purple-bg: #EDE9FE;
+    --gray: #6B7280;
+    --gray-bg: #F3F4F6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.5;
+    font-size: 14px;
+  }
+  .header {
+    background: linear-gradient(135deg, var(--teal) 0%, var(--teal-dark) 100%);
+    color: white;
+    padding: 24px 32px;
+    border-bottom: 4px solid var(--gold);
+  }
+  .header h1 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+  }
+  .header .sub {
+    font-size: 13px;
+    opacity: 0.9;
+  }
+  .header .meta {
+    margin-top: 12px;
+    display: flex;
+    gap: 24px;
+    font-size: 12px;
+  }
+  .header .meta span strong { color: var(--gold); }
+
+  .container {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 24px 32px;
+  }
+
+  /* Summary cards */
+  .summary {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .stat {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    border-left: 4px solid var(--teal);
+  }
+  .stat .num { font-size: 24px; font-weight: 700; color: var(--gray-header); }
+  .stat .lbl { font-size: 11px; color: var(--text-mute); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+  .stat.proceed { border-left-color: var(--green); }
+  .stat.archive { border-left-color: var(--gray); }
+  .stat.cancel { border-left-color: var(--red); }
+  .stat.notrel { border-left-color: var(--purple); }
+  .stat.pending { border-left-color: var(--yellow); }
+
+  /* Filter bar */
+  .filter-bar {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+  }
+  .filter-bar label {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text-mute);
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-right: 4px;
+  }
+  .filter-bar select, .filter-bar input {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 6px 10px;
+    font-size: 13px;
+    font-family: inherit;
+    background: white;
+    color: var(--text);
+  }
+  .filter-bar input[type="text"] { min-width: 220px; }
+  .filter-bar button {
+    background: var(--teal);
+    color: white;
+    border: none;
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .filter-bar button:hover { background: var(--teal-dark); }
+  .filter-bar button.secondary {
+    background: white;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  .filter-bar button.secondary:hover { background: var(--gray-bg); }
+
+  /* Retro section header */
+  .retro-section {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 16px;
+    overflow: hidden;
+  }
+  .retro-header {
+    background: var(--gray-header);
+    color: white;
+    padding: 12px 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    user-select: none;
+  }
+  .retro-header:hover { background: #3a4f6e; }
+  .retro-header h2 {
+    font-size: 15px;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+  }
+  .retro-header h2 .date {
+    color: var(--gold);
+    font-weight: 500;
+    margin-right: 8px;
+  }
+  .retro-header .count {
+    background: rgba(255,255,255,0.15);
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .retro-context {
+    background: var(--teal-light);
+    padding: 10px 18px;
+    font-size: 12px;
+    color: var(--teal-dark);
+    border-bottom: 1px solid var(--border);
+    font-style: italic;
+  }
+
+  /* Table */
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    background: #F9FAFB;
+    color: var(--text-mute);
+    text-align: left;
+    padding: 10px 12px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-bottom: 1px solid var(--border);
+  }
+  td {
+    padding: 12px;
+    border-bottom: 1px solid #F3F4F6;
+    vertical-align: top;
+    font-size: 13px;
+  }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: #FAFAFA; }
+
+  td.id-cell { font-family: 'SF Mono', Monaco, Consolas, monospace; font-size: 12px; font-weight: 600; color: var(--teal); white-space: nowrap; }
+  td.theme-cell { width: 110px; }
+  td.action-cell { line-height: 1.5; }
+  td.owner-cell { font-size: 12px; color: var(--text-mute); white-space: nowrap; }
+  td.status-cell { width: 130px; }
+  td.decision-cell { width: 200px; }
+  td.notes-cell { font-size: 12px; color: var(--text-mute); }
+
+  /* Theme pills */
+  .theme {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .theme.process     { background: #DBEAFE; color: #1E3A8A; }
+  .theme.testing     { background: #FEF3C7; color: #78350F; }
+  .theme.tooling     { background: #E0E7FF; color: #3730A3; }
+  .theme.docs        { background: #D1FAE5; color: #065F46; }
+  .theme.team        { background: #FCE7F3; color: #9D174D; }
+  .theme.governance  { background: #FEE2E2; color: #991B1B; }
+  .theme.tech        { background: #F3E8FF; color: #6B21A8; }
+
+  /* Status badges (origin status) */
+  .badge {
+    display: inline-block;
+    padding: 4px 9px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  .badge.completed   { background: var(--green-bg); color: var(--green); }
+  .badge.inprogress  { background: var(--blue-bg); color: var(--blue); }
+  .badge.outstanding { background: var(--yellow-bg); color: var(--yellow); }
+  .badge.deferred    { background: var(--gray-bg); color: var(--gray); }
+
+  /* Decision dropdown */
+  .decision-select {
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 6px;
+    font-size: 12px;
+    font-family: inherit;
+    background: white;
+    cursor: pointer;
+  }
+  .decision-select.proceed   { background: var(--green-bg); color: var(--green); border-color: var(--green); font-weight: 600; }
+  .decision-select.archive   { background: var(--gray-bg); color: var(--gray); border-color: var(--gray); font-weight: 600; }
+  .decision-select.cancel    { background: var(--red-bg); color: var(--red); border-color: var(--red); font-weight: 600; }
+  .decision-select.notrel    { background: var(--purple-bg); color: var(--purple); border-color: var(--purple); font-weight: 600; }
+  .decision-select.pending   { background: var(--yellow-bg); color: var(--yellow); border-color: var(--yellow); font-weight: 600; }
+
+  .team-note {
+    margin-top: 6px;
+    width: 100%;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 5px 7px;
+    font-size: 11px;
+    font-family: inherit;
+    background: white;
+    resize: vertical;
+    min-height: 30px;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text-mute);
+    background: var(--card);
+    border: 1px dashed var(--border);
+    border-radius: 8px;
+  }
+
+  /* Action footer */
+  .action-footer {
+    position: sticky;
+    bottom: 0;
+    background: white;
+    border-top: 2px solid var(--teal);
+    padding: 14px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -2px 8px rgba(0,0,0,0.05);
+    margin-top: 24px;
+  }
+  .action-footer .info {
+    font-size: 12px;
+    color: var(--text-mute);
+  }
+  .action-footer .info strong { color: var(--text); }
+  .action-footer .buttons { display: flex; gap: 8px; }
+  .action-footer button {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text);
+  }
+  .action-footer button.primary {
+    background: var(--teal);
+    color: white;
+    border-color: var(--teal);
+  }
+  .action-footer button.primary:hover { background: var(--teal-dark); }
+  .action-footer button:hover { background: var(--gray-bg); }
+
+  .legend {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    font-size: 11px;
+    color: var(--text-mute);
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .hidden { display: none !important; }
+
+  @media print {
+    .filter-bar, .action-footer, .decision-select, .team-note { display: none; }
+    .retro-section { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Automation Team — Retrospective Historical Tracker</h1>
+  <div class="sub">Continuous improvement items from past retrospectives · Triage view for team review</div>
+  <div class="meta">
+    <span><strong>Owner:</strong> Nancy Collins, Scrum Master</span>
+    <span><strong>Period covered:</strong> Jan 2026 – Apr 2026</span>
+    <span><strong>Updated:</strong> <span id="todayDate"></span></span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- Summary stats -->
+  <div class="summary" id="summaryStats"></div>
+
+  <!-- Legend -->
+  <div class="legend">
+    <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span><strong>Origin Status:</strong></span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--green)"></span>Completed — done at the time</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--blue)"></span>In Progress — being worked</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--yellow)"></span>Outstanding — never closed</span>
+    <span class="legend-item"><span class="legend-dot" style="background:var(--gray)"></span>Deferred — paused / future</span>
+  </div>
+
+  <!-- Filter bar -->
+  <div class="filter-bar">
+    <label>Search:</label>
+    <input type="text" id="searchInput" placeholder="Action, owner, theme...">
+    <label>Origin Status:</label>
+    <select id="statusFilter">
+      <option value="">All</option>
+      <option value="completed">Completed</option>
+      <option value="inprogress">In Progress</option>
+      <option value="outstanding">Outstanding</option>
+      <option value="deferred">Deferred</option>
+    </select>
+    <label>Theme:</label>
+    <select id="themeFilter">
+      <option value="">All</option>
+      <option value="process">Process</option>
+      <option value="testing">Testing</option>
+      <option value="tooling">Tooling</option>
+      <option value="docs">Documentation</option>
+      <option value="team">Team / Culture</option>
+      <option value="governance">Governance</option>
+      <option value="tech">Technical</option>
+    </select>
+    <label>Team Decision:</label>
+    <select id="decisionFilter">
+      <option value="">All</option>
+      <option value="pending">Pending Review</option>
+      <option value="proceed">Proceed</option>
+      <option value="archive">Archive</option>
+      <option value="cancel">Cancel</option>
+      <option value="notrel">No Longer Relevant</option>
+    </select>
+    <button class="secondary" onclick="resetFilters()">Reset</button>
+    <button class="secondary" onclick="window.print()">🖨 Print View</button>
+  </div>
+
+  <div id="retroContainer"></div>
+
+</div>
+
+<div class="action-footer">
+  <div class="info">
+    <strong id="totalCount">0</strong> total items ·
+    <strong id="pendingCount">0</strong> pending team decision
+  </div>
+  <div class="buttons">
+    <button class="secondary" onclick="exportData()">⬇ Export CSV</button>
+    <button class="secondary" onclick="resetDecisions()">↺ Reset Decisions</button>
+    <button class="primary" onclick="saveLocal()">💾 Save Progress</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════════════
+//  RETROSPECTIVE DATA — sourced from Automation team retros & 16th Min
+//  Period: Jan 2026 – Apr 2026
+// ═══════════════════════════════════════════════════════════════════
+
+const RETROS = [
+  {
+    id: 'retro-0128',
+    date: 'Jan 28, 2026',
+    name: 'Sprint 4 Retrospective',
+    theme: '🐶 Puppy Bowl Theme · Nancy\'s first solo retro',
+    context: 'PCE going live week of 1/29. Kay opened with focus on SOPs, templates, and acceptance criteria updates. Blaine appreciated Cameron\'s steady state reporting. Team mutual support was praised.',
+    items: [
+      {
+        id: 'R0128-01',
+        action: 'Establish Intake Summary Review Process — formalize complexity + cost review format for new automation requests',
+        owner: 'Kalayer Winn (Kay)',
+        theme: 'process',
+        status: 'completed',
+        notes: 'Closed — established as standard intake workflow. Format established and adopted by Kay\'s team.'
+      },
+      {
+        id: 'R0128-02',
+        action: 'Update SOPs to reflect post-go-live operational handoffs (PCE specifically)',
+        owner: 'Kalayer Winn / POs',
+        theme: 'docs',
+        status: 'inprogress',
+        notes: 'Ongoing — SOPs being refreshed as bots transition to steady state. Continued through Q1.'
+      },
+      {
+        id: 'R0128-03',
+        action: 'Update story / story templates with refined acceptance criteria standards',
+        owner: 'POs (Kay leading)',
+        theme: 'process',
+        status: 'completed',
+        notes: 'Story template established. Acceptance criteria language standardized in DoR.'
+      },
+      {
+        id: 'R0128-04',
+        action: 'Continue Cameron\'s steady state reporting cadence — recognized as valuable; expand pattern',
+        owner: 'Cameron White / Blaine Masters',
+        theme: 'team',
+        status: 'inprogress',
+        notes: 'Continued, but Cameron\'s team status is in flux per March follow-ups. Pattern preserved by Shiva.'
+      },
+      {
+        id: 'R0128-05',
+        action: 'Formalize team mutual-support norms (e.g., Fenil ↔ Nidhi UBP/PCE collaboration model)',
+        owner: 'Team / Nancy',
+        theme: 'team',
+        status: 'inprogress',
+        notes: 'Collaboration model continues organically. Captured later in Working Agreement v1.3.'
+      }
+    ]
+  },
+  {
+    id: 'retro-0210',
+    date: 'Feb 10, 2026',
+    name: 'Sprint 5 Retrospective',
+    theme: '💝 Valentine / Mid-quarter check-in',
+    context: 'MBA went live 2/2 (first run 2/3). UBP enhancement UAT running. Claim Denials Phase 2 hypercare active. Story pointing baseline being established (dev stories + bugs).',
+    items: [
+      {
+        id: 'R0210-01',
+        action: 'Begin formal story pointing on dev stories and bugs — establish velocity baseline',
+        owner: 'Nancy Collins / Devs',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Started Sprint 5/6. Pointing now applied to formal dev work. Velocity baseline still being built.'
+      },
+      {
+        id: 'R0210-02',
+        action: 'Streamline Thursday Accelerate update — focus on timeline changes, not full restate',
+        owner: 'Kalayer Winn / Nancy',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Per 1:1 Kay 03/05 — Kay agreed to focus on timeline changes only. Nancy working on Jira visual reporting alternative.'
+      },
+      {
+        id: 'R0210-03',
+        action: 'Finalize Working Agreement V1 — document Ready bucket standards, sprint pull, AC consensus, blocked protocol',
+        owner: 'Nancy Collins',
+        theme: 'governance',
+        status: 'completed',
+        notes: 'WA v1.3 finalized and pasted to Confluence. Authored by Nancy.'
+      },
+      {
+        id: 'R0210-04',
+        action: 'Resolve Joao Guimaraes\' Azure AD / Jira access issue (AADSTS50105)',
+        owner: 'Nancy / Kris Traenkner',
+        theme: 'tooling',
+        status: 'outstanding',
+        notes: 'Joao has since transitioned off the team. Issue effectively closed by attrition, not resolution.'
+      },
+      {
+        id: 'R0210-05',
+        action: 'Restore / harden Jira Scrum board access (post-deletion incident 02/06)',
+        owner: 'Nancy Collins / Eddie',
+        theme: 'tooling',
+        status: 'completed',
+        notes: 'Board restored 02/09 by Eddie. All sprint history preserved. "Restricted board" label applied.'
+      }
+    ]
+  },
+  {
+    id: 'retro-0310',
+    date: 'Mar 10, 2026',
+    name: 'Sprint 6 Retrospective (Q1 final)',
+    theme: '🌷 Spring-themed · Rick farewell sprint',
+    context: 'Sprint 6 (FY26 Q2 SP1) Mar 11 kickoff. Rick Disher transitioning off as SM coach; Nancy now full SM. Sprint Review cancelled — no finalized dev work to demo. Team voted on 1–2 action items to carry forward.',
+    items: [
+      {
+        id: 'R0310-01',
+        action: 'Document Epic update test cases for all Steady State bots (before April Epic update)',
+        owner: 'Shiva Ram Pinninti',
+        theme: 'testing',
+        status: 'inprogress',
+        notes: 'Carry-forward retro action #1 (team vote). Tracked as AUTO-TEST-EPIC. Critical for April Epic upgrade.'
+      },
+      {
+        id: 'R0310-02',
+        action: 'Explore UFR (User Flow Replay) automated test suite for steady-state bot regression coverage',
+        owner: 'Levi Seybert / Nidhi Mittal',
+        theme: 'testing',
+        status: 'outstanding',
+        notes: 'Carry-forward retro action #2 (team vote). Tracked as AUTO-UFR. Discovery phase only.'
+      },
+      {
+        id: 'R0310-03',
+        action: 'Capture Fenil\'s JSON serialization / framework refactor as a learning item — document pattern for reuse',
+        owner: 'Fenil Gandhi / Nidhi',
+        theme: 'tech',
+        status: 'inprogress',
+        notes: 'Refactor migrated to SIT 3/20. Documentation of pattern is the open piece.'
+      },
+      {
+        id: 'R0310-04',
+        action: 'Repurpose 16th Minute as retrospective follow-up / action tracking space',
+        owner: 'Nancy Collins',
+        theme: 'process',
+        status: 'completed',
+        notes: 'Implemented. 16th Minute now used to surface and discuss outstanding retro items. RIDAC log captures.'
+      },
+      {
+        id: 'R0310-05',
+        action: 'Plan testing framework for Epic upgrades — one-time test case creation, quarterly execution (sprints 3+5)',
+        owner: 'Nidhi Mittal / Ryan Pena',
+        theme: 'testing',
+        status: 'inprogress',
+        notes: 'RHEL environment access confirmed with David/Robin. Framework approach agreed; build pending.'
+      },
+      {
+        id: 'R0310-06',
+        action: 'Celebrate Rick Disher\'s transition — recognize his SM coaching contribution',
+        owner: 'Team',
+        theme: 'team',
+        status: 'completed',
+        notes: 'Acknowledged in Auto DS 03/06 farewell. Nancy formally announced transition.'
+      }
+    ]
+  },
+  {
+    id: 'retro-16min',
+    date: 'Mar – Apr 2026',
+    name: '16th Minute Carry-Over Items',
+    theme: '🔄 Captured during 16th Minute follow-ups (post-retro tracking)',
+    context: 'Items surfaced in 16th Minute discussions and stand-up RIDAC log between formal retros. Treated as retrospective-class items by the team.',
+    items: [
+      {
+        id: 'R16M-01',
+        action: 'Promote backlog stories for DU/MRD to Team Refinement bucket on time (3/20 incident)',
+        owner: 'Kalayer Winn / Vinitha',
+        theme: 'process',
+        status: 'completed',
+        notes: 'Resolved same-week. Process gap noted — POs need to promote stories before refinement.'
+      },
+      {
+        id: 'R16M-02',
+        action: 'Establish formal Q2 Dependency List for stories already added to Jira',
+        owner: 'All / Kay',
+        theme: 'governance',
+        status: 'inprogress',
+        notes: 'Nancy scheduled dedicated 16th Minute. Dependency mapping ongoing.'
+      },
+      {
+        id: 'R16M-03',
+        action: 'Remediate 340MU exception handling — bot not closing data entry screen on faulted jobs',
+        owner: 'Levi Seybert',
+        theme: 'tech',
+        status: 'completed',
+        notes: 'Root cause identified, fix applied, SIT validated.'
+      },
+      {
+        id: 'R16M-04',
+        action: 'Update MRD Dispatcher Epic library version (resolved same-day 3/19)',
+        owner: 'Shiva Ram Pinninti',
+        theme: 'tech',
+        status: 'completed',
+        notes: 'Library version updated. Bot processed records EOD 3/19. Same-day resolution.'
+      },
+      {
+        id: 'R16M-05',
+        action: 'Ensure all active sprint tickets have clear acceptance criteria before Backlog Refinement',
+        owner: 'POs / Nancy',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Recommendation surfaced multiple times. DoR enforces this; not yet self-enforcing across team.'
+      },
+      {
+        id: 'R16M-06',
+        action: 'Updated Roadmap Slide — incorporate new automation request intake',
+        owner: 'Kalayer Winn',
+        theme: 'docs',
+        status: 'inprogress',
+        notes: 'In progress per 3/20 stand-up. Slide deliverable.'
+      },
+      {
+        id: 'R16M-07',
+        action: 'Investigate Aetna vs commercial payer name variant (Claim Denials Availability Portal)',
+        owner: 'Levi Seybert',
+        theme: 'tech',
+        status: 'outstanding',
+        notes: 'Tracked as AUTO-CD-AVAIL. Pending investigation start.'
+      },
+      {
+        id: 'R16M-08',
+        action: 'Document UMR external portal steps for MRD (no meeting needed — business to provide)',
+        owner: 'Vinitha Tadepalli',
+        theme: 'docs',
+        status: 'outstanding',
+        notes: 'Tracked as AUTO-MRD-UMR. Awaiting business video/steps.'
+      },
+      {
+        id: 'R16M-09',
+        action: 'Plan PB Medical Record Denials Phase 3 (after AUTO-708 hold lifted)',
+        owner: 'Blaine Masters',
+        theme: 'process',
+        status: 'deferred',
+        notes: 'Deferred — pending Q2 business hold release on AUTO-708.'
+      },
+      {
+        id: 'R16M-10',
+        action: 'Set up UBP Real Estate POC Phase 3 demo — once Direct Energy training complete',
+        owner: 'Fenil Gandhi',
+        theme: 'tech',
+        status: 'deferred',
+        notes: 'Tracked as AUTO-UBP-P3. Deferred pending vendor training.'
+      },
+      {
+        id: 'R16M-11',
+        action: 'Move forward with E&M / EMM Dispatcher Phase 2 enhancement (post-hypercare planning)',
+        owner: 'Shiva Ram Pinninti',
+        theme: 'tech',
+        status: 'deferred',
+        notes: 'Tracked as AUTO-EMM-NEXT. Awaiting hypercare exit.'
+      },
+      {
+        id: 'R16M-12',
+        action: 'Begin 340B HIM Automation Discovery',
+        owner: 'Ryan Pena',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Tracked as AUTO-340B-HIM. In discovery phase per stand-up.'
+      },
+      {
+        id: 'R16M-13',
+        action: 'Plan Invoice Audit Phase 2 vendor expansion (after AUTO-889 completion)',
+        owner: 'Purity Otieno',
+        theme: 'process',
+        status: 'deferred',
+        notes: 'Tracked as AUTO-INV-NEXT. Awaiting Phase 1 close.'
+      },
+      {
+        id: 'R16M-14',
+        action: 'Begin SVO Automation Discovery (HIM)',
+        owner: 'Ryan Pena',
+        theme: 'process',
+        status: 'inprogress',
+        notes: 'Discovery phase. Discussed Auto DS 02/20.'
+      },
+      {
+        id: 'R16M-15',
+        action: 'Continue Q2 quarterly planning — refine Epic-level roadmap, timelines, reporting',
+        owner: 'Nancy Collins / Kalayer',
+        theme: 'governance',
+        status: 'completed',
+        notes: 'Q2 planning completed 03/11. SM transition confirmed. Ahead of schedule per 3/20 stand-up.'
+      }
+    ]
+  }
+];
+
+// ═══════════════════════════════════════════════════════════════════
+//  STATE — in-memory only (cleared on reload)
+// ═══════════════════════════════════════════════════════════════════
+const state = {
+  decisions: {},  // { itemId: 'pending' | 'proceed' | 'archive' | 'cancel' | 'notrel' }
+  notes: {},      // { itemId: 'team note text' }
+  collapsed: {}   // { retroId: true/false }
+};
+
+// Initialize defaults — outstanding/deferred default to pending; completed default to archive (already done)
+function initDefaults() {
+  RETROS.forEach(r => {
+    r.items.forEach(it => {
+      if (!state.decisions[it.id]) {
+        if (it.status === 'completed') state.decisions[it.id] = 'archive';
+        else state.decisions[it.id] = 'pending';
+      }
+    });
+  });
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  RENDER
+// ═══════════════════════════════════════════════════════════════════
+
+function render() {
+  document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+  const container = document.getElementById('retroContainer');
+  const search = document.getElementById('searchInput').value.toLowerCase();
+  const statusF = document.getElementById('statusFilter').value;
+  const themeF = document.getElementById('themeFilter').value;
+  const decisionF = document.getElementById('decisionFilter').value;
+
+  container.innerHTML = '';
+  let totalShown = 0;
+
+  RETROS.forEach(retro => {
+    const visibleItems = retro.items.filter(it => {
+      if (search && !(`${it.action} ${it.owner} ${it.notes}`.toLowerCase().includes(search))) return false;
+      if (statusF && it.status !== statusF) return false;
+      if (themeF && it.theme !== themeF) return false;
+      if (decisionF && state.decisions[it.id] !== decisionF) return false;
+      return true;
+    });
+
+    if (visibleItems.length === 0) return;
+    totalShown += visibleItems.length;
+
+    const section = document.createElement('div');
+    section.className = 'retro-section';
+
+    const isCollapsed = state.collapsed[retro.id];
+
+    section.innerHTML = `
+      <div class="retro-header" onclick="toggleSection('${retro.id}')">
+        <h2><span class="date">${retro.date}</span> · ${retro.name} · ${retro.theme}</h2>
+        <span class="count">${visibleItems.length} of ${retro.items.length} items</span>
+      </div>
+      ${isCollapsed ? '' : `
+      <div class="retro-context">${retro.context}</div>
+      <table>
+        <thead>
+          <tr>
+            <th style="width:80px">ID</th>
+            <th>Action Item</th>
+            <th style="width:140px">Owner</th>
+            <th style="width:90px">Theme</th>
+            <th style="width:120px">Origin Status</th>
+            <th style="width:200px">Team Decision</th>
+            <th>Notes / Outcome</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${visibleItems.map(it => {
+            const decision = state.decisions[it.id] || 'pending';
+            const note = state.notes[it.id] || '';
+            return `
+            <tr>
+              <td class="id-cell">${it.id}</td>
+              <td class="action-cell">${escapeHtml(it.action)}</td>
+              <td class="owner-cell">${escapeHtml(it.owner)}</td>
+              <td class="theme-cell"><span class="theme ${it.theme}">${themeLabel(it.theme)}</span></td>
+              <td class="status-cell"><span class="badge ${it.status}">${statusLabel(it.status)}</span></td>
+              <td class="decision-cell">
+                <select class="decision-select ${decision}" onchange="setDecision('${it.id}', this.value)">
+                  <option value="pending"   ${decision==='pending'?'selected':''}>⏳ Pending Review</option>
+                  <option value="proceed"   ${decision==='proceed'?'selected':''}>✅ Proceed</option>
+                  <option value="archive"   ${decision==='archive'?'selected':''}>📦 Archive (Done)</option>
+                  <option value="cancel"    ${decision==='cancel'?'selected':''}>❌ Cancel</option>
+                  <option value="notrel"    ${decision==='notrel'?'selected':''}>🚫 No Longer Relevant</option>
+                </select>
+                <textarea class="team-note" placeholder="Team note (optional)..." onchange="setNote('${it.id}', this.value)">${escapeHtml(note)}</textarea>
+              </td>
+              <td class="notes-cell">${escapeHtml(it.notes)}</td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>`}
+    `;
+    container.appendChild(section);
+  });
+
+  if (totalShown === 0) {
+    container.innerHTML = '<div class="empty-state">No items match the current filters.</div>';
+  }
+
+  renderSummary();
+}
+
+function renderSummary() {
+  const all = RETROS.flatMap(r => r.items);
+  const counts = {
+    total: all.length,
+    pending: 0, proceed: 0, archive: 0, cancel: 0, notrel: 0,
+    outstanding: all.filter(i => i.status === 'outstanding').length,
+    inprogress: all.filter(i => i.status === 'inprogress').length,
+    completed: all.filter(i => i.status === 'completed').length,
+    deferred: all.filter(i => i.status === 'deferred').length
+  };
+  all.forEach(i => {
+    const d = state.decisions[i.id] || 'pending';
+    counts[d]++;
+  });
+
+  document.getElementById('summaryStats').innerHTML = `
+    <div class="stat"><div class="num">${counts.total}</div><div class="lbl">Total Items</div></div>
+    <div class="stat" style="border-left-color:var(--green)"><div class="num">${counts.completed}</div><div class="lbl">Completed</div></div>
+    <div class="stat" style="border-left-color:var(--blue)"><div class="num">${counts.inprogress}</div><div class="lbl">In Progress</div></div>
+    <div class="stat" style="border-left-color:var(--yellow)"><div class="num">${counts.outstanding}</div><div class="lbl">Outstanding</div></div>
+    <div class="stat" style="border-left-color:var(--gray)"><div class="num">${counts.deferred}</div><div class="lbl">Deferred</div></div>
+    <div class="stat pending"><div class="num">${counts.pending}</div><div class="lbl">Pending Decision</div></div>
+    <div class="stat proceed"><div class="num">${counts.proceed}</div><div class="lbl">✅ Proceed</div></div>
+    <div class="stat archive"><div class="num">${counts.archive}</div><div class="lbl">📦 Archive</div></div>
+    <div class="stat cancel"><div class="num">${counts.cancel}</div><div class="lbl">❌ Cancel</div></div>
+    <div class="stat notrel"><div class="num">${counts.notrel}</div><div class="lbl">🚫 Not Relevant</div></div>
+  `;
+
+  document.getElementById('totalCount').textContent = counts.total;
+  document.getElementById('pendingCount').textContent = counts.pending;
+}
+
+function themeLabel(t) {
+  return { process:'Process', testing:'Testing', tooling:'Tooling', docs:'Docs', team:'Team', governance:'Gov', tech:'Tech' }[t] || t;
+}
+function statusLabel(s) {
+  return { completed:'Completed', inprogress:'In Progress', outstanding:'Outstanding', deferred:'Deferred' }[s] || s;
+}
+function escapeHtml(str) {
+  return String(str || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ═══════════════════════════════════════════════════════════════════
+//  ACTIONS
+// ═══════════════════════════════════════════════════════════════════
+function setDecision(id, val) { state.decisions[id] = val; render(); }
+function setNote(id, val)     { state.notes[id] = val; }
+function toggleSection(id)    { state.collapsed[id] = !state.collapsed[id]; render(); }
+
+function resetFilters() {
+  document.getElementById('searchInput').value = '';
+  document.getElementById('statusFilter').value = '';
+  document.getElementById('themeFilter').value = '';
+  document.getElementById('decisionFilter').value = '';
+  render();
+}
+
+function resetDecisions() {
+  if (!confirm('Reset all team decisions back to defaults? Notes will be cleared too.')) return;
+  state.decisions = {};
+  state.notes = {};
+  initDefaults();
+  render();
+}
+
+async function saveLocal() {
+  try {
+    await window.storage.set('auto_retro_tracker_state', JSON.stringify(state));
+    alert('✅ Progress saved. Decisions and notes will persist across sessions.');
+  } catch (e) {
+    alert('Could not save: ' + e.message);
+  }
+}
+
+async function loadLocal() {
+  try {
+    const result = await window.storage.get('auto_retro_tracker_state');
+    if (result && result.value) {
+      const saved = JSON.parse(result.value);
+      Object.assign(state, saved);
+    }
+  } catch (e) {
+    // first-time use, no saved state — that's fine
+  }
+}
+
+function exportData() {
+  const rows = [['Retro Date', 'Retro Name', 'Item ID', 'Action', 'Owner', 'Theme', 'Origin Status', 'Team Decision', 'Team Note', 'Outcome / History']];
+  RETROS.forEach(r => {
+    r.items.forEach(it => {
+      rows.push([
+        r.date, r.name, it.id, it.action, it.owner, themeLabel(it.theme),
+        statusLabel(it.status),
+        (state.decisions[it.id] || 'pending'),
+        state.notes[it.id] || '',
+        it.notes
+      ]);
+    });
+  });
+  const csv = rows.map(r => r.map(c => `"${String(c).replace(/"/g, '""')}"`).join(',')).join('\n');
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `Automation_Retro_Tracker_${new Date().toISOString().slice(0,10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
+// Wire up filter inputs
+['searchInput', 'statusFilter', 'themeFilter', 'decisionFilter'].forEach(id => {
+  document.getElementById(id).addEventListener('input', render);
+});
+
+// Boot
+(async function init() {
+  initDefaults();
+  await loadLocal();
+  render();
+})();
+</script>
+
+</body>
+</html>
