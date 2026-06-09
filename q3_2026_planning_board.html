@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Q3 2026 Quarterly Planning — Automation</title>
+<style>
+  :root{
+    --ink:#1b2430; --muted:#5b6675; --line:#e3e7ee;
+    --epic:#5b8def;   --epic-bg:#d6e2fb;
+    --story:#e8c23b;  --story-bg:#fbf2cc;
+    --spike:#34c39a;  --spike-bg:#d2f3e8;
+    --task:#9b6ddb;   --task-bg:#e8dcf8;
+    --bug:#ec7063;    --bug-bg:#fbdcd8;
+    --month:#0f2a47;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; background:#f4f6f9; color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding:28px 22px 60px;
+  }
+  header.page{max-width:1280px;margin:0 auto 22px;}
+  h1{font-size:22px;letter-spacing:-.2px;margin:0 0 4px;}
+  .sub{color:var(--muted);font-size:13.5px;margin:0;}
+  .meta{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;}
+  .pill{font-size:11.5px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--muted);}
+
+  .board{max-width:1280px;margin:0 auto;background:#fff;border:1px solid var(--line);
+    border-radius:14px;overflow:hidden;box-shadow:0 1px 2px rgba(16,42,71,.04);}
+  .grid{display:grid;grid-template-columns:148px repeat(3,1fr);}
+  .corner{background:var(--month);}
+  .monthhead{background:var(--month);color:#fff;font-weight:600;letter-spacing:.06em;
+    font-size:12.5px;text-transform:uppercase;text-align:center;padding:12px 8px;
+    border-left:1px solid rgba(255,255,255,.12);}
+
+  .rowlabel{display:flex;align-items:center;justify-content:center;text-align:center;
+    font-weight:700;font-size:12px;line-height:1.25;color:#fff;text-transform:uppercase;
+    letter-spacing:.04em;padding:10px 6px;border-top:1px solid var(--line);}
+  .cell{border-top:1px solid var(--line);border-left:1px solid var(--line);
+    padding:9px;min-height:96px;display:flex;flex-direction:column;gap:7px;background:#fff;}
+
+  .card{border-radius:8px;padding:8px 9px;font-size:12px;line-height:1.3;
+    border:1px solid rgba(0,0,0,.06);box-shadow:0 1px 1px rgba(16,42,71,.05);}
+  .card .title{font-weight:600;color:#222;}
+  .card .foot{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-top:6px;}
+  .owner{font-size:10.5px;color:#3a4452;font-weight:600;}
+  .jira{font-size:10px;font-weight:700;letter-spacing:.02em;background:rgba(255,255,255,.7);
+    border:1px solid rgba(0,0,0,.12);border-radius:5px;padding:1px 5px;color:#1b2430;white-space:nowrap;}
+  .jira.new{background:transparent;border-style:dashed;color:#8a3b2f;border-color:#c98b80;}
+
+  /* swimlane tints */
+  .rowlabel.epic{background:var(--epic);} .epic .card{background:var(--epic-bg);}
+  .rowlabel.story{background:var(--story);color:#4a3c00;} .story .card{background:var(--story-bg);}
+  .rowlabel.spike{background:var(--spike);} .spike .card{background:var(--spike-bg);}
+  .rowlabel.task{background:var(--task);} .task .card{background:var(--task-bg);}
+  .rowlabel.bug{background:var(--bug);} .bug .card{background:var(--bug-bg);}
+
+  /* footer blocks */
+  .blocks{max-width:1280px;margin:18px auto 0;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+  .blk{background:#fff;border:1px solid var(--line);border-radius:12px;padding:14px 16px;}
+  .blk h3{margin:0 0 8px;font-size:13px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);}
+  .legend{display:flex;flex-direction:column;gap:7px;font-size:12.5px;}
+  .legend .row{display:flex;align-items:center;gap:9px;}
+  .sw{width:16px;height:16px;border-radius:4px;border:1px solid rgba(0,0,0,.12);}
+  .obj ul{margin:0;padding-left:18px;font-size:12.5px;line-height:1.5;color:#2b3543;}
+  .note{max-width:1280px;margin:14px auto 0;font-size:11.5px;color:var(--muted);
+    background:#fff;border:1px dashed var(--line);border-radius:10px;padding:10px 14px;}
+  @media (max-width:820px){
+    .grid{grid-template-columns:96px repeat(3,1fr);}
+    .blocks{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+<header class="page">
+  <h1>Q3 2026 Quarterly Planning &mdash; Automation</h1>
+  <p class="sub">Suggested work mapping for team review &middot; July to September 2026</p>
+  <div class="meta" id="meta"></div>
+</header>
+
+<div class="board">
+  <div class="grid" id="grid"></div>
+</div>
+
+<div class="blocks">
+  <div class="blk">
+    <h3>Legend</h3>
+    <div class="legend">
+      <div class="row"><span class="sw" style="background:var(--epic-bg);border-color:var(--epic)"></span> Epic</div>
+      <div class="row"><span class="sw" style="background:var(--story-bg);border-color:var(--story)"></span> Story</div>
+      <div class="row"><span class="sw" style="background:var(--spike-bg);border-color:var(--spike)"></span> Spike</div>
+      <div class="row"><span class="sw" style="background:var(--task-bg);border-color:var(--task)"></span> Task / Sub-task</div>
+      <div class="row"><span class="sw" style="background:var(--bug-bg);border-color:var(--bug)"></span> Bug / Defect / Tech Debt</div>
+      <div class="row" style="margin-top:4px"><span class="jira new">AUTO-###</span>&nbsp; Dashed = not yet created in Jira</div>
+    </div>
+  </div>
+  <div class="blk obj">
+    <h3>Q3 2026 Objective</h3>
+    <ul>
+      <li>Stabilize prior-quarter go-lives and close out hypercare findings.</li>
+      <li>Advance 340B, claim denial, and invoice audit automation into Q3 scope.</li>
+      <li>Pilot WPH radiology prior auth and PB Medical Record Denials Phase 2.</li>
+      <li>Drive the UBP track (Engineering, Real Estate, AP Infor) toward go-live and design.</li>
+      <li>Run discovery spikes for HIM compliance and AP Infor integration ahead of Q4.</li>
+    </ul>
+  </div>
+</div>
+
+<div class="note" id="flag"></div>
+
+<script>
+const MONTHS = ["JULY","AUGUST","SEPTEMBER"];
+const ROWS = [
+  {key:"epic",  label:"Epic"},
+  {key:"story", label:"Story"},
+  {key:"spike", label:"Spike"},
+  {key:"task",  label:"Task / Sub-task"},
+  {key:"bug",   label:"Bug / Defect / Tech Debt"},
+];
+// item, month, row, owner, jira (null = not yet in Jira)
+const ITEMS = [
+  // EPICS
+  ["340B Eligibility 2.0","JULY","epic","Ryan","AUTO-781"],
+  ["Claim Denials Automation","JULY","epic","Purity","AUTO-387"],
+  ["Invoice Audit (Implant Invoice Attachment)","JULY","epic","Purity","AUTO-774"],
+  ["Pharmacy 340B Audit 2.0","JULY","epic","Ryan","AUTO-855"],
+  ["Prior Auth Radiology – WPH","AUGUST","epic","Ryan","AUTO-783"],
+  ["PB Medical Record Denials – Phase 2","AUGUST","epic","Blaine","AUTO-851"],
+  ["MMG Out of Network (OON) Denials","AUGUST","epic","Blaine","AUTO-709"],
+  ["HIM Joint Commission Review","AUGUST","epic","Blaine","AUTO-708"],
+  ["HIM Joint Commission Review (continues)","SEPTEMBER","epic","Blaine","AUTO-708"],
+  ["UBP Engineering Automation","SEPTEMBER","epic","Vinitha","AUTO-770"],
+  ["UBP Real Estate Automation","SEPTEMBER","epic","Vinitha","AUTO-590"],
+  ["UBP AP Infor Automation","SEPTEMBER","epic","Vinitha","AUTO-579"],
+  // STORIES
+  ["Complete telemedicine 340B eligibility deployment & validation","JULY","story",null,"AUTO-857"],
+  ["Finalize MMC claim denial stabilization & monitor exception rates","JULY","story",null,"AUTO-1097"],
+  ["Execute exception handling optimization playbook","JULY","story",null,"AUTO-614"],
+  ["Complete invoice attachment workflow build & integration testing","JULY","story",null,"AUTO-903"],
+  ["Deliver WPH radiology prior auth pilot & measure ROI","AUGUST","story",null,null],
+  ["Execute PB Medical Record Denials Phase 2 rollout plan","AUGUST","story",null,"AUTO-852"],
+  ["Build & validate OON denial automation workflows","AUGUST","story",null,"AUTO-727"],
+  ["Complete UBP Engineering go-live & hypercare","SEPTEMBER","story",null,"AUTO-1098"],
+  ["Finalize UBP AP Infor solution design & begin development","SEPTEMBER","story",null,"AUTO-612"],
+  ["Complete UBP Real Estate PDD review & UAT prep","SEPTEMBER","story",null,"AUTO-724"],
+  // SPIKES
+  ["Abbreviation Audit implementation spike (carry-forward from Q2)","JULY","spike",null,null],
+  ["HIM compliance automation feasibility spike","AUGUST","spike",null,null],
+  ["AP Infor integration architecture spike","SEPTEMBER","spike",null,"AUTO-627"],
+  // TASK / SUBTASK
+  ["Validate Q2 hypercare results & close out findings","JULY","task",null,null],
+  ["Finalize PDD/SDD documentation updates","JULY","task",null,null],
+  ["Build sprint-ready automation stories for Sprint 1","JULY","task",null,null],
+  ["Complete baseline measurement analysis","JULY","task",null,null],
+  ["Configure OON automation workflows","AUGUST","task",null,"AUTO-953"],
+  ["Execute folder/EDI automation build","AUGUST","task",null,null],
+  ["Produce updated business case for MMG OON","AUGUST","task",null,"AUTO-952"],
+  ["Execute UBP Engineering UAT testing","SEPTEMBER","task",null,"AUTO-836"],
+  ["Complete development & validation of UBP processes","SEPTEMBER","task",null,null],
+  ["Conduct DU analysis & exception review for AP Infor","SEPTEMBER","task",null,null],
+  ["Complete data & metric analysis for Real Estate","SEPTEMBER","task",null,null],
+  // BUGS
+  ["Claim processing exception failures","JULY","bug",null,null],
+  ["Logging failures in automation workflows","JULY","bug",null,null],
+  ["Document attachment retrieval failures","JULY","bug",null,null],
+  ["Data validation errors","JULY","bug",null,null],
+  ["Workflow integration issues","AUGUST","bug",null,null],
+  ["API timeout exceptions","AUGUST","bug",null,null],
+  ["Data format exceptions","SEPTEMBER","bug",null,null],
+  ["Duplicate submission errors","SEPTEMBER","bug",null,null],
+  ["Missing field validation bug","SEPTEMBER","bug",null,null],
+];
+
+function card(it){
+  const [title,,,owner,jira]=it;
+  const jiraTag = jira
+    ? `<span class="jira">${jira}</span>`
+    : `<span class="jira new">not in Jira</span>`;
+  const ownerTag = owner ? `<span class="owner">${owner}</span>` : `<span class="owner" style="color:#9aa3af">unassigned</span>`;
+  return `<div class="card"><div class="title">${title}</div>
+    <div class="foot">${ownerTag}${jiraTag}</div></div>`;
+}
+
+const grid=document.getElementById("grid");
+let html = `<div class="corner"></div>` + MONTHS.map(m=>`<div class="monthhead">${m}</div>`).join("");
+ROWS.forEach(r=>{
+  html += `<div class="rowlabel ${r.key}">${r.label}</div>`;
+  MONTHS.forEach(m=>{
+    const cards = ITEMS.filter(it=>it[1]===m && it[2]===r.key).map(card).join("");
+    html += `<div class="cell ${r.key}">${cards}</div>`;
+  });
+});
+grid.innerHTML = html;
+
+// meta counts
+const total=ITEMS.length;
+const inJira=ITEMS.filter(i=>i[4]).length;
+const newItems=total-inJira;
+document.getElementById("meta").innerHTML =
+  `<span class="pill">${total} items</span>`+
+  `<span class="pill">${inJira} in Jira</span>`+
+  `<span class="pill">${newItems} not yet created</span>`+
+  `<span class="pill">Draft for review</span>`;
+
+document.getElementById("flag").innerHTML =
+  `Note: items marked <strong>not in Jira</strong> are proposed and would need to be created before they can be sprinted. `+
+  `HIM Joint Commission Review (AUTO-708) spans August and September. Bug/defect cards are category placeholders, not specific tickets yet.`;
+</script>
+</body>
+</html>
