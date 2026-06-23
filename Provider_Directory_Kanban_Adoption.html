@@ -153,6 +153,102 @@
     h1{font-size:24px}.owners,.boards{grid-template-columns:1fr}
     .lane{grid-template-columns:1fr}.lane .lh{border-right:none;border-bottom:1px solid var(--line)}
   }
+
+  /* ===== motion + interactivity ===== */
+  @media (prefers-reduced-motion:no-preference){
+    .revealable{opacity:0;transform:translateY(15px);transition:opacity .5s ease,transform .55s cubic-bezier(.2,.7,.2,1)}
+    .revealable.in{opacity:1;transform:none}
+  }
+  .card,.owner,.pcard{transition:border-color .2s,transform .2s,box-shadow .2s}
+  .card:hover,.owner:hover{border-color:#33506e}
+  ul.clean li{transition:background .2s}
+  ul.clean li:hover{background:rgba(56,198,192,.05)}
+
+  /* readiness ring */
+  .readiness{display:flex;gap:24px;align-items:center;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px 22px;margin:0 0 22px}
+  .ring-wrap{position:relative;width:120px;height:120px;flex:0 0 auto}
+  .ring-wrap svg{transform:rotate(-90deg)}
+  .ring-bg{fill:none;stroke:var(--line);stroke-width:9}
+  .ring-fg{fill:none;stroke:var(--teal);stroke-width:9;stroke-linecap:round;stroke-dasharray:326.7;stroke-dashoffset:326.7;transition:stroke-dashoffset 1.3s cubic-bezier(.2,.7,.2,1)}
+  .ring-center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .ring-center .rp{font-size:27px;font-weight:680;letter-spacing:-.02em}
+  .ring-center .rl{font-family:var(--mono);font-size:8.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:1px}
+  .readiness .rt h4{margin:0 0 5px;font-size:14.5px}
+  .readiness .rt p{margin:0;color:var(--muted);font-size:13px}
+  .readiness .rt .rchips{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap}
+  .rchip{font-family:var(--mono);font-size:9.5px;text-transform:uppercase;letter-spacing:.05em;border:1px solid var(--line);border-radius:5px;padding:3px 7px;color:var(--muted)}
+  .rchip.g{color:var(--green);border-color:rgba(62,207,142,.35)} .rchip.a{color:var(--amber);border-color:rgba(242,177,52,.35)}
+
+  /* board toggle */
+  .boardtoggle{display:flex;gap:8px;margin:0 0 14px}
+  .bt-btn{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:9px;padding:9px 14px;cursor:pointer;font-family:var(--sans);font-size:13px;font-weight:550;transition:all .2s}
+  .bt-btn:hover{color:var(--ink)}
+  .bt-btn.active{color:var(--ink);border-color:var(--teal);background:var(--panel2)}
+  .board{transition:opacity .35s,box-shadow .35s,transform .35s}
+  .board.focus{opacity:1;box-shadow:0 0 0 1px var(--teal),0 12px 34px -14px rgba(56,198,192,.5);transform:translateY(-2px)}
+  .board.dimmed{opacity:.42}
+  .viewing{font-family:var(--mono);font-size:10.5px;color:var(--teal);letter-spacing:.05em;text-transform:uppercase;margin:12px 0 0;min-height:14px}
+
+  /* animated kanban conveyor */
+  .kbflow{position:relative;border:1px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden;margin:6px 0 10px}
+  .kbflow .heads{display:grid;grid-template-columns:repeat(6,1fr)}
+  .kbflow .heads div{padding:9px 6px;font-family:var(--mono);font-size:9px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted);border-right:1px solid var(--line);border-bottom:1px solid var(--line);text-align:center}
+  .kbflow .heads div:last-child{border-right:none}
+  .kbflow .heads div.wz{color:var(--amber);background:rgba(242,177,52,.05)}
+  .kbtrack{position:relative;height:106px}
+  .kbtrack .wzone{position:absolute;top:0;bottom:0;left:50%;width:16.667%;background:rgba(242,177,52,.06);border-left:1px dashed rgba(242,177,52,.3);border-right:1px dashed rgba(242,177,52,.3)}
+  .kbcard{position:absolute;width:12%;min-width:74px;height:30px;border-radius:7px;border:1px solid var(--line);background:var(--panel2);display:flex;align-items:center;gap:7px;padding:0 9px;font-family:var(--mono);font-size:9.5px;color:var(--ink);left:-15%;box-shadow:0 4px 12px -6px rgba(0,0,0,.5)}
+  .kbcard .dot{width:7px;height:7px;border-radius:50%;flex:0 0 auto}
+  .kbcard.exp .dot{background:var(--red)} .kbcard.proj .dot{background:var(--violet)} .kbcard.rtb .dot{background:var(--teal)}
+  @keyframes flow{0%{left:-15%;opacity:0}6%{opacity:1}48%{left:51.5%}96%{left:101%;opacity:1}100%{left:116%;opacity:0}}
+  @keyframes flowWait{0%{left:-15%;opacity:0}6%{opacity:1}38%{left:51.5%}64%{left:51.5%}96%{left:101%;opacity:1}100%{left:116%;opacity:0}}
+  .kbflow .legend{display:flex;gap:15px;flex-wrap:wrap;padding:9px 13px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}
+  .kbflow .legend span{display:flex;align-items:center;gap:6px}
+  .kbflow .legend i{width:8px;height:8px;border-radius:50%;display:inline-block}
+  @media (prefers-reduced-motion:reduce){ .kbflow{display:none} }
+
+  /* WIP slider demo */
+  .wipdemo{margin:14px 0 4px}
+  .wipdemo .wlabel{font-size:13px;margin-bottom:9px}
+  .wipdemo .wlabel b{color:var(--ink)}
+  .wipdemo input[type=range]{width:100%;accent-color:var(--teal);margin:2px 0 12px}
+  .wipcells{display:flex;gap:7px;margin-bottom:11px;min-height:36px;flex-wrap:wrap;align-items:center}
+  .wcell{width:30px;height:36px;border-radius:6px;background:var(--panel2);border:1px solid var(--line);transition:all .18s;animation:pop .25s ease}
+  .wcell.over{background:rgba(239,93,107,.2);border-color:var(--red)}
+  @keyframes pop{from{transform:scale(.6);opacity:0}to{transform:scale(1);opacity:1}}
+  .wipmsg{font-size:12.5px;font-family:var(--mono);color:var(--green)}
+  .wipmsg.bad{color:var(--red)}
+
+  /* metric stats + flow-efficiency bar */
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:4px 0 6px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:16px 12px;text-align:center}
+  .stat .num{font-size:25px;font-weight:680;letter-spacing:-.02em;color:var(--teal)}
+  .stat .lbl{font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:5px}
+  .illus{font-family:var(--mono);font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--faint);margin:8px 0 18px}
+  .effwrap{margin:4px 0 6px}
+  .effbar{height:36px;border-radius:8px;overflow:hidden;display:flex;border:1px solid var(--line)}
+  .effbar .seg{display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:10.5px;color:#0d1520;font-weight:600;width:0;transition:width 1.1s cubic-bezier(.2,.7,.2,1);white-space:nowrap;overflow:hidden}
+  .effbar .act{background:var(--teal)} .effbar .wait{background:var(--amber)}
+  @media(max-width:680px){.stats{grid-template-columns:repeat(2,1fr)}}
+
+  /* learning path tab */
+  .lpsub{font-family:var(--mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--violet);margin:0 0 8px}
+  .path{margin:16px 0 8px}
+  .pstep{display:grid;grid-template-columns:50px 1fr}
+  .pstep .pnum{display:flex;flex-direction:column;align-items:center}
+  .pstep .pnum b{width:38px;height:38px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);color:var(--teal);font-family:var(--mono);font-size:15px;display:flex;align-items:center;justify-content:center;font-weight:600;flex:0 0 auto}
+  .pstep .pline{flex:1;width:2px;background:var(--line);margin:3px 0}
+  .pstep:last-child .pline{display:none}
+  .pcard{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px 17px;margin:0 0 14px}
+  .pcard:hover{border-color:var(--teal);transform:translateX(3px)}
+  .pcard h4{margin:0 0 4px;font-size:15px}
+  .pcard .pwhat{color:var(--muted);font-size:13px;margin:0 0 11px}
+  .plinks{display:flex;flex-direction:column;gap:7px}
+  .plink{display:flex;align-items:center;gap:10px;font-size:13px;text-decoration:none;color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 11px;background:var(--panel2);transition:all .18s}
+  .plink:hover{border-color:var(--cyan);background:#1d3247;transform:translateX(2px)}
+  .plink .ic{font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:3px 6px;flex:0 0 auto;font-weight:600}
+  .plink .ic.yt{color:#0d1520;background:#ff7a7a} .plink .ic.doc{color:#0d1520;background:var(--cyan)} .plink .ic.tip{color:#0d1520;background:var(--amber)}
+  .plink .pl-t{flex:1} .plink .arr{color:var(--faint);font-family:var(--mono)}
 </style>
 </head>
 <body>
@@ -175,6 +271,7 @@
   <button data-tab="playbook"><span class="n">03</span>Adoption playbook</button>
   <button data-tab="metrics"><span class="n">04</span>Metrics</button>
   <button data-tab="routing"><span class="n">05</span>Routing &amp; next steps</button>
+  <button data-tab="learn"><span class="n">06</span>For Scrum Masters</button>
 </nav>
 
 <!-- ============ 01 CONFORMANCE ============ -->
@@ -187,6 +284,18 @@
     <div>
       <h2>Provider Directory satisfies the Lite bar in principle — with four gaps to close before the Epics-Defined gate.</h2>
       <p>The work genuinely fits a flow-based plan, and a roadmap already exists. What's missing is structural, not conceptual: no initiatives or framework epics exist yet, the Kanban board still needs to be created and configured, and flow metrics have no baseline. None of these block the approach; they are the to-do list.</p>
+    </div>
+  </div>
+
+  <div class="readiness">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 120 120"><circle class="ring-bg" cx="60" cy="60" r="52"/><circle class="ring-fg" cx="60" cy="60" r="52"/></svg>
+      <div class="ring-center"><div class="rp">0%</div><div class="rl">on track</div></div>
+    </div>
+    <div class="rt">
+      <h4>Lite readiness snapshot</h4>
+      <p>Four of the six standard planning artifacts are met or already underway. The two outstanding are structural — initiatives and framework epics — not conceptual.</p>
+      <div class="rchips"><span class="rchip g">Met / waived ×3</span><span class="rchip">Underway ×1</span><span class="rchip a">Gap ×2</span></div>
     </div>
   </div>
 
@@ -251,6 +360,10 @@
   <h2>Two boards, one team</h2>
   <p class="lede">Provider Directory leaves the Scheduling sprint and runs on its own Kanban board. Scheduling is untouched. The same scrum team works both; the Scrum Master switches board view depending on which work is in focus.</p>
 
+  <div class="boardtoggle">
+    <button class="bt-btn active" data-board="kanban">Provider Directory · Kanban</button>
+    <button class="bt-btn" data-board="scrum">Scheduling · Scrum</button>
+  </div>
   <div class="boards">
     <div class="board kanban">
       <div class="bh"><span class="bt">Provider Directory</span><span class="bk">Kanban · new</span></div>
@@ -265,6 +378,7 @@
       </div>
     </div>
   </div>
+  <p class="viewing"></p>
   <p class="switch">↑ Scrum Master switches between board views — one team underneath ↑</p>
   <div class="team-rail">One <b>scrum team</b> · one shared <b>daily standup</b> · shared Epic resources — the linkage that made a fully separate team a non-starter stays intact</div>
 
@@ -284,6 +398,18 @@
   <p class="lede">There's no existing Kanban process to inherit, so this is the starting convention — deliberately light, tuned to a small vendor-dependent team. Refine after a few weeks of real use.</p>
 
   <h3>1 &middot; Columns &amp; the vendor-wait state</h3>
+  <div class="kbflow">
+    <div class="heads"><div>Backlog</div><div>Ready</div><div>In progress</div><div class="wz">Waiting · vendor</div><div>Validation</div><div>Done</div></div>
+    <div class="kbtrack">
+      <div class="wzone"></div>
+      <div class="kbcard rtb" style="top:11px;animation:flow 9s linear infinite"><span class="dot"></span>PD-OPS</div>
+      <div class="kbcard proj" style="top:49px;animation:flowWait 12.5s linear infinite 2s"><span class="dot"></span>MIGRATE</div>
+      <div class="kbcard exp" style="top:30px;animation:flow 7s linear infinite 4.2s"><span class="dot"></span>FABRIC</div>
+      <div class="kbcard rtb" style="top:68px;animation:flowWait 11s linear infinite 6.6s"><span class="dot"></span>SITE</div>
+    </div>
+    <div class="legend"><span><i style="background:var(--red)"></i>Expedite</span><span><i style="background:var(--violet)"></i>Project</span><span><i style="background:var(--teal)"></i>Run the business</span><span style="margin-left:auto;color:var(--amber)">Cards dwell in “Waiting · vendor” — visible, not counted</span></div>
+  </div>
+  <p class="dim" style="margin:0 0 14px">Live view of how work moves — pulled left to right, parking when it's blocked on the vendor. The reference below names each column and its WIP limit.</p>
   <div class="flow">
     <div class="col"><div class="cn">Backlog</div><span class="wip">∞</span></div>
     <div class="col"><div class="cn">Ready / Replenish</div><span class="wip">WIP 5</span></div>
@@ -299,6 +425,13 @@
     <li><b>Keep limits tight and honest.</b> With ~3 contributors and typically 3–4 active items, set per-person in-progress to 1–2 and total active to about 5. The limit is a forcing function, not an aspiration.</li>
     <li><b>One expedite slot.</b> Fabric's ~2-day release notice is an <b>Expedite class of service</b>: a single time-critical spot-check/test item may jump the queue and temporarily exceed WIP. One at a time — if a second expedite appears, something else stops.</li>
   </ul>
+
+  <div class="wipdemo card tight">
+    <div class="wlabel">Try it — <b>In progress · analysis</b>, limit <b>3</b>. Drag to see what a WIP breach looks like:</div>
+    <input type="range" min="0" max="6" value="2" id="wipRange" aria-label="Items in progress">
+    <div class="wipcells" id="wipCells"></div>
+    <div class="wipmsg" id="wipMsg"></div>
+  </div>
 
   <h3>3 &middot; Optional swimlanes by class of service</h3>
   <p class="dim">All Provider Directory work flows through the same columns. Swimlanes (a Kanban feature, not a Scrum one) keep the three kinds of work readable at a glance.</p>
@@ -361,6 +494,17 @@
 <section class="panel" id="metrics">
   <h2>Measure flow, not velocity</h2>
   <p class="lede">A Kanban team is measured on how work <em>moves</em>, not how many points it commits. Velocity and predictability don't apply; these flow metrics replace them and surface the real story — how much time is lost waiting on the vendor.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="num" data-count="6.5" data-suffix="d">0</div><div class="lbl">Cycle time</div></div>
+    <div class="stat"><div class="num" data-count="4" data-suffix="/wk">0</div><div class="lbl">Throughput</div></div>
+    <div class="stat"><div class="num" data-count="5">0</div><div class="lbl">Avg WIP</div></div>
+    <div class="stat"><div class="num" data-count="38" data-suffix="%">0</div><div class="lbl">Flow efficiency</div></div>
+  </div>
+  <div class="effwrap">
+    <div class="effbar"><div class="seg act"></div><div class="seg wait"></div></div>
+  </div>
+  <p class="illus">Illustrative — example of what the board surfaces once live. Flow efficiency = active time vs. time parked waiting on the vendor.</p>
 
   <div class="card tight">
   <table>
@@ -437,19 +581,146 @@
   <div class="note"><span><b>Open question to settle with the standards owner:</b> the Lite track waives the sprint-planning board and capacity commitment — confirm that the roadmap + WIP-limited Kanban board + framework epics is the accepted evidence set for the Epics-Defined gate, so Provider Directory isn't held to a Scheduling-style bar it can't meet.</span></div>
 </section>
 
+<!-- ============ 06 FOR SCRUM MASTERS ============ -->
+<section class="panel" id="learn">
+  <p class="lpsub">Practitioner reference &middot; included for the team's Scrum Masters</p>
+  <h2>Kanban in Jira — a Scrum Master's starter path</h2>
+  <p class="lede">A short, ordered path for any Scrum Master standing up a Kanban board in Jira: build the board, set WIP, add swimlanes, then turn on flow metrics. Official Atlassian docs first, with video walk-throughs alongside.</p>
+
+  <div class="path">
+    <div class="pstep">
+      <div class="pnum"><b>1</b><div class="pline"></div></div>
+      <div class="pcard">
+        <h4>Build the board</h4>
+        <p class="pwhat">Create a Kanban board, then set columns to match the real workflow — Backlog → Ready → In progress → Waiting on vendor → Validation → Done.</p>
+        <div class="plinks">
+          <a class="plink" href="https://www.atlassian.com/agile/tutorials/creating-your-agile-board" target="_blank" rel="noopener"><span class="ic doc">Docs</span><span class="pl-t">Atlassian — Create an agile board (official)</span><span class="arr">↗</span></a>
+          <a class="plink" href="https://www.youtube.com/watch?v=k60mVcfDrHU" target="_blank" rel="noopener"><span class="ic yt">Video</span><span class="pl-t">Create a Kanban Board in Jira — Quick Guide (2025)</span><span class="arr">↗</span></a>
+          <a class="plink" href="https://www.youtube.com/watch?v=Kfupfhl6TX4" target="_blank" rel="noopener"><span class="ic yt">Video</span><span class="pl-t">How to Create a New Kanban Board — Jira Training Guide</span><span class="arr">↗</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pstep">
+      <div class="pnum"><b>2</b><div class="pline"></div></div>
+      <div class="pcard">
+        <h4>Set WIP limits</h4>
+        <p class="pwhat">Add min/max limits per column so bottlenecks surface early. Key constraint: in Jira, WIP limits apply per column, not per swimlane — the limits live on the columns, swimlanes just group the view.</p>
+        <div class="plinks">
+          <a class="plink" href="https://www.atlassian.com/agile/tutorials/how-to-do-kanban-with-jira" target="_blank" rel="noopener"><span class="ic doc">Docs</span><span class="pl-t">Atlassian — How to do Kanban with Jira (WIP &amp; columns)</span><span class="arr">↗</span></a>
+          <a class="plink" href="https://www.youtube.com/results?search_query=Jira+Kanban+WIP+limits+tutorial" target="_blank" rel="noopener"><span class="ic tip">Search</span><span class="pl-t">YouTube — “Jira Kanban WIP limits tutorial”</span><span class="arr">↗</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pstep">
+      <div class="pnum"><b>3</b><div class="pline"></div></div>
+      <div class="pcard">
+        <h4>Add swimlanes &amp; classes of service</h4>
+        <p class="pwhat">Group the board by class of service — an Expedite lane for time-critical vendor work (driven by a JQL query or priority), plus project and run-the-business lanes.</p>
+        <div class="plinks">
+          <a class="plink" href="https://support.atlassian.com/jira-software-cloud/docs/configure-swimlanes/" target="_blank" rel="noopener"><span class="ic doc">Docs</span><span class="pl-t">Atlassian — Configure swimlanes (JQL-based)</span><span class="arr">↗</span></a>
+          <a class="plink" href="https://www.google.com/search?q=Jira+Kanban+classes+of+service+swimlanes" target="_blank" rel="noopener"><span class="ic tip">Search</span><span class="pl-t">“Jira Kanban classes of service swimlanes”</span><span class="arr">↗</span></a>
+        </div>
+      </div>
+    </div>
+
+    <div class="pstep">
+      <div class="pnum"><b>4</b><div class="pline"></div></div>
+      <div class="pcard">
+        <h4>Turn on flow metrics</h4>
+        <p class="pwhat">Replace velocity with cycle time, throughput, WIP, and the cumulative flow diagram. Define the commitment point (when an item leaves Ready) so cycle time measures the right window.</p>
+        <div class="plinks">
+          <a class="plink" href="https://www.atlassian.com/agile/tutorials/how-to-do-kanban-with-jira" target="_blank" rel="noopener"><span class="ic doc">Docs</span><span class="pl-t">Atlassian — Cumulative Flow Diagram &amp; reports</span><span class="arr">↗</span></a>
+          <a class="plink" href="https://www.google.com/search?q=4+essential+Kanban+metrics+in+Jira+lead+cycle+time+throughput" target="_blank" rel="noopener"><span class="ic tip">Search</span><span class="pl-t">“4 essential Kanban metrics in Jira”</span><span class="arr">↗</span></a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note teal"><span><b>Rule of thumb:</b> columns hold the WIP limits, swimlanes hold the classes of service, and the commitment point is where cycle time starts. Get those three right and the rest is tuning.</span></div>
+</section>
+
 <p class="foot">PROVIDER DIRECTORY &middot; KANBAN ADOPTION &amp; QP-LITE CONFORMANCE &middot; Q3 2026 &middot; DRAFT FOR TEAM SOCIALIZATION</p>
 </div>
 
 <script>
-  document.querySelectorAll('nav.tabs button').forEach(b=>{
-    b.addEventListener('click',()=>{
-      document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));
-      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
-      b.classList.add('active');
-      document.getElementById(b.dataset.tab).classList.add('active');
-      window.scrollTo({top:0,behavior:'smooth'});
-    });
+  const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const REVEAL_SEL = 'h2,h3,.lede,.verdict,.readiness,.card,.note,ul.clean,.boardtoggle,.boards,.viewing,.switch,.team-rail,.kbflow,.lanes,.stats,.effwrap,.illus,.owners,ol.seq,.lpsub,.path,.pstep,.dim';
+
+  // tag revealable blocks across all panels
+  document.querySelectorAll('.panel').forEach(p=>{
+    p.querySelectorAll(REVEAL_SEL).forEach(el=>el.classList.add('revealable'));
   });
+
+  function stagger(panel){
+    const items=[...panel.querySelectorAll('.revealable')];
+    items.forEach((el,i)=>{
+      el.classList.remove('in');
+      if(REDUCE){el.classList.add('in');return;}
+      setTimeout(()=>el.classList.add('in'), 40 + i*60);
+    });
+  }
+  function ringFill(){
+    const fg=document.querySelector('.ring-fg'), rp=document.querySelector('.ring-center .rp');
+    if(!fg) return; const pct=67, C=326.7;
+    requestAnimationFrame(()=>{ fg.style.strokeDashoffset = C*(1-pct/100); });
+    if(REDUCE){ rp.textContent=pct+'%'; return; }
+    let s=null; const dur=1200;
+    (function st(t){ if(!s)s=t; const p=Math.min(1,(t-s)/dur);
+      rp.textContent=Math.round(pct*(1-Math.pow(1-p,3)))+'%'; if(p<1)requestAnimationFrame(st); })(performance.now());
+  }
+  function countUps(panel){
+    panel.querySelectorAll('[data-count]').forEach(el=>{
+      const target=parseFloat(el.dataset.count), suf=el.dataset.suffix||'', dec=(target%1!==0);
+      if(REDUCE){ el.textContent=(dec?target.toFixed(1):target)+suf; return; }
+      let s=null; const dur=950;
+      (function st(t){ if(!s)s=t; const p=Math.min(1,(t-s)/dur); const v=target*(1-Math.pow(1-p,3));
+        el.textContent=(dec?v.toFixed(1):Math.round(v))+suf; if(p<1)requestAnimationFrame(st); })(performance.now());
+    });
+  }
+  function effBar(panel){
+    const a=panel.querySelector('.effbar .act'), w=panel.querySelector('.effbar .wait');
+    if(!a) return;
+    requestAnimationFrame(()=>{ a.style.width='38%'; w.style.width='62%'; a.textContent='Active 38%'; w.textContent='Waiting 62%'; });
+  }
+
+  function showTab(id){
+    document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.toggle('active', x.dataset.tab===id));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.toggle('active', p.id===id));
+    const panel=document.getElementById(id);
+    stagger(panel);
+    if(id==='verdict') setTimeout(ringFill,120);
+    if(id==='metrics') setTimeout(()=>{ countUps(panel); effBar(panel); },150);
+    window.scrollTo({top:0,behavior:'smooth'});
+  }
+  document.querySelectorAll('nav.tabs button').forEach(b=> b.addEventListener('click',()=>showTab(b.dataset.tab)));
+
+  // board toggle
+  const K=document.querySelector('.board.kanban'), S=document.querySelector('.board.scrum'), VIEW=document.querySelector('.viewing');
+  function setBoard(which){
+    document.querySelectorAll('.bt-btn').forEach(x=>x.classList.toggle('active', x.dataset.board===which));
+    if(which==='kanban'){ K.classList.add('focus');K.classList.remove('dimmed'); S.classList.add('dimmed');S.classList.remove('focus');
+      VIEW.textContent='Viewing: Provider Directory — Kanban board'; }
+    else { S.classList.add('focus');S.classList.remove('dimmed'); K.classList.add('dimmed');K.classList.remove('focus');
+      VIEW.textContent='Viewing: Scheduling — Scrum board (unchanged)'; }
+  }
+  document.querySelectorAll('.bt-btn').forEach(btn=> btn.addEventListener('click',()=>setBoard(btn.dataset.board)));
+  if(K&&S) setBoard('kanban');
+
+  // WIP slider demo
+  const wr=document.getElementById('wipRange'), wc=document.getElementById('wipCells'), wm=document.getElementById('wipMsg');
+  function renderWip(){
+    const n=+wr.value, lim=3; wc.innerHTML='';
+    for(let i=0;i<n;i++){ const d=document.createElement('div'); d.className='wcell'+(i>=lim?' over':''); wc.appendChild(d); }
+    if(n<=lim){ wm.className='wipmsg'; wm.textContent=n+' of '+lim+' active — healthy flow'; }
+    else { wm.className='wipmsg bad'; wm.textContent=n+' of '+lim+' — over limit: finish or unblock before pulling more'; }
+  }
+  if(wr){ wr.addEventListener('input',renderWip); renderWip(); }
+
+  // initial paint
+  stagger(document.getElementById('verdict'));
+  setTimeout(ringFill,300);
 </script>
 </body>
 </html>
