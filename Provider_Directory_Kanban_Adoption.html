@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Provider Directory — Kanban Adoption &amp; Quarterly Planning (Lite)</title>
+<style>
+  :root{
+    --bg:#0d1520; --panel:#131f2c; --panel2:#18283a; --line:#26394f;
+    --ink:#e8eef4; --muted:#8ca2b6; --faint:#5f7488;
+    --teal:#38c6c0; --cyan:#4aa8ff; --amber:#f2b134; --green:#3ecf8e;
+    --red:#ef5d6b; --violet:#a78bfa;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:"Inter",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+    line-height:1.55;font-size:15px;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 22px 80px}
+
+  header{border-bottom:1px solid var(--line);padding:30px 0 22px}
+  .eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.22em;text-transform:uppercase;
+    color:var(--teal);margin:0 0 10px}
+  h1{font-size:30px;line-height:1.12;margin:0 0 8px;font-weight:680;letter-spacing:-.01em}
+  h1 span{color:var(--teal)}
+  .sub{color:var(--muted);font-size:14px;max-width:760px;margin:0}
+  .metabar{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .pill{font-family:var(--mono);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;
+    border:1px solid var(--line);border-radius:999px;padding:5px 11px;color:var(--muted);background:var(--panel)}
+  .pill b{color:var(--ink);font-weight:600}
+
+  nav.tabs{position:sticky;top:0;z-index:20;background:rgba(13,21,32,.94);
+    backdrop-filter:blur(8px);border-bottom:1px solid var(--line);
+    display:flex;gap:2px;overflow-x:auto;margin:0 -22px;padding:0 22px}
+  nav.tabs button{flex:0 0 auto;background:none;border:none;color:var(--muted);
+    font-family:var(--sans);font-size:13.5px;font-weight:540;cursor:pointer;
+    padding:15px 16px 13px;border-bottom:2px solid transparent;white-space:nowrap;letter-spacing:.01em}
+  nav.tabs button .n{font-family:var(--mono);font-size:11px;color:var(--faint);margin-right:7px}
+  nav.tabs button:hover{color:var(--ink)}
+  nav.tabs button.active{color:var(--ink);border-bottom-color:var(--teal)}
+  nav.tabs button.active .n{color:var(--teal)}
+
+  .panel{display:none;padding-top:30px;animation:fade .25s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+  h2{font-size:20px;margin:0 0 6px;font-weight:640;letter-spacing:-.01em}
+  h3{font-size:15px;margin:26px 0 10px;font-weight:620;color:var(--ink)}
+  .lede{color:var(--muted);font-size:14px;margin:0 0 22px;max-width:780px}
+  p{margin:0 0 12px}
+  a{color:var(--cyan)}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:20px 22px;margin:0 0 16px}
+  .card.tight{padding:16px 18px}
+
+  .verdict{display:flex;gap:16px;align-items:flex-start;border-radius:12px;padding:20px 22px;margin:0 0 22px;
+    background:linear-gradient(180deg,rgba(62,207,142,.10),rgba(62,207,142,.02));border:1px solid rgba(62,207,142,.32)}
+  .verdict .badge{font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+    color:#0d1520;background:var(--green);border-radius:6px;padding:6px 10px;white-space:nowrap;margin-top:2px}
+  .verdict h2{margin:0 0 4px;font-size:17px}
+  .verdict p{margin:0;color:var(--muted);font-size:13.5px}
+
+  table{width:100%;border-collapse:collapse;font-size:13px;margin:6px 0 4px}
+  th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+    color:var(--muted);font-weight:600;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:bottom}
+  td{padding:11px 12px;border-bottom:1px solid var(--line);vertical-align:top;color:var(--ink)}
+  td.dim{color:var(--muted)}
+  tr:last-child td{border-bottom:none}
+  .tag{font-family:var(--mono);font-size:10px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+    border-radius:5px;padding:3px 7px;display:inline-block;white-space:nowrap}
+  .t-pass{color:var(--green);background:rgba(62,207,142,.13);border:1px solid rgba(62,207,142,.3)}
+  .t-gap{color:var(--amber);background:rgba(242,177,52,.12);border:1px solid rgba(242,177,52,.3)}
+  .t-part{color:var(--cyan);background:rgba(74,168,255,.12);border:1px solid rgba(74,168,255,.3)}
+  .t-na{color:var(--muted);background:rgba(140,162,182,.1);border:1px solid var(--line)}
+  .key{font-family:var(--mono);font-size:12px;color:var(--teal)}
+
+  ul.clean{list-style:none;padding:0;margin:8px 0}
+  ul.clean li{padding:9px 0 9px 26px;border-bottom:1px solid var(--line);position:relative;font-size:13.5px}
+  ul.clean li:last-child{border-bottom:none}
+  ul.clean li::before{content:"";position:absolute;left:4px;top:15px;width:7px;height:7px;border-radius:2px;background:var(--teal)}
+  ul.clean li b{color:var(--ink)}
+
+  /* Two-board diagram */
+  .boards{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0 6px}
+  .board{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--panel)}
+  .board .bh{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between}
+  .board .bh .bt{font-weight:640;font-size:14px}
+  .board .bh .bk{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;
+    border-radius:5px;padding:3px 8px}
+  .board.kanban{border-color:rgba(56,198,192,.45)}
+  .board.kanban .bh{background:linear-gradient(180deg,rgba(56,198,192,.12),transparent)}
+  .board.kanban .bk{color:#0d1520;background:var(--teal)}
+  .board.scrum{opacity:.62}
+  .board.scrum .bk{color:var(--violet);border:1px solid rgba(167,139,250,.4)}
+  .board .bb{padding:14px 16px;font-size:12.5px;color:var(--muted)}
+  .board .bb b{color:var(--ink)}
+  .board .mini{display:flex;gap:6px;margin-top:11px}
+  .board .mini span{flex:1;height:30px;border-radius:5px;background:var(--panel2);border:1px solid var(--line)}
+  .board.kanban .mini span:nth-child(3){background:rgba(56,198,192,.18)}
+  .switch{text-align:center;font-family:var(--mono);font-size:11px;color:var(--faint);
+    letter-spacing:.05em;text-transform:uppercase;margin:2px 0 0}
+  .team-rail{margin:14px 0 0;border:1px dashed var(--line);border-radius:10px;padding:12px 16px;
+    font-size:12.5px;color:var(--muted);text-align:center}
+  .team-rail b{color:var(--ink)}
+
+  /* Swimlanes (class of service) */
+  .lanes{margin:18px 0 10px;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+  .lane{display:grid;grid-template-columns:170px 1fr;border-bottom:1px solid var(--line)}
+  .lane:last-child{border-bottom:none}
+  .lane .lh{padding:16px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:4px;justify-content:center}
+  .lane .lh .lk{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase}
+  .lane .lh .lt{font-weight:640;font-size:14px}
+  .lane.exp .lh{background:linear-gradient(180deg,rgba(239,93,107,.13),transparent)} .lane.exp .lk{color:var(--red)}
+  .lane.proj .lh{background:linear-gradient(180deg,rgba(167,139,250,.13),transparent)} .lane.proj .lk{color:var(--violet)}
+  .lane.rtb .lh{background:linear-gradient(180deg,rgba(56,198,192,.12),transparent)} .lane.rtb .lk{color:var(--teal)}
+  .lane .lc{padding:14px 16px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .chip{font-size:12px;border:1px solid var(--line);border-radius:7px;padding:6px 10px;background:var(--panel2);color:var(--ink)}
+  .chip .meta{font-family:var(--mono);font-size:9.5px;color:var(--muted);display:block;letter-spacing:.04em;text-transform:uppercase;margin-top:1px}
+
+  .flow{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;margin:12px 0}
+  .flow .col{flex:1;min-width:118px;background:var(--panel2);border:1px solid var(--line);border-radius:9px;padding:11px 12px}
+  .flow .col .cn{font-family:var(--mono);font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+  .flow .col .wip{font-size:11px;color:var(--amber);font-family:var(--mono)}
+  .flow .col.wait{border-color:rgba(242,177,52,.4)}
+  .flow .col.wait .cn{color:var(--amber)}
+
+  .note{display:flex;gap:11px;background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--amber);
+    border-radius:8px;padding:13px 15px;margin:14px 0;font-size:13px;color:var(--muted)}
+  .note b{color:var(--ink)}
+  .note.teal{border-left-color:var(--teal)}
+  .note.violet{border-left-color:var(--violet)}
+
+  .owners{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+  .owner{background:var(--panel);border:1px solid var(--line);border-radius:11px;padding:15px 17px}
+  .owner .who{font-weight:640;font-size:14.5px;margin-bottom:2px}
+  .owner .role{font-family:var(--mono);font-size:10px;letter-spacing:.05em;text-transform:uppercase;color:var(--teal);margin-bottom:9px}
+  .owner ul{margin:0;padding-left:16px;font-size:12.5px;color:var(--muted)}
+  .owner li{margin:0 0 5px}
+
+  ol.seq{list-style:none;counter-reset:s;padding:0;margin:10px 0}
+  ol.seq li{counter-increment:s;position:relative;padding:13px 0 13px 46px;border-bottom:1px solid var(--line)}
+  ol.seq li:last-child{border-bottom:none}
+  ol.seq li::before{content:counter(s);position:absolute;left:0;top:11px;width:30px;height:30px;border-radius:8px;
+    background:var(--panel2);border:1px solid var(--line);color:var(--teal);font-family:var(--mono);font-size:13px;
+    display:flex;align-items:center;justify-content:center;font-weight:600}
+  ol.seq li b{color:var(--ink)}
+  ol.seq .own{font-family:var(--mono);font-size:10.5px;color:var(--violet);text-transform:uppercase;letter-spacing:.05em}
+
+  .foot{margin-top:36px;padding-top:18px;border-top:1px solid var(--line);color:var(--faint);font-size:11.5px;font-family:var(--mono)}
+
+  @media(max-width:680px){
+    h1{font-size:24px}.owners,.boards{grid-template-columns:1fr}
+    .lane{grid-template-columns:1fr}.lane .lh{border-right:none;border-bottom:1px solid var(--line)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <p class="eyebrow">Q3 2026 &middot; Provider Directory &middot; Framework Recommendation</p>
+  <h1>Provider Directory: <span>Kanban adoption</span><br>&amp; Quarterly Planning (Lite) conformance</h1>
+  <p class="sub">Provider Directory moves to its own dedicated Kanban board in Jira — a second board for the team, separate from the Scheduling Scrum board. This covers how to stand that board up from scratch and confirms the Q3 plan satisfies the quarterly-planning Lite track. Scope is Provider Directory only.</p>
+  <div class="metabar">
+    <span class="pill"><b>Track:</b> Quarterly Planning — Lite</span>
+    <span class="pill"><b>Model:</b> Kanban — dedicated board</span>
+    <span class="pill"><b>Boards:</b> 2 &middot; switch by view</span>
+    <span class="pill"><b>Team:</b> same scrum team, shared standup</span>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="active" data-tab="verdict"><span class="n">01</span>Conformance</button>
+  <button data-tab="setup"><span class="n">02</span>Board setup</button>
+  <button data-tab="playbook"><span class="n">03</span>Adoption playbook</button>
+  <button data-tab="metrics"><span class="n">04</span>Metrics</button>
+  <button data-tab="routing"><span class="n">05</span>Routing &amp; next steps</button>
+</nav>
+
+<!-- ============ 01 CONFORMANCE ============ -->
+<section class="panel active" id="verdict">
+  <h2>Does the Q3 plan meet Quarterly Planning — Lite?</h2>
+  <p class="lede">The full quarterly-planning flow assumes story-pointable, sprint-committable work. Provider Directory is vendor-dependent and analysis-heavy — most of its work cannot be pointed or committed, which is exactly why it's moving to Kanban. The Lite track exists for this profile: it keeps the planning <em>intent</em> (initiatives, epics, a roadmap, a visible board) while dropping sprint-capacity commitment.</p>
+
+  <div class="verdict">
+    <span class="badge">Conditional pass</span>
+    <div>
+      <h2>Provider Directory satisfies the Lite bar in principle — with four gaps to close before the Epics-Defined gate.</h2>
+      <p>The work genuinely fits a flow-based plan, and a roadmap already exists. What's missing is structural, not conceptual: no initiatives or framework epics exist yet, the Kanban board still needs to be created and configured, and flow metrics have no baseline. None of these block the approach; they are the to-do list.</p>
+    </div>
+  </div>
+
+  <h3>Standard quarterly-planning artifacts, mapped to the Lite expectation</h3>
+  <div class="card tight">
+  <table>
+    <thead><tr><th>Standard artifact</th><th>Lite expectation for Provider Directory</th><th>Today</th><th>Status</th></tr></thead>
+    <tbody>
+      <tr>
+        <td><b>Problem List</b></td>
+        <td class="dim">Light. A one-paragraph framing is enough; the roadmap may stand in for a full problem deck.</td>
+        <td class="dim">Roadmap exists; no formal problem list.</td>
+        <td><span class="tag t-pass">Met</span></td>
+      </tr>
+      <tr>
+        <td><b>Initiatives &amp; Epics defined</b></td>
+        <td class="dim">Required. Initiatives created in SPM; framework epics in Jira. Epics are outcome-based, <b>no time-box rules</b>.</td>
+        <td class="dim">No initiatives ever created; existing epics are empty placeholders.</td>
+        <td><span class="tag t-gap">Gap</span></td>
+      </tr>
+      <tr>
+        <td><b>Planning board <span class="dim">(committed stories by month)</span></b></td>
+        <td class="dim"><b>Not required</b> on the Lite track. Replaced by a WIP-limited Kanban board plus lightweight replenishment.</td>
+        <td class="dim">Kanban board to be created; mockup exists.</td>
+        <td><span class="tag t-part">In progress</span></td>
+      </tr>
+      <tr>
+        <td><b>Roadmap <span class="dim">(Now / Next / Later / Future)</span></b></td>
+        <td class="dim">Required. The vendor-fed roadmap is the plan of record for the flow work.</td>
+        <td class="dim">Roadmap exists; needs formatting into the 4 horizons.</td>
+        <td><span class="tag t-part">Format</span></td>
+      </tr>
+      <tr>
+        <td><b>Epics-Defined gate</b></td>
+        <td class="dim">Framework epics must exist in Jira by the gate (even if thinly populated).</td>
+        <td class="dim">Not yet created.</td>
+        <td><span class="tag t-gap">Gap</span></td>
+      </tr>
+      <tr>
+        <td><b>Sprint capacity commitment</b></td>
+        <td class="dim">Waived. Kanban work is pulled, not committed; velocity does not apply.</td>
+        <td class="dim">N/A by design.</td>
+        <td><span class="tag t-na">Waived</span></td>
+      </tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>The four gaps to close</h3>
+  <ul class="clean">
+    <li><b>Create the initiatives in SPM</b> — fast-tracked within the pillar next week (these aren't cross-pillar, so they skip the heavy demand process). Initiatives live in SPM, <b>not</b> duplicated in Jira.</li>
+    <li><b>Create framework epics in Jira</b> — outcome-based, deliberately few. Suggested spine is in the Adoption Playbook tab.</li>
+    <li><b>Create &amp; configure the Kanban board</b> — build it from the existing mockup: columns with a vendor-wait state, WIP limits, optional class-of-service swimlanes, and a cleanup of stale Q2 stories.</li>
+    <li><b>Baseline flow metrics</b> — start capturing cycle time / throughput / WIP now so there's a trend by the next quarterly checkpoint. Velocity is replaced, not reported.</li>
+  </ul>
+
+  <div class="note teal"><span>The decision is a <b>dedicated Provider Directory Kanban board</b> — a second board for the team alongside the Scheduling Scrum board. The same scrum team and shared standup keep the close scheduling linkage intact, so separation is at the board level only. See <b>Board setup</b>.</span></div>
+</section>
+
+<!-- ============ 02 BOARD SETUP ============ -->
+<section class="panel" id="setup">
+  <h2>Two boards, one team</h2>
+  <p class="lede">Provider Directory leaves the Scheduling sprint and runs on its own Kanban board. Scheduling is untouched. The same scrum team works both; the Scrum Master switches board view depending on which work is in focus.</p>
+
+  <div class="boards">
+    <div class="board kanban">
+      <div class="bh"><span class="bt">Provider Directory</span><span class="bk">Kanban · new</span></div>
+      <div class="bb"><b>Pulled, WIP-limited, no sprint commitment.</b> Scoped to <span class="key">Provider_Directory</span>-labeled work. This is what's being stood up here.
+        <div class="mini"><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+    <div class="board scrum">
+      <div class="bh"><span class="bt">Scheduling</span><span class="bk">Scrum · done</span></div>
+      <div class="bb"><b>Unchanged.</b> Continues its sprint cadence exactly as today. Nothing in this recommendation touches it.
+        <div class="mini"><span></span><span></span><span></span><span></span></div>
+      </div>
+    </div>
+  </div>
+  <p class="switch">↑ Scrum Master switches between board views — one team underneath ↑</p>
+  <div class="team-rail">One <b>scrum team</b> · one shared <b>daily standup</b> · shared Epic resources — the linkage that made a fully separate team a non-starter stays intact</div>
+
+  <h3>Why Kanban is the right fit for this work</h3>
+  <ul class="clean">
+    <li><b>Most of the work can't be planned in two-week chunks.</b> Vendor releases land with ~2 days' notice; analysis items take many meetings over months. There's nothing to commit to a sprint.</li>
+    <li><b>It isn't story-pointable.</b> The work is analysis, requirements, and testing — not build. Forcing it into pointed, committed stories created the "every story is really a task" distortion the team flagged.</li>
+    <li><b>Kanban matches the rhythm:</b> pull work when capacity frees up, limit work in progress, and make vendor-wait time visible — instead of committing capacity the team doesn't control.</li>
+  </ul>
+
+  <div class="note"><span><b>What changes vs. what doesn't.</b> Provider Directory work moves off the Scheduling sprint onto its own Kanban board, planning shifts from sprint commitment to continuous pull, and metrics shift from velocity to flow. The team, the standup, and the scheduling relationship do <b>not</b> change.</span></div>
+</section>
+
+<!-- ============ 03 PLAYBOOK ============ -->
+<section class="panel" id="playbook">
+  <h2>How to stand up the board</h2>
+  <p class="lede">There's no existing Kanban process to inherit, so this is the starting convention — deliberately light, tuned to a small vendor-dependent team. Refine after a few weeks of real use.</p>
+
+  <h3>1 &middot; Columns &amp; the vendor-wait state</h3>
+  <div class="flow">
+    <div class="col"><div class="cn">Backlog</div><span class="wip">∞</span></div>
+    <div class="col"><div class="cn">Ready / Replenish</div><span class="wip">WIP 5</span></div>
+    <div class="col"><div class="cn">In progress — analysis</div><span class="wip">WIP 3</span></div>
+    <div class="col wait"><div class="cn">Waiting on vendor</div><span class="wip">not counted</span></div>
+    <div class="col"><div class="cn">Validation / test</div><span class="wip">WIP 2</span></div>
+    <div class="col"><div class="cn">Done</div><span class="wip">—</span></div>
+  </div>
+  <div class="note"><span>The <b>Waiting on vendor</b> column maps to the Working Agreement's <b>External Dependency Hold</b> overlay. Items parked there (Fabric not done, can't proceed) stay visible but are excluded from active WIP and from cycle-time — so the board shows reality without punishing the team for vendor delay.</span></div>
+
+  <h3>2 &middot; WIP limits for a 3-person team</h3>
+  <ul class="clean">
+    <li><b>Keep limits tight and honest.</b> With ~3 contributors and typically 3–4 active items, set per-person in-progress to 1–2 and total active to about 5. The limit is a forcing function, not an aspiration.</li>
+    <li><b>One expedite slot.</b> Fabric's ~2-day release notice is an <b>Expedite class of service</b>: a single time-critical spot-check/test item may jump the queue and temporarily exceed WIP. One at a time — if a second expedite appears, something else stops.</li>
+  </ul>
+
+  <h3>3 &middot; Optional swimlanes by class of service</h3>
+  <p class="dim">All Provider Directory work flows through the same columns. Swimlanes (a Kanban feature, not a Scrum one) keep the three kinds of work readable at a glance.</p>
+  <div class="lanes">
+    <div class="lane exp">
+      <div class="lh"><span class="lk">Expedite</span><span class="lt">Vendor releases</span></div>
+      <div class="lc"><span class="chip">Fabric feature spot-check / test<span class="meta">~2-day notice · jumps queue</span></span></div>
+    </div>
+    <div class="lane proj">
+      <div class="lh"><span class="lk">Project</span><span class="lt">Planned, multi-month</span></div>
+      <div class="lc">
+        <span class="chip">Provider Finder migration<span class="meta">6–9 mo · epics → stories</span></span>
+        <span class="chip">Brado<span class="meta">if approved</span></span>
+        <span class="chip">Yext<span class="meta">if approved</span></span>
+      </div>
+    </div>
+    <div class="lane rtb">
+      <div class="lh"><span class="lk">Run the business</span><span class="lt">Reactive &amp; ops</span></div>
+      <div class="lc">
+        <span class="chip">Member-site expansion<span class="meta">requirements</span></span>
+        <span class="chip">Provider 360<span class="meta">analysis / testing</span></span>
+        <span class="chip">Directory Cleanup<span class="meta">ops &amp; support</span></span>
+      </div>
+    </div>
+  </div>
+  <div class="note violet"><span>The migration is the one stream with real owned build work, so it carries proper epics and more stories — but it still <b>flows</b> through the Kanban board rather than being sprint-committed. Project ≠ Scrum here; it's just a heavier class of Kanban work.</span></div>
+
+  <h3>4 &middot; Work-item taxonomy (the "story = task" fix)</h3>
+  <p>Most Provider Directory work isn't customer-facing — it's analysis, requirements, and testing. Rather than forcing INVEST rigor onto it, classify it and keep a Definition-of-Ready-lite (clear title, the outcome, and which vendor/site it touches).</p>
+  <div class="card tight">
+  <table>
+    <thead><tr><th>Work</th><th>Lives under</th><th>How it's tracked</th></tr></thead>
+    <tbody>
+      <tr><td>Vendor-fed feature releases, member-site expansion</td><td class="key">Run-the-Business epic</td><td class="dim">Pulled onto the board. Discovery items use the WA <b>Fabric Discovery/Documentation</b> overlay — visible, not actively worked.</td></tr>
+      <tr><td>Provider 360 analysis &amp; testing</td><td class="key">Provider 360 epic</td><td class="dim">Stories appear only when there's real analysis/test work.</td></tr>
+      <tr><td>Day-to-day ops, reports, troubleshooting</td><td class="key">Directory Cleanup epic</td><td class="dim">Blanket keep-the-lights-on epic.</td></tr>
+      <tr><td>Migration build (real owned work)</td><td class="key">Provider Finder epic</td><td class="dim">Epics → stories, flowed through the board, demoed.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <h3>5 &middot; Suggested initiative / epic spine</h3>
+  <ul class="clean">
+    <li><b>Initiative — "Determine the future path of Provider Directory"</b> → Epic <span class="key">Implement Provider Finder migration</span>. Keeps the epic tied to a real customer outcome (the directory goes live on the new platform) rather than a "requirements" placeholder.</li>
+    <li><b>Initiative — "Run the Business / Keep the Lights On"</b> → Epics <span class="key">Fabric Feature &amp; Site Expansion</span>, <span class="key">Provider 360 Support</span>, <span class="key">Directory Cleanup</span>.</li>
+    <li><b>Initiatives — Brado, Yext</b> → created as awareness now; epics defined only if/when they're approved to proceed.</li>
+  </ul>
+  <div class="note violet"><span><b>Epics stay outcome-based with no time-box.</b> That's deliberate — it's the standards owner's call to resist Q1-epic / Q2-epic patterns, and it's the right one. An epic completes when the outcome ships, not when a quarter ends.</span></div>
+
+  <h3>6 &middot; Ceremonies — what changes, what doesn't</h3>
+  <ul class="clean">
+    <li><b>Keep one shared standup</b> with the rest of the team — run Provider Directory off the new Kanban board, switch to the Scrum board for the scheduling portion.</li>
+    <li><b>Replace sprint planning with replenishment.</b> A lightweight weekly pull/prioritize (can ride the existing standup's 16th minute) instead of committing a sprint of capacity.</li>
+    <li><b>Retro stays</b> per the Working Agreement.</li>
+    <li><b>Quarterly = a roadmap refresh</b> (Now / Next / Later / Future), not a capacity commit.</li>
+  </ul>
+</section>
+
+<!-- ============ 04 METRICS ============ -->
+<section class="panel" id="metrics">
+  <h2>Measure flow, not velocity</h2>
+  <p class="lede">A Kanban team is measured on how work <em>moves</em>, not how many points it commits. Velocity and predictability don't apply; these flow metrics replace them and surface the real story — how much time is lost waiting on the vendor.</p>
+
+  <div class="card tight">
+  <table>
+    <thead><tr><th>Metric</th><th>What it tells you</th><th>Why it fits Provider Directory</th></tr></thead>
+    <tbody>
+      <tr><td><b>Cycle time</b></td><td class="dim">How long an item takes from start to done.</td><td class="dim">Replaces story-point velocity for work that can't be pointed.</td></tr>
+      <tr><td><b>Throughput</b></td><td class="dim">Items completed per week.</td><td class="dim">A capacity signal that doesn't require commitment.</td></tr>
+      <tr><td><b>WIP</b></td><td class="dim">How much is in flight at once.</td><td class="dim">Enforces the limits; catches overload on a tiny team.</td></tr>
+      <tr><td><b>Work-item age</b></td><td class="dim">How long active items have been open.</td><td class="dim">Flags the multi-month "16 meetings" items before they stall silently.</td></tr>
+      <tr><td><b>Flow efficiency</b></td><td class="dim">Active time vs. waiting time.</td><td class="dim">Quantifies time lost in <b>Waiting on vendor</b> — the team's central frustration, made visible.</td></tr>
+    </tbody>
+  </table>
+  </div>
+
+  <div class="note teal"><span>Flow efficiency is the one to lead with in leadership conversations: it turns "Fabric gives us two days' notice and we have no control" from an anecdote into a number on the board.</span></div>
+
+  <p style="margin-top:18px">Start a baseline now even if it's rough — a few weeks of cycle-time and throughput data makes the next quarterly checkpoint a real review instead of a guess. The metrics rollout sits with the Kanban-adoption owner; align the exact dashboard there so it's consistent with the other value streams.</p>
+</section>
+
+<!-- ============ 05 ROUTING ============ -->
+<section class="panel" id="routing">
+  <h2>Who owns what, and in what order</h2>
+  <p class="lede">This work spans the updated coaching split. Routing it correctly is half the battle — Kanban adoption and metrics sit with one owner, standards with another.</p>
+
+  <div class="owners">
+    <div class="owner">
+      <div class="who">Rick — Senior Scrum Master</div>
+      <div class="role">Primary: Kanban adoption &amp; metrics</div>
+      <ul>
+        <li>Confirm the board config, WIP limits, and class-of-service / expedite policy.</li>
+        <li>Own the flow-metrics dashboard so it's consistent with other streams.</li>
+        <li>Ceremony effectiveness for the new replenishment cadence.</li>
+      </ul>
+    </div>
+    <div class="owner">
+      <div class="who">Kris — Agile Coach</div>
+      <div class="role">Standards &amp; epic/initiative definition</div>
+      <ul>
+        <li>Codify the Lite quarterly-planning convention into standards.</li>
+        <li>Initiative / epic alignment; the SPM–Jira integration direction.</li>
+        <li>Confirm the Lite evidence set for the Epics-Defined gate.</li>
+      </ul>
+    </div>
+    <div class="owner">
+      <div class="who">Stacey — SPM / Portfolio</div>
+      <div class="role">Demands &amp; initiatives in SPM</div>
+      <ul>
+        <li>Create the demands → initiatives next week (fast-tracked, in-pillar).</li>
+        <li>Initiatives stay in SPM — not duplicated into Jira.</li>
+      </ul>
+    </div>
+    <div class="owner">
+      <div class="who">Nancy — Scrum Master</div>
+      <div class="role">Board build &amp; backlog hygiene</div>
+      <ul>
+        <li>Create the Provider Directory Kanban board from the existing mockup.</li>
+        <li>Clear stale Q2 stories; apply the Provider_Directory label/filter.</li>
+        <li>Draft the DoR-lite + expedite policy for team review.</li>
+      </ul>
+    </div>
+  </div>
+
+  <h3>Sequence</h3>
+  <ol class="seq">
+    <li><b>Socialize the model with the team first.</b> The PD lead asked to do this before locking anything — confirm the dedicated Kanban board before configuring. <span class="own">Nancy + PD leads</span></li>
+    <li><b>Stacey creates demands → initiatives in SPM</b> for the four candidates (next week, in-pillar fast-track). <span class="own">Stacey</span></li>
+    <li><b>Create the framework epics in Jira</b> on the suggested spine — before the Epics-Defined gate. Few, outcome-based, no time-box. <span class="own">Nancy + PD leads</span></li>
+    <li><b>Create &amp; configure the Kanban board</b> — columns incl. Waiting-on-vendor, WIP limits, swimlanes, label filter; clear stale stories. <span class="own">Nancy</span></li>
+    <li><b>Align board policy + metrics</b> with the Kanban-adoption owner so it matches the other streams. <span class="own">Rick</span></li>
+    <li><b>Format the roadmap</b> into Now / Next / Later / Future as the Lite plan of record. <span class="own">PD leads</span></li>
+    <li><b>Codify into standards</b> once it's run for a few weeks and proven. <span class="own">Kris</span></li>
+  </ol>
+
+  <div class="note"><span><b>Open question to settle with the standards owner:</b> the Lite track waives the sprint-planning board and capacity commitment — confirm that the roadmap + WIP-limited Kanban board + framework epics is the accepted evidence set for the Epics-Defined gate, so Provider Directory isn't held to a Scheduling-style bar it can't meet.</span></div>
+</section>
+
+<p class="foot">PROVIDER DIRECTORY &middot; KANBAN ADOPTION &amp; QP-LITE CONFORMANCE &middot; Q3 2026 &middot; DRAFT FOR TEAM SOCIALIZATION</p>
+</div>
+
+<script>
+  document.querySelectorAll('nav.tabs button').forEach(b=>{
+    b.addEventListener('click',()=>{
+      document.querySelectorAll('nav.tabs button').forEach(x=>x.classList.remove('active'));
+      document.querySelectorAll('.panel').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      document.getElementById(b.dataset.tab).classList.add('active');
+      window.scrollTo({top:0,behavior:'smooth'});
+    });
+  });
+</script>
+</body>
+</html>
