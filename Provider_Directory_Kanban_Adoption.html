@@ -249,6 +249,47 @@
   .plink .ic{font-family:var(--mono);font-size:8.5px;letter-spacing:.04em;text-transform:uppercase;border-radius:4px;padding:3px 6px;flex:0 0 auto;font-weight:600}
   .plink .ic.yt{color:#0d1520;background:#ff7a7a} .plink .ic.doc{color:#0d1520;background:var(--cyan)} .plink .ic.tip{color:#0d1520;background:var(--amber)}
   .plink .pl-t{flex:1} .plink .arr{color:var(--faint);font-family:var(--mono)}
+  .jql{font-family:var(--mono);font-size:11.5px;color:var(--teal);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:4px 9px;display:inline-block;white-space:pre-wrap;word-break:break-word;line-height:1.5}
+  .lane .lc .jqlnote{font-size:12.5px;color:var(--muted)}
+
+  /* target-state board mockup */
+  .tbwrap{border:1px solid var(--line);border-radius:12px;overflow:hidden;margin:14px 0 6px;background:var(--panel)}
+  .tbscroll{overflow-x:auto}
+  .tbgrid{min-width:940px}
+  .tbrow{display:grid;grid-template-columns:148px repeat(6,1fr)}
+  .tbhead{border-bottom:1px solid var(--line)}
+  .tbhead>div{padding:11px 12px;border-right:1px solid var(--line)}
+  .tbhead>div:last-child{border-right:none}
+  .tbhead .corner{background:var(--panel2)}
+  .tbh{font-family:var(--mono);font-size:9px;letter-spacing:.03em;text-transform:uppercase;color:var(--muted)}
+  .tbh .wip{display:block;margin-top:4px;color:var(--teal);font-size:9px}
+  .tbh.wait{color:var(--amber);background:rgba(242,177,52,.05)}
+  .tbh.wait .wip{color:var(--amber)}
+  .tbh.full .wip{color:var(--red)}
+  .swim{border-bottom:1px solid var(--line)}
+  .swim:last-child{border-bottom:none}
+  .swim>div{border-right:1px solid var(--line)}
+  .swim>div:last-child{border-right:none}
+  .slabel{padding:12px;display:flex;flex-direction:column;gap:3px}
+  .slabel .sk{font-family:var(--mono);font-size:9px;letter-spacing:.05em;text-transform:uppercase}
+  .slabel .st{font-size:11.5px;color:var(--muted)}
+  .swim.exp .slabel{background:linear-gradient(180deg,rgba(239,93,107,.1),transparent)} .swim.exp .sk{color:var(--red)}
+  .swim.proj .slabel{background:linear-gradient(180deg,rgba(167,139,250,.1),transparent)} .swim.proj .sk{color:var(--violet)}
+  .swim.rtb .slabel{background:linear-gradient(180deg,rgba(56,198,192,.1),transparent)} .swim.rtb .sk{color:var(--teal)}
+  .swim.els .sk{color:var(--muted)}
+  .tbcell{padding:8px;display:flex;flex-direction:column;gap:7px;min-height:54px}
+  .tbcell.wait{background:rgba(242,177,52,.04)}
+  .tcard{background:var(--panel2);border:1px solid var(--line);border-left-width:3px;border-radius:6px;padding:7px 8px}
+  .tcard .tt{font-size:11px;line-height:1.35;color:var(--ink);margin-bottom:6px}
+  .tcard .tm{display:flex;align-items:center;gap:6px}
+  .tcard .ek{font-family:var(--mono);font-size:8px;color:var(--muted)}
+  .tcard .av{margin-left:auto;width:17px;height:17px;border-radius:50%;font-size:7.5px;display:flex;align-items:center;justify-content:center;color:#0d1520;font-weight:700}
+  .av.sb{background:#e8955c} .av.sh{background:var(--teal)} .av.nc{background:var(--violet)}
+  .tcard.exp{border-left-color:var(--red)} .tcard.proj{border-left-color:var(--violet)} .tcard.rtb{border-left-color:var(--teal)} .tcard.els{border-left-color:var(--muted)}
+  .tcard.done .tt{text-decoration:line-through;color:var(--muted)}
+  .tblegend{display:flex;gap:15px;flex-wrap:wrap;font-size:11.5px;color:var(--muted);margin:10px 0 0}
+  .tblegend span{display:flex;align-items:center;gap:6px}
+  .tblegend i{width:9px;height:9px;border-radius:2px;display:inline-block}
 </style>
 </head>
 <body>
@@ -381,6 +422,66 @@
   <p class="viewing"></p>
   <p class="switch">↑ Scrum Master switches between board views — one team underneath ↑</p>
   <div class="team-rail">One <b>scrum team</b> · one shared <b>daily standup</b> · shared Epic resources — the linkage that made a fully separate team a non-starter stays intact</div>
+
+  <h3>What the board looks like once it's set up</h3>
+  <p class="dim">The target state: six columns left to right, four class-of-service swimlanes top to bottom, WIP limits on the columns. This is where the setup lands — an at-a-glance picture of the finished Provider Directory Kanban board.</p>
+  <div class="tbwrap">
+    <div class="tbscroll"><div class="tbgrid">
+      <div class="tbrow tbhead">
+        <div class="corner"></div>
+        <div class="tbh">Backlog<span class="wip">∞</span></div>
+        <div class="tbh">Ready<span class="wip">2 / 5</span></div>
+        <div class="tbh full">In progress<span class="wip">3 / 3 · full</span></div>
+        <div class="tbh wait">Waiting · vendor<span class="wip">not counted</span></div>
+        <div class="tbh">Validation<span class="wip">1 / 2</span></div>
+        <div class="tbh">Done<span class="wip">—</span></div>
+      </div>
+
+      <div class="tbrow swim exp">
+        <div class="slabel"><span class="sk">Expedite</span><span class="st">Vendor time-critical</span></div>
+        <div class="tbcell"></div>
+        <div class="tbcell"></div>
+        <div class="tbcell"><div class="tcard exp"><div class="tt">Fabric release smoke test — 2-day notice</div><div class="tm"><span class="ek">Fabric</span><span class="av sb">SB</span></div></div></div>
+        <div class="tbcell wait"></div>
+        <div class="tbcell"></div>
+        <div class="tbcell"></div>
+      </div>
+
+      <div class="tbrow swim proj">
+        <div class="slabel"><span class="sk">Project</span><span class="st">Planned delivery</span></div>
+        <div class="tbcell"><div class="tcard proj"><div class="tt">Provider Finder — data-mapping spec</div><div class="tm"><span class="ek">DSCH-1305</span><span class="av sh">SH</span></div></div></div>
+        <div class="tbcell"><div class="tcard proj"><div class="tt">Yext — field-mapping requirements</div><div class="tm"><span class="ek">DSCH-1352</span><span class="av sb">SB</span></div></div></div>
+        <div class="tbcell"><div class="tcard proj"><div class="tt">Provider Finder — migration discovery</div><div class="tm"><span class="ek">DSCH-1305</span><span class="av sh">SH</span></div></div></div>
+        <div class="tbcell wait"><div class="tcard proj"><div class="tt">Brado — awaiting vendor SOW</div><div class="tm"><span class="ek">DSCH-1496</span><span class="av sb">SB</span></div></div></div>
+        <div class="tbcell"></div>
+        <div class="tbcell"></div>
+      </div>
+
+      <div class="tbrow swim rtb">
+        <div class="slabel"><span class="sk">Run the business</span><span class="st">Reactive &amp; ops</span></div>
+        <div class="tbcell"><div class="tcard rtb"><div class="tt">Directory cleanup — duplicate provider merge</div><div class="tm"><span class="ek">DSCH-952</span><span class="av sh">SH</span></div></div></div>
+        <div class="tbcell"><div class="tcard rtb"><div class="tt">Provider 360 — Phase 1 test cases</div><div class="tm"><span class="ek">DSCH-1351</span><span class="av sb">SB</span></div></div></div>
+        <div class="tbcell"><div class="tcard rtb"><div class="tt">New member-site — requirements template</div><div class="tm"><span class="ek">DSCH-1497</span><span class="av sb">SB</span></div></div></div>
+        <div class="tbcell wait"><div class="tcard rtb"><div class="tt">Site expansion — awaiting Fabric build</div><div class="tm"><span class="ek">DSCH-1468</span><span class="av sb">SB</span></div></div></div>
+        <div class="tbcell"><div class="tcard rtb"><div class="tt">Analysis — Mount Vernon / New Rochelle test cases</div><div class="tm"><span class="ek">DSCH-1485</span><span class="av sb">SB</span></div></div></div>
+        <div class="tbcell"><div class="tcard rtb done"><div class="tt">Add Mount Vernon &amp; New Rochelle to Directory</div><div class="tm"><span class="ek">DSCH-1468</span><span class="av sb">SB</span></div></div></div>
+      </div>
+
+      <div class="tbrow swim els">
+        <div class="slabel"><span class="sk">Everything else</span><span class="st">Catch-all · needs a class</span></div>
+        <div class="tbcell"><div class="tcard els"><div class="tt">Provider photo fix — unclassified</div><div class="tm"><span class="ek">—</span><span class="av nc">NC</span></div></div></div>
+        <div class="tbcell"></div><div class="tbcell"></div><div class="tbcell wait"></div><div class="tbcell"></div><div class="tbcell"></div>
+      </div>
+    </div></div>
+  </div>
+  <div class="tblegend">
+    <span><i style="background:var(--red)"></i>Expedite</span>
+    <span><i style="background:var(--violet)"></i>Project</span>
+    <span><i style="background:var(--teal)"></i>Run the business</span>
+    <span><i style="background:var(--muted)"></i>Everything else</span>
+    <span style="margin-left:auto;color:var(--amber)">Amber column = blocked on vendor, not counted against WIP</span>
+  </div>
+  <p class="illus">Illustrative target state — example cards. In-progress is shown at its WIP cap (3/3) so you can see what a full column looks like.</p>
 
   <h3>Why Kanban is the right fit for this work</h3>
   <ul class="clean">
@@ -639,6 +740,28 @@
   </div>
 
   <div class="note teal"><span><b>Rule of thumb:</b> columns hold the WIP limits, swimlanes hold the classes of service, and the commitment point is where cycle time starts. Get those three right and the rest is tuning.</span></div>
+
+  <h3>Applied — this board's swimlanes</h3>
+  <p class="dim">Switch the method from Epics to <b>Queries</b> (Board settings → Layout → Swimlanes → Select method → Queries), then define these four lanes top to bottom. A card lands in the first lane it matches, so order matters — Expedite sits on top.</p>
+  <div class="lanes">
+    <div class="lane exp">
+      <div class="lh"><span class="lk">Lane 1 · Expedite</span><span class="lt">Vendor time-critical</span></div>
+      <div class="lc"><code class="jql">labels = Expedite</code></div>
+    </div>
+    <div class="lane proj">
+      <div class="lh"><span class="lk">Lane 2 · Project</span><span class="lt">Planned delivery</span></div>
+      <div class="lc"><code class="jql">parent in (DSCH-1305, DSCH-1352, DSCH-1496)</code></div>
+    </div>
+    <div class="lane rtb">
+      <div class="lh"><span class="lk">Lane 3 · Run the business</span><span class="lt">Reactive &amp; ops</span></div>
+      <div class="lc"><code class="jql">parent in (DSCH-1497, DSCH-1468, DSCH-1351, DSCH-952, DSCH-1217, DSCH-1220)</code></div>
+    </div>
+    <div class="lane">
+      <div class="lh"><span class="lk">Lane 4 · Everything else</span><span class="lt">Catch-all (pinned)</span></div>
+      <div class="lc"><span class="jqlnote">No JQL — anything uncategorized surfaces here as a nudge to classify it.</span></div>
+    </div>
+  </div>
+  <div class="note"><span><b>Remember:</b> WIP limits live on the columns, not the lanes — swimlanes only group the view. When new epics appear, add their keys to the right lane's JQL or they'll drop into Everything Else. Prefer zero query upkeep? Label each card <code class="jql">cos-project</code> / <code class="jql">cos-rtb</code> and query on the label instead. If <code class="jql">parent</code> doesn't resolve on this project type, use <code class="jql">"Epic Link" in (…)</code>.</span></div>
 </section>
 
 <p class="foot">PROVIDER DIRECTORY &middot; KANBAN ADOPTION &amp; QP-LITE CONFORMANCE &middot; Q3 2026 &middot; DRAFT FOR TEAM SOCIALIZATION</p>
@@ -646,7 +769,7 @@
 
 <script>
   const REDUCE = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const REVEAL_SEL = 'h2,h3,.lede,.verdict,.readiness,.card,.note,ul.clean,.boardtoggle,.boards,.viewing,.switch,.team-rail,.kbflow,.lanes,.stats,.effwrap,.illus,.owners,ol.seq,.lpsub,.path,.pstep,.dim';
+  const REVEAL_SEL = 'h2,h3,.lede,.verdict,.readiness,.card,.note,ul.clean,.boardtoggle,.boards,.viewing,.switch,.team-rail,.tbwrap,.tblegend,.illus,.kbflow,.lanes,.stats,.effwrap,.owners,ol.seq,.lpsub,.path,.pstep,.dim';
 
   // tag revealable blocks across all panels
   document.querySelectorAll('.panel').forEach(p=>{
