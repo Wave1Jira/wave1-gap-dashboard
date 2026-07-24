@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Automation Steady State Operating Model — Team Review Draft</title>
+<style>
+  :root{
+    --ink:#0F172A; --ink2:#334155; --muted:#64748B; --line:#E2E8F0;
+    --paper:#FFFFFF; --wash:#F8FAFC; --accent:#1E3A8A;
+    --process:#2563EB; --process-bg:#DBEAFE;
+    --decision:#16A34A; --decision-bg:#DCFCE7;
+    --jira:#EA580C; --jira-bg:#FFEDD5;
+    --cause:#7C3AED; --cause-bg:#EDE9FE;
+    --endst:#6B7280; --endst-bg:#E5E7EB;
+    --warn:#D97706; --warn-bg:#FFFBEB; --warn-ink:#78350F;
+    --sans:"Segoe UI",-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    --mono:ui-monospace,"SF Mono","Cascadia Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--wash);color:var(--ink);font-family:var(--sans);font-size:15px;line-height:1.6}
+  .shell{max-width:1120px;margin:0 auto;padding:0 20px 80px}
+
+  /* Status rail — the constraint that governs the whole document */
+  .rail{background:var(--warn-bg);border-bottom:1px solid var(--warn);margin-bottom:0}
+  .rail-in{max-width:1120px;margin:0 auto;padding:10px 20px;display:flex;gap:14px;align-items:baseline;flex-wrap:wrap}
+  .rail-tag{font-family:var(--mono);font-size:11px;letter-spacing:.09em;text-transform:uppercase;font-weight:700;color:var(--warn-ink);white-space:nowrap}
+  .rail-txt{font-size:13px;color:var(--warn-ink)}
+
+  header.doc{padding:34px 0 22px;border-bottom:1px solid var(--line)}
+  .eyebrow{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent);font-weight:700}
+  h1{font-size:31px;line-height:1.18;letter-spacing:-.02em;margin:8px 0 10px;font-weight:700}
+  .meta{display:flex;gap:22px;flex-wrap:wrap;font-family:var(--mono);font-size:12px;color:var(--muted)}
+  .meta b{color:var(--ink2);font-weight:600}
+
+  /* Tabs */
+  .tabs{display:flex;gap:2px;overflow-x:auto;border-bottom:2px solid var(--line);margin-top:26px;scrollbar-width:thin}
+  .tab{appearance:none;border:0;background:none;font-family:var(--sans);font-size:14px;font-weight:600;color:var(--muted);
+       padding:11px 15px;white-space:nowrap;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s}
+  .tab:hover{color:var(--ink2)}
+  .tab[aria-selected="true"]{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab:focus-visible{outline:2px solid var(--accent);outline-offset:-3px;border-radius:3px}
+  .tab .n{font-family:var(--mono);font-size:11px;color:#94A3B8;margin-right:7px}
+  .tab[aria-selected="true"] .n{color:var(--accent)}
+
+  .panel{display:none;animation:fade .22s ease-out}
+  .panel.on{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+  @media (prefers-reduced-motion:reduce){.panel{animation:none}}
+
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:26px 28px;margin-top:22px}
+  h2{font-size:20px;letter-spacing:-.01em;margin:0 0 6px;font-weight:700}
+  h3{font-size:15px;margin:26px 0 8px;font-weight:700;color:var(--ink)}
+  h3:first-child{margin-top:0}
+  .sub{color:var(--muted);font-size:13.5px;margin:0 0 18px}
+  p{margin:0 0 12px}
+  ul{margin:0 0 12px;padding-left:20px}
+  li{margin-bottom:5px}
+
+  table{width:100%;border-collapse:collapse;margin:14px 0 6px;font-size:13.5px}
+  th{text-align:left;font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;
+     color:var(--muted);font-weight:700;border-bottom:1.5px solid var(--line);padding:8px 10px 8px 0;vertical-align:bottom}
+  td{border-bottom:1px solid var(--line);padding:11px 10px 11px 0;vertical-align:top}
+  tr:last-child td{border-bottom:0}
+  td.fill{background:#FCFCFD;border-left:1px dashed var(--line);padding-left:10px;color:#CBD5E1;font-style:italic}
+
+  .chip{display:inline-block;font-family:var(--mono);font-size:11px;font-weight:700;letter-spacing:.04em;
+        padding:2.5px 8px;border-radius:4px;white-space:nowrap}
+  .c-jira{background:var(--jira-bg);color:#7C2D12;border:1px solid var(--jira)}
+  .c-cause{background:var(--cause-bg);color:#2E1065;border:1px solid var(--cause)}
+  .c-end{background:var(--endst-bg);color:#1F2937;border:1px solid var(--endst)}
+  .c-proc{background:var(--process-bg);color:#0F172A;border:1px solid var(--process)}
+  .key{font-family:var(--mono);font-size:12px;color:var(--accent);font-weight:600}
+
+  .note{border-left:3px solid var(--warn);background:var(--warn-bg);color:var(--warn-ink);
+        padding:13px 16px;border-radius:0 6px 6px 0;font-size:13.5px;margin:18px 0}
+  .note b{font-weight:700}
+  .note.calm{border-left-color:var(--accent);background:#F1F5F9;color:var(--ink2)}
+
+  .figure{background:var(--paper);border:1px solid var(--line);border-radius:8px;padding:14px;margin:16px 0}
+  .figure svg{width:100%;height:auto;display:block}
+  figcaption{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:10px;text-align:center}
+
+  .steps{list-style:none;padding:0;margin:16px 0 0;counter-reset:s}
+  .steps li{counter-increment:s;padding-left:42px;position:relative;margin-bottom:16px}
+  .steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:1px;font-family:var(--mono);
+        font-size:11px;font-weight:700;color:var(--accent);border:1px solid var(--line);border-radius:4px;padding:3px 6px;background:var(--wash)}
+  .steps b{display:block;font-size:14.5px}
+
+  .defs{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));margin-top:8px}
+  .def{border:1px solid var(--line);border-radius:8px;padding:16px 18px;background:var(--wash)}
+  .def h4{margin:0 0 10px;font-size:15px;display:flex;align-items:center;gap:9px}
+  .def dl{margin:0;font-size:13.5px}
+  .def dt{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-top:9px}
+  .def dt:first-child{margin-top:0}
+  .def dd{margin:2px 0 0}
+
+  footer{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+
+  @media print{
+    .tabs,.rail{display:none}
+    .panel{display:block!important;page-break-before:always}
+    .panel:first-of-type{page-break-before:avoid}
+    body{background:#fff}
+  }
+</style>
+</head>
+<body>
+
+<div class="rail">
+  <div class="rail-in">
+    <span class="rail-tag">Working draft</span>
+    <span class="rail-txt">Not an approved team process. AUTO has no Task issue type, so this model routes to Bug, Story, Spike, or No Action only.</span>
+  </div>
+</div>
+
+<div class="shell">
+
+<header class="doc">
+  <div class="eyebrow">Automation CoE · Steady State</div>
+  <h1>Automation Steady State Operating Model</h1>
+  <div class="meta">
+    <span><b>Status</b> Draft for team review</span>
+    <span><b>Epic</b> 2026 DACOE Steady State</span>
+    <span><b>Tracked under</b> AUTO-1233</span>
+    <span><b>Feedback due</b> — set date —</span>
+  </div>
+
+  <div class="tabs" role="tablist" aria-label="Review draft sections">
+    <button class="tab" role="tab" aria-selected="true"  aria-controls="p1" id="t1"><span class="n">01</span>Overview</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p2" id="t2"><span class="n">02</span>Workflow</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p3" id="t3"><span class="n">03</span>Work-Type Decision Guide</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p4" id="t4"><span class="n">04</span>Jira Work Type Reference</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p5" id="t5"><span class="n">05</span>Root Cause</button>
+    <button class="tab" role="tab" aria-selected="false" aria-controls="p6" id="t6"><span class="n">06</span>Decisions &amp; Feedback</button>
+  </div>
+</header>
+
+<!-- 01 OVERVIEW -->
+<section class="panel on" id="p1" role="tabpanel" aria-labelledby="t1" tabindex="0">
+  <div class="card">
+    <h2>Purpose</h2>
+    <p class="sub">Why this model is being proposed.</p>
+    <p>The Automation team needs a consistent way to handle findings raised by daily monitoring once an automation has left Hypercare and entered Steady State. The proposed model is intended to:</p>
+    <ul>
+      <li>Remove the need to clone Steady State stories into every sprint.</li>
+      <li>Create Jira work only when the daily monitoring report identifies something actionable.</li>
+      <li>Give the team a repeatable method for choosing the right work type.</li>
+      <li>Capture why findings occur, so the team can report on trends rather than incidents.</li>
+      <li>Keep traceability from the monitoring report through to resolution.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Current-state challenge</h2>
+    <p class="sub">What happens today. Described as process, not performance.</p>
+    <ul>
+      <li>Steady State monitoring has been represented by recurring or cloned Jira stories.</li>
+      <li>Stories stay open, or are recreated, even when there is no actionable work behind them.</li>
+      <li>There is no documented method for deciding whether a finding becomes a Bug, Story, or Spike.</li>
+      <li>Root causes are not captured consistently, so recurring problems are hard to see.</li>
+      <li>The result is administrative overhead and limited visibility into operational trends.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Guiding principle</h2>
+    <p class="sub">The one sentence the rest of the model follows from.</p>
+    <p style="font-size:19px;line-height:1.5;font-weight:600;letter-spacing:-.01em;margin:6px 0 4px">Monitoring identifies work. It does not perform the work.</p>
+    <p style="color:var(--muted);font-size:13.5px;margin:0">Reviewing the daily report is an operational governance activity. It does not, by itself, require a Jira issue.</p>
+  </div>
+</section>
+
+<!-- 02 WORKFLOW -->
+<section class="panel" id="p2" role="tabpanel" aria-labelledby="t2" tabindex="0">
+  <div class="card">
+    <h2>Decision flow</h2>
+    <p class="sub">From the daily monitoring report through to the Steady State Epic.</p>
+    <figure class="figure" style="margin:16px 0 0">
+      <svg viewBox="0 0 1200 1000" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Decision flow from daily monitoring report to the Steady State Epic" font-family="Segoe UI, Helvetica Neue, Arial, sans-serif">
+        <defs><marker id="ar" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto" markerUnits="strokeWidth"><path d="M0,0 L0,6 L9,3 z" fill="#475569"/></marker></defs>
+        <rect x="0" y="0" width="1200" height="1000" fill="#FFFFFF"/>
+        <rect x="50" y="80" width="330" height="160" rx="6" fill="#F8FAFC" stroke="#CBD5E1"/>
+        <text x="70" y="104" font-size="13" font-weight="600" fill="#0F172A">Legend</text>
+        <rect x="70" y="115" width="22" height="14" rx="3" fill="#DBEAFE" stroke="#2563EB"/><text x="104" y="127" font-size="12" fill="#334155">Operational process</text>
+        <rect x="70" y="141" width="22" height="14" rx="3" fill="#DCFCE7" stroke="#16A34A"/><text x="104" y="153" font-size="12" fill="#334155">Decision</text>
+        <rect x="70" y="167" width="22" height="14" rx="3" fill="#FFEDD5" stroke="#EA580C"/><text x="104" y="179" font-size="12" fill="#334155">Jira work item</text>
+        <rect x="70" y="193" width="22" height="14" rx="3" fill="#EDE9FE" stroke="#7C3AED"/><text x="104" y="205" font-size="12" fill="#334155">Root cause</text>
+        <rect x="70" y="219" width="22" height="14" rx="3" fill="#E5E7EB" stroke="#6B7280"/><text x="104" y="231" font-size="12" fill="#334155">End state</text>
+
+        <rect x="480" y="70" width="240" height="56" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="600" y="104" text-anchor="middle" font-size="14" fill="#0F172A">Daily Monitoring Report</text>
+        <rect x="480" y="170" width="240" height="56" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="600" y="204" text-anchor="middle" font-size="14" fill="#0F172A">Review Findings</text>
+        <path d="M490,300 L600,250 L710,300 L600,350 Z" fill="#DCFCE7" stroke="#16A34A" stroke-width="1.5"/>
+        <text x="600" y="305" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">Requires Jira work?</text>
+        <rect x="140" y="380" width="220" height="64" rx="8" fill="#E5E7EB" stroke="#6B7280" stroke-width="2"/>
+        <text x="250" y="408" text-anchor="middle" font-size="14" font-weight="600" fill="#1F2937">No Action</text>
+        <text x="250" y="427" text-anchor="middle" font-size="12" fill="#4B5563">Close / document the finding</text>
+        <text x="250" y="462" text-anchor="middle" font-size="11" font-style="italic" fill="#64748B">Not a Jira issue type — a recorded review outcome.</text>
+        <rect x="490" y="400" width="220" height="64" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="600" y="428" text-anchor="middle" font-size="14" fill="#0F172A">Determine Work</text>
+        <text x="600" y="446" text-anchor="middle" font-size="14" fill="#0F172A">Needed</text>
+        <rect x="345" y="520" width="150" height="50" rx="8" fill="#FFEDD5" stroke="#EA580C" stroke-width="1.5"/>
+        <text x="420" y="551" text-anchor="middle" font-size="14" font-weight="600" fill="#7C2D12">Bug</text>
+        <rect x="525" y="520" width="150" height="50" rx="8" fill="#FFEDD5" stroke="#EA580C" stroke-width="1.5"/>
+        <text x="600" y="551" text-anchor="middle" font-size="14" font-weight="600" fill="#7C2D12">Story</text>
+        <rect x="705" y="520" width="150" height="50" rx="8" fill="#FFEDD5" stroke="#EA580C" stroke-width="1.5"/>
+        <text x="780" y="551" text-anchor="middle" font-size="14" font-weight="600" fill="#7C2D12">Spike</text>
+        <rect x="60" y="628" width="360" height="76" rx="6" fill="#FFFBEB" stroke="#D97706" stroke-dasharray="4 3"/>
+        <text x="74" y="648" font-size="11" fill="#78350F">AUTO has no Task issue type. Operational findings route to</text>
+        <text x="74" y="664" font-size="11" fill="#78350F">Bug when function is broken, Story when it is not.</text>
+        <text x="74" y="680" font-size="11" fill="#78350F">Sub-tasks decompose an item after it is created — they are</text>
+        <text x="74" y="696" font-size="11" fill="#78350F">not a triage outcome and do not appear in this flow.</text>
+        <rect x="460" y="640" width="280" height="60" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+        <text x="600" y="676" text-anchor="middle" font-size="14" fill="#2E1065">Root Cause Classification</text>
+        <text x="770" y="660" font-size="11" font-style="italic" fill="#6B21A8">Recorded separately from the work type.</text>
+        <text x="770" y="675" font-size="11" font-style="italic" fill="#6B21A8">For a Spike, remains TBD until the</text>
+        <text x="770" y="690" font-size="11" font-style="italic" fill="#6B21A8">investigation concludes.</text>
+        <rect x="52" y="740" width="200" height="60" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+        <text x="152" y="765" text-anchor="middle" font-size="12" fill="#2E1065">Internal Solution</text>
+        <text x="152" y="782" text-anchor="middle" font-size="12" fill="#2E1065">Defect</text>
+        <rect x="276" y="740" width="200" height="60" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+        <text x="376" y="775" text-anchor="middle" font-size="12" fill="#2E1065">Upstream Change</text>
+        <rect x="500" y="740" width="200" height="60" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+        <text x="600" y="775" text-anchor="middle" font-size="12" fill="#2E1065">Design Gap</text>
+        <rect x="724" y="740" width="200" height="60" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+        <text x="824" y="765" text-anchor="middle" font-size="12" fill="#2E1065">Environment</text>
+        <text x="824" y="782" text-anchor="middle" font-size="12" fill="#2E1065">or Data</text>
+        <rect x="948" y="740" width="200" height="60" rx="8" fill="#EDE9FE" stroke="#7C3AED" stroke-width="1.5"/>
+        <text x="1048" y="765" text-anchor="middle" font-size="12" fill="#2E1065">Other</text>
+        <text x="1048" y="782" text-anchor="middle" font-size="11" fill="#6B21A8">(describe)</text>
+        <rect x="440" y="870" width="320" height="64" rx="8" fill="#DBEAFE" stroke="#2563EB" stroke-width="1.5"/>
+        <text x="600" y="898" text-anchor="middle" font-size="14" fill="#0F172A">Link to 2026 DACOE</text>
+        <text x="600" y="916" text-anchor="middle" font-size="14" fill="#0F172A">Steady State Epic</text>
+        <g stroke="#475569" stroke-width="1.8" fill="none" marker-end="url(#ar)">
+          <path d="M600,126 V166"/><path d="M600,226 V246"/><path d="M490,300 H250 V376"/><path d="M600,350 V396"/>
+          <path d="M420,492 V516"/><path d="M600,492 V516"/><path d="M780,492 V516"/><path d="M600,600 V636"/>
+          <path d="M152,716 V736"/><path d="M376,716 V736"/><path d="M600,716 V736"/><path d="M824,716 V736"/><path d="M1048,716 V736"/>
+          <path d="M600,830 V866"/>
+        </g>
+        <g stroke="#475569" stroke-width="1.8" fill="none">
+          <path d="M600,464 V492"/><path d="M420,492 H780"/><path d="M420,570 V600"/><path d="M600,570 V600"/><path d="M780,570 V600"/>
+          <path d="M420,600 H780"/><path d="M600,700 V716"/><path d="M152,716 H1048"/>
+          <path d="M152,800 V830"/><path d="M376,800 V830"/><path d="M600,800 V830"/><path d="M824,800 V830"/><path d="M1048,800 V830"/>
+          <path d="M152,830 H1048"/>
+        </g>
+        <path d="M240,628 V545 H341" stroke="#D97706" stroke-width="1.3" stroke-dasharray="4 3" fill="none"/>
+        <text x="380" y="292" text-anchor="middle" font-size="13" font-weight="600" fill="#166534">NO</text>
+        <text x="616" y="378" font-size="13" font-weight="600" fill="#166534">YES</text>
+      </svg>
+      <figcaption>Steady State monitoring finding — decision flow</figcaption>
+    </figure>
+  </div>
+
+  <div class="card">
+    <h2>Narrative walkthrough</h2>
+    <p class="sub">The same flow in words, for anyone reading without the diagram.</p>
+    <ol class="steps">
+      <li><b>Review the daily monitoring report.</b> This is a standing operational activity. It does not require its own Jira issue.</li>
+      <li><b>Decide whether the finding requires action.</b> Expected behaviour, false alerts, informational results, and issues that resolved on their own end here as No Action. Record them if the record is useful for reporting; otherwise close them.</li>
+      <li><b>Choose the work type.</b> If function is broken, raise a Bug. If nothing is broken but something new or improved is needed, raise a Story. If the team cannot yet tell which, raise a Spike.</li>
+      <li><b>Assign the root cause.</b> Independent of the work type. For a Spike it stays unassigned until the investigation concludes, then it is set alongside whatever follow-up work the Spike produces.</li>
+      <li><b>Link to the Epic and prioritise.</b> Work is associated with the 2026 DACOE Steady State Epic and prioritised through the team's normal backlog process. If the finding turns out to be a substantial new initiative, it moves to the appropriate delivery Epic instead.</li>
+    </ol>
+    <div class="note calm"><b>Spikes feed back into the flow.</b> A Spike does not end the process. Its documented conclusion re-enters at step 3 and produces a Bug, a Story, or a decision that no further work is needed.</div>
+  </div>
+</section>
+
+<!-- 03 WORK-TYPE DECISION GUIDE -->
+<section class="panel" id="p3" role="tabpanel" aria-labelledby="t3" tabindex="0">
+  <div class="card">
+    <h2>Choosing the work type</h2>
+    <p class="sub">Applies to findings raised by Steady State monitoring. For general AUTO definitions, see the Jira Work Type Reference tab.</p>
+    <table>
+      <thead><tr><th style="width:15%">Outcome</th><th style="width:44%">When to use it</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr>
+          <td><span class="chip c-end">No Action</span></td>
+          <td>Expected behaviour, a false alert, an informational finding, or an issue that resolved without intervention. No Jira work item is created.</td>
+          <td>A temporary delay triggered an alert, but the automation completed successfully.</td>
+        </tr>
+        <tr>
+          <td><span class="chip c-jira">Bug</span></td>
+          <td>An existing automation is no longer doing what it did before, and corrective work is required. The cause may be internal, upstream, or environmental — the work type describes the fix, not the blame.</td>
+          <td>An application field changed and the process can no longer complete. A service account credential expired and the run failed.</td>
+        </tr>
+        <tr>
+          <td><span class="chip c-jira">Story</span></td>
+          <td>The automation works as designed, but a new capability, exception path, business requirement, documentation update, or proactive improvement is needed.</td>
+          <td>A new business scenario was introduced that the automation was never built to process. A playbook needs updating for Steady State support.</td>
+        </tr>
+        <tr>
+          <td><span class="chip c-jira">Spike</span></td>
+          <td>The cause, scope, or correct work type is not yet known and investigation is required. Time-boxed. Produces a documented conclusion and recommendation.</td>
+          <td>Intermittent failures with no clear pattern across code, infrastructure, credentials, data, or an upstream dependency.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="note">
+      <b>Why there is no Task.</b> AUTO does not offer a Task issue type. Operational and maintenance findings route to <b>Bug</b> when function is broken and <b>Story</b> when it is not. Sub-tasks break down an item after it has been created; they are not a triage outcome and do not appear in this flow.
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Spike completion expectations</h2>
+    <p class="sub">Minimum content before a Steady State Spike can be closed.</p>
+    <ul>
+      <li>A clearly stated question or problem to investigate.</li>
+      <li>The evidence reviewed.</li>
+      <li>The root cause, if it was determined.</li>
+      <li>Business or operational impact.</li>
+      <li>A recommended next step and the resulting work type.</li>
+      <li>Links to any follow-up Bug or Story.</li>
+      <li>A clear conclusion — including No Action, where that is the honest outcome.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- 04 JIRA WORK TYPE REFERENCE -->
+<section class="panel" id="p4" role="tabpanel" aria-labelledby="t4" tabindex="0">
+  <div class="card">
+    <h2>AUTO work item types</h2>
+    <p class="sub">Reference copy. The canonical version lives on the Work Item Types page — transclude it rather than maintaining two copies.</p>
+
+    <div class="defs">
+      <div class="def">
+        <h4><span class="chip c-jira">Story</span></h4>
+        <dl>
+          <dt>What</dt><dd>Tracks a deliverable that adds value — functionality, documentation, or an operational improvement. Expressed as a user goal where one applies.</dd>
+          <dt>How</dt><dd>Must have clear Acceptance Criteria defining when the work is Done.</dd>
+          <dt>When</dt><dd>Building known requirements or enhancements.</dd>
+          <dt>Example</dt><dd><span class="key">AUTO-1232</span> Playbook — Referral Attachment. Creates documentation for a specific automation to support Steady State.</dd>
+        </dl>
+      </div>
+      <div class="def">
+        <h4><span class="chip c-jira">Spike</span></h4>
+        <dl>
+          <dt>What</dt><dd>A time-boxed research activity used to reduce uncertainty or investigate a technical approach.</dd>
+          <dt>How</dt><dd>The outcome is information or a decision, not functional code. Often produces new Stories.</dd>
+          <dt>When</dt><dd>The team lacks enough information to estimate or design a solution.</dd>
+          <dt>Example</dt><dd><span class="key">AUTO-1233</span> Enhance Automation Steady State Workflow. Researches and recommends improvements to production issue triage.</dd>
+        </dl>
+      </div>
+      <div class="def">
+        <h4><span class="chip c-jira">Bug</span></h4>
+        <dl>
+          <dt>What</dt><dd>A problem, error, or deviation from intended behaviour or acceptance criteria.</dd>
+          <dt>How</dt><dd>Defined by intended behaviour versus actual behaviour.</dd>
+          <dt>When</dt><dd>Existing functionality is broken or was built incorrectly. Often identified during Steady State monitoring.</dd>
+          <dt>Example</dt><dd><span class="key">AUTO-1210</span> LocAuth — validate and update selectors. Fixed a failure where selectors no longer matched the application UI.</dd>
+        </dl>
+      </div>
+      <div class="def">
+        <h4><span class="chip c-jira">Sub-task</span></h4>
+        <dl>
+          <dt>What</dt><dd>A small, technical piece of work that is part of a larger Story, Bug, or Spike.</dd>
+          <dt>How</dt><dd>Breaks the "how" of the parent issue into manageable developer steps.</dd>
+          <dt>When</dt><dd>Tracking the individual steps required to complete a parent work item.</dd>
+          <dt>Example</dt><dd><span class="key">AUTO-1002</span> Claim Denials Phase 2 — Update Playbook. Documentation component of a larger delivery Story.</dd>
+        </dl>
+      </div>
+    </div>
+
+    <h3>Summary</h3>
+    <table>
+      <thead><tr><th>Type</th><th>Purpose</th><th>Outcome</th><th>AUTO context</th></tr></thead>
+      <tbody>
+        <tr><td><span class="chip c-jira">Story</span></td><td>Build known value</td><td>Functional feature or deliverable</td><td>New bot development, playbooks</td></tr>
+        <tr><td><span class="chip c-jira">Spike</span></td><td>Research unknowns</td><td>Knowledge or decision</td><td>Evaluating new workflow models</td></tr>
+        <tr><td><span class="chip c-jira">Bug</span></td><td>Fix errors</td><td>Restored function</td><td>Production bot failures</td></tr>
+        <tr><td><span class="chip c-jira">Sub-task</span></td><td>Break down work</td><td>Task completion</td><td>Technical steps within a Story</td></tr>
+      </tbody>
+    </table>
+
+    <div class="note calm">
+      Related reading on this space: <b>Work Item Types</b> and <b>Spikes vs Bugs (Defects)</b>. The Steady State model does not redefine these types — it only says which one to pick for a monitoring finding.
+    </div>
+  </div>
+</section>
+
+<!-- 05 ROOT CAUSE -->
+<section class="panel" id="p5" role="tabpanel" aria-labelledby="t5" tabindex="0">
+  <div class="card">
+    <h2>Root-cause categories</h2>
+    <p class="sub">The work type says how the work will be managed. The root cause says why the finding happened. They are recorded independently.</p>
+
+    <div class="defs">
+      <div class="def">
+        <h4><span class="chip c-cause">Internal Solution Defect</span></h4>
+        <p style="font-size:13.5px;margin:0 0 8px">Our code, configuration, logic, or implementation was incorrect or did not behave as intended.</p>
+        <ul style="font-size:13px;margin:0">
+          <li>Incorrect business rule</li><li>Code defect</li><li>Configuration error</li>
+          <li>Logic failed for a scenario that should have been supported</li><li>Testing did not catch it before release</li>
+        </ul>
+      </div>
+      <div class="def">
+        <h4><span class="chip c-cause">Upstream Change</span></h4>
+        <p style="font-size:13.5px;margin:0 0 8px">A vendor, source system, interface, or business process changed and affected the automation.</p>
+        <ul style="font-size:13px;margin:0">
+          <li>Vendor application update</li><li>API response changed</li><li>Screen layout changed</li>
+          <li>Business team changed the source process</li><li>Input file structure changed</li>
+        </ul>
+      </div>
+      <div class="def">
+        <h4><span class="chip c-cause">Design Gap</span></h4>
+        <p style="font-size:13.5px;margin:0 0 8px">The automation works as originally designed, but the design did not include a scenario that is now required.</p>
+        <ul style="font-size:13px;margin:0">
+          <li>New exception path</li><li>Newly identified business scenario</li><li>New user population</li>
+          <li>A condition that was not known during design</li>
+        </ul>
+      </div>
+      <div class="def">
+        <h4><span class="chip c-cause">Environment or Data</span></h4>
+        <p style="font-size:13.5px;margin:0 0 8px">Infrastructure, access, credentials, connectivity, platform availability, scheduling, or input data quality.</p>
+        <ul style="font-size:13px;margin:0">
+          <li>Expired credential</li><li>Missing permission</li><li>Network outage</li>
+          <li>Bad or incomplete input data</li><li>Orchestrator or server availability</li><li>Locked account</li>
+        </ul>
+      </div>
+      <div class="def">
+        <h4><span class="chip c-cause">Other</span></h4>
+        <p style="font-size:13.5px;margin:0">Use only when none of the categories above accurately describes the finding. A short written description is required when this is selected.</p>
+      </div>
+    </div>
+
+    <h3>How the two dimensions combine</h3>
+    <table>
+      <thead><tr><th style="width:40%">Scenario</th><th style="width:18%">Work type</th><th>Root cause</th></tr></thead>
+      <tbody>
+        <tr><td>Existing logic produces an incorrect result</td><td><span class="chip c-jira">Bug</span></td><td><span class="chip c-cause">Internal Solution Defect</span></td></tr>
+        <tr><td>A vendor changes an API and the automation fails</td><td><span class="chip c-jira">Bug</span></td><td><span class="chip c-cause">Upstream Change</span></td></tr>
+        <tr><td>A service account credential expired</td><td><span class="chip c-jira">Bug</span></td><td><span class="chip c-cause">Environment or Data</span></td></tr>
+        <tr><td>A new business scenario must be supported</td><td><span class="chip c-jira">Story</span></td><td><span class="chip c-cause">Design Gap</span></td></tr>
+        <tr><td>Support documentation needs updating</td><td><span class="chip c-jira">Story</span></td><td><span class="chip c-cause">Other</span> — describe</td></tr>
+        <tr><td>Repeated failures with no identified cause</td><td><span class="chip c-jira">Spike</span></td><td>To be determined during investigation</td></tr>
+        <tr><td>Alert reviewed, nothing required</td><td><span class="chip c-end">No Action</span></td><td>Record only if useful for reporting</td></tr>
+      </tbody>
+    </table>
+    <div class="note calm">Notice that the first three rows are all Bugs with three different causes. That separation is the point: the work type drives how the team manages the work, the root cause drives what the team learns.</div>
+  </div>
+
+  <div class="card">
+    <h2>What the categories let the team ask</h2>
+    <ul>
+      <li>Are most incidents caused by our own code?</li>
+      <li>Are upstream systems breaking us, and which ones?</li>
+      <li>Are scenarios being missed during design?</li>
+      <li>Are infrastructure and access issues becoming more common?</li>
+      <li>Are credentials and permissions a recurring problem?</li>
+    </ul>
+    <p style="color:var(--muted);font-size:13.5px;margin:0">Select only the metrics that will change a decision. Everything else is reporting overhead.</p>
+  </div>
+</section>
+
+<!-- 06 DECISIONS & FEEDBACK -->
+<section class="panel" id="p6" role="tabpanel" aria-labelledby="t6" tabindex="0">
+  <div class="card">
+    <h2>Decisions needed from the team</h2>
+    <p class="sub">Blank columns are for the review session. Nothing here is settled.</p>
+    <table>
+      <thead><tr><th style="width:32%">Decision</th><th style="width:30%">Proposed direction</th><th style="width:16%">Team feedback</th><th style="width:12%">Final decision</th><th style="width:10%">Owner</th></tr></thead>
+      <tbody>
+        <tr><td>Use one persistent Steady State Epic</td><td>Yes — 2026 DACOE Steady State</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Monitoring alone does not require recurring Jira stories</td><td>Confirm</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Definitions for Bug, Story, Spike, and No Action</td><td>As documented on the Work-Type Decision Guide tab</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Operational maintenance classification</td><td>Bug when function is broken, Story when it is not. No Task type requested.</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Widen the Story definition to cover documentation and operational deliverables</td><td>Yes — matches how AUTO already uses Story</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>The five root-cause categories</td><td>Adopt as listed</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>How root cause is captured in Jira</td><td>Field, label, or component — team to choose</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Whether root cause is required at creation</td><td>No — Spikes cannot supply it until they close</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Board placement — current Scrum board or a dedicated Kanban board</td><td>Open</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Who reviews the daily monitoring report</td><td>Open</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Who may create and classify the resulting work</td><td>Open</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>How urgent or production-impacting findings escalate</td><td>Open</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Epic cadence — annual, persistent, or other</td><td>Annual, per the 2026 naming</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>When a finding moves from Steady State to a delivery Epic</td><td>When it becomes a substantial project, redesign, or funded initiative</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td>Which metrics the team will actually report</td><td>Open</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Questions for the review session</h2>
+    <ul>
+      <li>Does this reflect how Steady State findings should actually be handled?</li>
+      <li>Are the work-type definitions clear enough to produce consistent decisions?</li>
+      <li>Is anything missing from the No Action, Bug, Story, or Spike paths?</li>
+      <li>Can one finding have more than one root cause, or should the team pick a primary?</li>
+      <li>What must be captured from the daily monitoring report itself?</li>
+      <li>Who owns triage and follow-up?</li>
+      <li>What changes are needed before the team can pilot this?</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Team feedback and open questions</h2>
+    <p class="sub">Add a row during or after the review. Nothing is dismissed without a written resolution.</p>
+    <table>
+      <thead><tr><th style="width:20%">Topic</th><th style="width:34%">Feedback or question</th><th style="width:14%">Raised by</th><th style="width:22%">Proposed resolution</th><th style="width:10%">Status</th></tr></thead>
+      <tbody>
+        <tr><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+        <tr><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td><td class="fill">—</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h2>Next steps</h2>
+    <ol class="steps">
+      <li><b>Review this draft with the Automation team.</b></li>
+      <li><b>Capture feedback and unresolved decisions</b> in the table above.</li>
+      <li><b>Update the workflow and definitions</b> to match what was agreed.</li>
+      <li><b>Confirm the Jira configuration</b> needed to capture root cause.</li>
+      <li><b>Pilot the model</b> on a small number of Steady State findings.</li>
+      <li><b>Review the pilot results,</b> then finalise and approve.</li>
+      <li><b>Update the Automation Lifecycle Playbook</b> and the team working agreement.</li>
+    </ol>
+  </div>
+</section>
+
+<footer>
+  Working draft. Not an approved team process until the Automation team confirms the decisions on tab 06.
+</footer>
+
+</div>
+
+<script>
+(function(){
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('.tab'));
+  function select(i){
+    tabs.forEach(function(t,j){
+      var on = i === j;
+      t.setAttribute('aria-selected', on ? 'true' : 'false');
+      document.getElementById(t.getAttribute('aria-controls')).classList.toggle('on', on);
+    });
+  }
+  tabs.forEach(function(t,i){
+    t.addEventListener('click', function(){ select(i); });
+    t.addEventListener('keydown', function(e){
+      var d = e.key === 'ArrowRight' ? 1 : e.key === 'ArrowLeft' ? -1 : 0;
+      if(!d) return;
+      e.preventDefault();
+      var n = (i + d + tabs.length) % tabs.length;
+      tabs[n].focus(); select(n);
+    });
+  });
+})();
+</script>
+</body>
+</html>
