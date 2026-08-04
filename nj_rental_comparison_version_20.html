@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NJ Rental Walkthrough Lineup — 8/6 &amp; 8/8 · v20</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,800;1,9..144,500&family=Archivo:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1d241f;--ink-soft:#48524a;--cream:#f7f3e9;--paper:#fffdf7;
+    --forest:#1f4332;--forest-2:#2c5a44;--gold:#b8893b;--gold-soft:#e9d9b6;
+    --rule:#e2dccb;--good:#2c5a44;--good-bg:#e7efe7;--over:#a23a32;--over-bg:#f6e6e2;
+    --maybe:#8a6d1f;--maybe-bg:#f4ecd6;--shadow:0 18px 40px -24px rgba(31,67,50,.45);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:'Archivo',sans-serif;
+    background:radial-gradient(1200px 500px at 80% -8%, #efe7d2 0%, transparent 60%),radial-gradient(900px 600px at -5% 110%, #e7eee6 0%, transparent 55%),var(--cream);
+    color:var(--ink);line-height:1.5;padding:32px 18px 80px;-webkit-font-smoothing:antialiased;}
+  .wrap{max-width:1180px;margin:0 auto}
+  header{margin-bottom:22px}
+  .kicker{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--gold);font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:12px}
+  .kicker::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,var(--gold-soft),transparent)}
+  h1{font-family:'Fraunces',serif;font-weight:800;font-size:clamp(30px,5vw,52px);line-height:1.02;color:var(--forest);letter-spacing:-.02em}
+  h1 em{font-style:italic;color:var(--gold);font-weight:500}
+  .sub{margin-top:14px;max-width:790px;color:var(--ink-soft);font-size:15.5px}
+  .meta{margin-top:8px;font-size:12.5px;color:var(--ink-soft);opacity:.8}
+  .tabs{display:flex;gap:6px;flex-wrap:wrap;margin:24px 0 22px;border-bottom:2px solid var(--rule)}
+  .tab{font-family:'Archivo';font-weight:600;font-size:14px;color:var(--ink-soft);background:transparent;border:0;border-bottom:3px solid transparent;padding:12px 16px;cursor:pointer;transition:.18s;margin-bottom:-2px}
+  .tab:hover{color:var(--forest)}
+  .tab.active{color:var(--forest);border-bottom-color:var(--gold)}
+  .panel{display:none;animation:fade .3s ease}
+  .panel.active{display:block}
+  @keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+  .insight{margin:0 0 24px;border:1px solid var(--rule);border-left:5px solid var(--gold);background:linear-gradient(180deg,var(--paper),#fbf7ec);border-radius:14px;padding:22px 24px;box-shadow:var(--shadow)}
+  .insight h2{font-family:'Fraunces',serif;font-size:21px;color:var(--forest);font-weight:600;margin-bottom:10px}
+  .insight p{font-size:14.5px;color:var(--ink-soft);max-width:920px}
+  .insight strong{color:var(--ink)}
+  .twohit{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px}
+  .hit{flex:1;min-width:230px;background:#fff;border:1px solid var(--rule);border-radius:11px;padding:14px 16px}
+  .hit .lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+  .hit.green .lab{color:var(--good)} .hit.red .lab{color:var(--over)}
+  .hit p{font-size:13px}
+  .controls{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:0 0 16px}
+  .seg{display:inline-flex;background:#fff;border:1px solid var(--rule);border-radius:999px;padding:4px;box-shadow:0 2px 8px -6px rgba(0,0,0,.3)}
+  .seg button{border:0;background:transparent;font-family:'Archivo';font-weight:600;font-size:13.5px;color:var(--ink-soft);padding:9px 18px;border-radius:999px;cursor:pointer;transition:.18s;white-space:nowrap}
+  .seg button.active{background:var(--forest);color:#fff}
+  .toggle{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:13.5px;font-weight:600;color:var(--ink)}
+  .switch{position:relative;width:46px;height:26px;cursor:pointer}
+  .switch input{opacity:0;width:0;height:0}
+  .slider{position:absolute;inset:0;background:#cdd4cc;border-radius:999px;transition:.2s}
+  .slider::before{content:"";position:absolute;height:20px;width:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+  .switch input:checked + .slider{background:var(--gold)}
+  .switch input:checked + .slider::before{transform:translateX(20px)}
+  .grid{display:flex;flex-direction:column;gap:16px}
+  .card{background:var(--paper);border:1px solid var(--rule);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);transition:.2s}
+  .card.hide{display:none}
+  .card-top{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start;padding:20px 22px 14px}
+  .rank{font-family:'Fraunces',serif;font-size:30px;font-weight:800;color:var(--gold);line-height:1;min-width:42px}
+  .ident{flex:1;min-width:200px}
+  .ident h3{font-family:'Fraunces',serif;font-size:23px;font-weight:600;color:var(--forest)}
+  .ident .loc{font-size:13px;color:var(--ink-soft);margin-top:2px}
+  .ident .loc b{color:var(--gold);font-weight:700}
+  .badges{display:flex;gap:7px;flex-wrap:wrap;margin-top:9px}
+  .pill{font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;border:1px solid var(--rule);background:#fff;color:var(--ink-soft)}
+  .pill.star{color:var(--gold);border-color:var(--gold-soft);background:#fdf8ec}
+  .pill.score{color:#fff;background:var(--forest);border-color:var(--forest);font-weight:700}
+  .contact{text-align:right;font-size:12.5px;color:var(--ink-soft);min-width:130px}
+  .contact a{color:var(--forest);font-weight:600;text-decoration:none}
+  .contact a:hover{text-decoration:underline}
+  .why{padding:0 22px 12px;font-size:13px;color:var(--ink-soft)}
+  .why b{color:var(--forest)}
+  .area{margin:0 22px 14px;padding:10px 13px;background:#f1efe4;border:1px solid var(--rule);border-left:4px solid var(--forest-2);border-radius:9px;font-size:12px;color:var(--ink-soft);line-height:1.45}
+  .area .area-h{display:inline-block;font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--forest);margin-right:8px}
+  .area b{color:var(--ink)}
+  .tourhrs{margin:0 22px 14px;padding:11px 14px;background:#fbf7ec;border:1px solid var(--rule);border-left:4px solid var(--gold);border-radius:9px;font-size:12px;color:var(--ink-soft);display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+  .tourhrs .th-h{font-size:10px;letter-spacing:.14em;text-transform:uppercase;font-weight:700;color:var(--gold)}
+  .tourhrs .hrs{color:var(--ink);font-weight:600}
+  .satbadge{font-size:10.5px;font-weight:700;letter-spacing:.04em;padding:3px 9px;border-radius:7px;text-transform:uppercase}
+  .satbadge.yes{color:var(--good);background:var(--good-bg)}
+  .satbadge.no{color:var(--over);background:var(--over-bg)}
+  .th-note{flex-basis:100%;font-style:italic;font-size:11.5px;color:var(--ink-soft)}
+  .hours-table{border-collapse:collapse;width:100%;min-width:680px;background:var(--paper);border:1px solid var(--rule);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);font-size:13px;margin-bottom:6px}
+  .hours-table th,.hours-table td{padding:11px 9px;text-align:center;border-bottom:1px solid var(--rule)}
+  .hours-table thead th{background:var(--forest);color:#fff;font-weight:600;font-size:11.5px}
+  .hours-table thead th.satcol{background:var(--maybe)}
+  .hours-table tbody th{text-align:left;font-family:'Fraunces',serif;font-weight:600;color:var(--forest);font-size:13px;background:#fcfaf2;white-space:nowrap}
+  .hours-table td.satcol{background:#f4ecd6;font-weight:600}
+  .hours-table td.closed{color:var(--over)}
+  .hours-table tbody tr:last-child td,.hours-table tbody tr:last-child th{border-bottom:0}
+  .hours-scroll{overflow-x:auto;border-radius:14px}
+  .units{border-top:1px dashed var(--rule);padding:6px 22px 4px}
+  .urow{display:grid;grid-template-columns:1.15fr .9fr 1fr;gap:14px;align-items:center;padding:13px 0;border-bottom:1px dashed var(--rule)}
+  .urow:last-child{border-bottom:0}
+  .utype{font-weight:700;font-size:13.5px;color:var(--ink)}
+  .utype span{display:block;font-weight:400;font-size:11.5px;color:var(--ink-soft);margin-top:2px}
+  .uprice{font-family:'Fraunces',serif;font-size:19px;font-weight:600;color:var(--forest)}
+  .uprice small{font-family:'Archivo';font-size:11px;color:var(--ink-soft);font-weight:500;display:block;margin-top:1px}
+  .tag{justify-self:start;font-size:11px;font-weight:700;letter-spacing:.04em;padding:5px 11px;border-radius:8px;text-transform:uppercase}
+  .tag.good{color:var(--good);background:var(--good-bg)}
+  .tag.over{color:var(--over);background:var(--over-bg)}
+  .tag.maybe{color:var(--maybe);background:var(--maybe-bg)}
+  .tag.none{color:var(--ink-soft);background:#eee9dd}
+  .amen{padding:14px 22px 20px;border-top:1px solid var(--rule);background:#fcfaf2}
+  .amen .h{font-size:11px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;color:var(--gold);margin-bottom:9px}
+  .chips{display:flex;flex-wrap:wrap;gap:6px}
+  .chip{font-size:11.5px;background:#fff;border:1px solid var(--rule);color:var(--ink-soft);padding:4px 9px;border-radius:7px}
+  .chip.k{border-color:#bcd3c4;color:var(--forest);font-weight:600;background:var(--good-bg)}
+  .note{margin-top:10px;font-size:12px;color:var(--ink-soft);font-style:italic}
+  .matrix-wrap{overflow-x:auto;border:1px solid var(--rule);border-radius:14px;box-shadow:var(--shadow);background:var(--paper)}
+  table.matrix{border-collapse:collapse;width:100%;min-width:1000px;font-size:12.5px}
+  table.matrix th,table.matrix td{padding:11px 9px;text-align:center;border-bottom:1px solid var(--rule)}
+  table.matrix thead th{background:var(--forest);color:#fff;font-weight:600;font-size:11px;position:sticky;top:0}
+  table.matrix thead th:first-child{text-align:left;border-top-left-radius:14px}
+  table.matrix thead th:last-child{border-top-right-radius:14px}
+  table.matrix tbody th{text-align:left;font-weight:600;color:var(--ink);background:#fcfaf2;font-size:12px}
+  table.matrix tbody tr:nth-child(even) td{background:#fbf8ef}
+  .yes{color:var(--good);font-weight:700}
+  .no{color:#c9c0aa}
+  .soon{color:var(--gold);font-weight:700;font-size:11px}
+  .sec-title{font-family:'Fraunces',serif;font-size:26px;color:var(--forest);font-weight:600;margin:0 0 6px}
+  .sec-sub{color:var(--ink-soft);font-size:14px;margin-bottom:18px;max-width:900px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;margin:0 0 18px;font-size:12px;color:var(--ink-soft)}
+  .legend span{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:11px;height:11px;border-radius:3px;display:inline-block}
+  .dot.good{background:var(--good-bg);border:1px solid var(--good)}
+  .dot.maybe{background:var(--maybe-bg);border:1px solid var(--maybe)}
+  .dot.over{background:var(--over-bg);border:1px solid var(--over)}
+  .dot.none{background:#eee9dd;border:1px solid #c9c0aa}
+  .mapcard{background:var(--paper);border:1px solid var(--rule);border-radius:16px;box-shadow:var(--shadow);padding:18px;overflow:hidden}
+  .mapcard svg{width:100%;height:auto;display:block}
+  .mlegend{display:flex;gap:14px;flex-wrap:wrap;margin-top:14px;font-size:12px;color:var(--ink-soft);padding:0 6px}
+  .mlegend span{display:inline-flex;align-items:center;gap:6px}
+  .mdot{width:12px;height:12px;border-radius:50%;display:inline-block;border:2px solid #fff;box-shadow:0 0 0 1px var(--rule)}
+  .rec-hero{background:linear-gradient(135deg,var(--forest),var(--forest-2));color:#fbf7ec;border-radius:18px;padding:28px 30px;box-shadow:var(--shadow);margin-bottom:20px}
+  .rec-hero .lab{font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--gold-soft);font-weight:700}
+  .rec-hero h2{font-family:'Fraunces',serif;font-size:30px;font-weight:600;margin:8px 0 12px;line-height:1.1}
+  .rec-hero h2 em{font-style:italic;color:var(--gold-soft)}
+  .rec-hero p{font-size:14.5px;max-width:920px;opacity:.95}
+  .rec-hero p + p{margin-top:10px}
+  .rec-hero b{color:#fff}
+  .rrow{display:flex;align-items:center;gap:14px;background:var(--paper);border:1px solid var(--rule);border-radius:13px;padding:14px 18px;margin-bottom:11px;box-shadow:0 8px 22px -18px rgba(0,0,0,.4)}
+  .rrank{font-family:'Fraunces',serif;font-size:26px;font-weight:800;color:var(--gold);min-width:30px;text-align:center}
+  .rmain{flex:1;min-width:0}
+  .rmain h4{font-family:'Fraunces',serif;font-size:18px;color:var(--forest);font-weight:600}
+  .rmain h4 small{font-family:'Archivo';font-weight:500;font-size:12px;color:var(--ink-soft)}
+  .rmain p{font-size:12.5px;color:var(--ink-soft);margin-top:3px}
+  .rbar{min-width:150px;width:170px}
+  .rbar .track{height:9px;background:#ede7d6;border-radius:99px;overflow:hidden}
+  .rbar .fill{height:100%;background:linear-gradient(90deg,var(--gold),var(--forest-2));border-radius:99px}
+  .rbar .sval{font-size:11px;color:var(--ink-soft);margin-top:4px;text-align:right;font-weight:600}
+  .crit{margin-top:22px;font-size:12.5px;color:var(--ink-soft)}
+  .crit b{color:var(--forest)}
+  .crit ul{list-style:none;display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+  .crit li{background:#fff;border:1px solid var(--rule);border-radius:8px;padding:6px 11px;font-size:12px}
+  .crit li b{color:var(--gold)}
+  /* markets tab */
+  table.commute{border-collapse:collapse;width:100%;background:var(--paper);border:1px solid var(--rule);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);font-size:13.5px}
+  table.commute th,table.commute td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--rule)}
+  table.commute thead th{background:var(--forest);color:#fff;font-weight:600;font-size:12.5px}
+  table.commute tbody th{font-family:'Fraunces',serif;font-weight:600;color:var(--forest);font-size:14px}
+  table.commute td b{color:var(--ink)}
+  table.commute td span{color:var(--ink-soft);font-size:12px}
+  .mkt-grid{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+  .mkt{flex:1;min-width:300px;background:var(--paper);border:1px solid var(--rule);border-radius:14px;padding:18px 20px;box-shadow:var(--shadow)}
+  .mkt h4{font-family:'Fraunces',serif;font-size:18px;color:var(--forest);font-weight:600;margin-bottom:3px}
+  .mkt .who{font-size:12px;color:var(--gold);font-weight:600;margin-bottom:12px}
+  .mkt ul{list-style:none}
+  .mkt li{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px dashed var(--rule);font-size:13px}
+  .mkt li:last-child{border-bottom:0}
+  .mkt li b{color:var(--ink);font-weight:600}
+  .mkt li span{color:var(--ink-soft);font-size:12px;white-space:nowrap;text-align:right}
+  .callout{margin-top:16px;background:#fff;border:1px solid var(--rule);border-left:4px solid var(--gold);border-radius:10px;padding:12px 16px;font-size:12.5px;color:var(--ink-soft)}
+  .callout b{color:var(--forest)}
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--rule);font-size:11.5px;color:var(--ink-soft);opacity:.85}
+  @media(max-width:640px){
+    .urow{grid-template-columns:1fr;gap:6px;text-align:left}
+    .contact{text-align:left;min-width:0}
+    .rrow{flex-wrap:wrap}.rbar{width:100%}
+  }
+  .matrix tr.detailrow th{background:#f1efe4;border-top:2px solid var(--gold-soft)}
+  .matrix td.detailcell{font-size:11.5px;line-height:1.35;text-align:left;color:var(--ink-soft);min-width:150px;vertical-align:top;padding:10px 9px;border-top:2px solid var(--gold-soft)}
+  .matrix td.detailcell b{color:var(--ink)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="kicker">Northern New Jersey · Walkthrough Lineup · v20</div>
+    <h1>Ten communities, <em>two days</em></h1>
+    <p class="sub">The current walkthrough list, replacing the earlier five-finalist set. Ten communities compared across the two priority layouts — a <strong>1 BR + den/loft</strong> and a <strong>2 BR / 2 BA</strong> — against a <strong>$2,800/month</strong> ceiling, and split into two outings: <strong>Thursday 8/6</strong> for the weekday-only offices plus the two confirmed tours, and <strong>Saturday 8/8</strong> for everything that takes weekend appointments.</p>
+    <p class="meta">Base rents pulled August 2026 from listing aggregators, which contradicted each other on several properties — treat every figure as a floor and confirm live at the tour. Base rent excludes mandatory fees; The Walcott and EVO both publish a higher "total monthly leasing price." Confirm two-dog pet terms at every stop.</p>
+  </header>
+
+  <div class="tabs" id="tabs">
+    <button class="tab active" data-p="rec">Ranked Overview</button>
+    <button class="tab" data-p="compare">Comparison</button>
+    <button class="tab" data-p="tours">Tour Scheduling</button>
+    <button class="tab" data-p="map">Map &amp; Proximity</button>
+    <button class="tab" data-p="markets">Commute &amp; Area</button>
+    <button class="tab" data-p="amen">Amenities</button>
+  </div>
+
+  <!-- RANKED OVERVIEW -->
+  <section class="panel active" id="rec">
+    <div class="rec-hero">
+      <div class="lab">Summary &amp; ranking — current walkthrough list</div>
+      <h2>Only three communities actually offer a <em>1 BR + den or loft</em></h2>
+      <p>That is the headline finding of this round. Of the ten on the list, <b>Reveal Hackensack</b>, <b>The Walcott</b> and <b>EVO Englewood</b> are the only ones with a genuine one-bedroom-plus-den or loft layout. <b>Highlands at Westwood</b> offers a den, but only in its two-bedroom, which lands at $3,440+. The other six run studio / 1 BR / 2 BR with no flex room at all — though The Monarch's largest one-bedroom (1,120 sf) and 140 Mayhill's (up to 1,300 sf) are den-sized without carrying the name or the premium.</p>
+      <p>On price, standard one-bedrooms cluster tightly at <b>$2,300–$2,700</b> across the whole list. A true 1 BR + den runs roughly <b>$3,000–$3,100</b> — about a $500/month premium that puts you within a few hundred dollars of a two-bedroom at several of these. Worth asking each leasing agent directly whether the 2 BR pencils out better than the den.</p>
+      <p><b>Reveal</b> takes the top spot: it confirms den and loft plans on select layouts, has one of the better ratings on the list (4.3), a resort pool with sun deck, a dog run with direct access to Hackensack River County Park, no pet weight limit, the shortest Yonkers commute, and a tour that is <b>already booked for Thursday at 3:15</b>. <b>The Walcott</b> follows: brand new (2023), loft homes and townhomes in the layout mix, the most accommodating pet policy here (two pets up to 75 lbs each), and up to two months free with an August 15 move-in deadline attached. <b>EVO</b> is third — the only community with a dedicated, priced 1 BR + Den plan on the board, but at $3,083 it sits above the cap.</p>
+      <p>Two cautions worth carrying into the tours. <b>140 Mayhill</b> restricts residents to one pet with a 20 lb weight limit, which likely rules it out on both counts before you walk the door. And <b>The Parkview at Polifly</b> is the outlier on quality — a 1967 building with a 2.6 rating across only twelve reviews, no published office hours, and no confirmed Saturday availability. Call before spending a Saturday slot on it.</p>
+    </div>
+    <div id="recList"></div>
+    <div class="crit">
+      <b>How the fit score is weighted (out of 100):</b>
+      <ul>
+        <li>Target layouts under $2,800 (den/loft &amp; 2 BR/2 BA) — <b>25</b></li>
+        <li>Resident rating &amp; quality — <b>15</b></li>
+        <li>Wellness &amp; outdoor: pool/gym/grill — <b>15</b></li>
+        <li>Value &amp; concessions — <b>13</b></li>
+        <li>Pet terms for two dogs — <b>12</b></li>
+        <li>Tour flexibility (Saturday availability) — <b>10</b></li>
+        <li>Commute &amp; transit — <b>10</b></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- COMPARISON -->
+  <section class="panel" id="compare">
+    <div class="insight">
+      <h2>What the listings show</h2>
+      <p>The den/loft question splits this list cleanly. Three communities offer the layout, one offers it only in a two-bedroom, and six do not offer it at all. Pricing below is base rent from aggregator listings as of August 2026 — several sources disagreed, so ranges are shown where they conflicted.</p>
+      <div class="twohit">
+        <div class="hit green"><div class="lab">✓ Den / loft layout exists</div><p><strong>Reveal Hackensack</strong> — dens and lofts on select plans, 1 BR from $2,595. <strong>The Walcott</strong> — loft homes and townhomes in the mix, 1 BR from $2,437. <strong>EVO Englewood</strong> — a dedicated 1 Bed/Den plan, 793–817 sf, $3,083. <strong>Volair</strong> — loft on select units, pricing unpublished.</p></div>
+        <div class="hit red"><div class="lab">✗ No 1 BR + den offered</div><p><strong>Highlands at Westwood</strong> — den exists only in the 2 BR ($3,440+). <strong>The Delford</strong>, <strong>The Monarch</strong>, <strong>The Forte</strong>, <strong>140 Mayhill</strong> and <strong>Parkview at Polifly</strong> run studio / 1 BR / 2 BR only. The Monarch's 1,120 sf one-bedroom and Mayhill's 1,300 sf plans are den-sized without the label.</p></div>
+      </div>
+    </div>
+    <div class="controls">
+      <div class="seg" id="seg">
+        <button data-f="all" class="active">All layouts</button>
+        <button data-f="den">1 BR + Den/Loft</button>
+        <button data-f="two">2 BR / 2 BA</button>
+      </div>
+      <label class="toggle">Only show under $2,800
+        <span class="switch"><input type="checkbox" id="capToggle"><span class="slider"></span></span>
+      </label>
+    </div>
+    <div class="legend">
+      <span><i class="dot good"></i> Fits ≤ $2,800 (available)</span>
+      <span><i class="dot maybe"></i> Brushes cap / confirm</span>
+      <span><i class="dot over"></i> Above $2,800</span>
+      <span><i class="dot none"></i> Layout not offered</span>
+    </div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <!-- TOUR SCHEDULING -->
+  <section class="panel" id="tours">
+    <h2 class="sec-title">Tour scheduling — Thursday 8/6 and Saturday 8/8</h2>
+    <p class="sec-sub">Two tours are already confirmed for Thursday. The rest sorts by whether the leasing office opens on Saturdays. <b>The Delford and Highlands at Westwood are both closed weekends</b> — that is why they ride along on Thursday rather than joining the Saturday sweep. Everything else takes weekend appointments, with Parkview at Polifly the one unknown.</p>
+
+    <div class="twohit" style="margin-bottom:20px">
+      <div class="hit green"><div class="lab">✓ Saturday available (7)</div><p><strong>The Forte</strong> and <strong>The Monarch</strong> are open seven days. <strong>The Walcott</strong>, <strong>EVO</strong> and <strong>140 Mayhill</strong> all take Saturday appointments. <strong>Reveal</strong> runs self-guided tours daily. <strong>Parkview at Polifly</strong> publishes no hours at all — call before counting on it.</p></div>
+      <div class="hit red"><div class="lab">✗ Weekday only (3)</div><p><strong>The Delford</strong> — Mon–Fri to 5:30, closed weekends. <strong>Highlands at Westwood</strong> — Mon–Fri to 5:00, closed weekends, and the hard backstop on Thursday. <strong>Volair Wesmont</strong> — closed weekends; Thursday runs to 7pm, so the 2:00 slot has room behind it.</p></div>
+    </div>
+
+    <div class="hours-scroll">
+      <table class="hours-table">
+        <thead><tr>
+          <th style="text-align:left">Community</th><th>Mon</th><th>Tue</th><th>Wed</th><th>Thu</th><th>Fri</th><th class="satcol">Sat</th><th>Sun</th>
+        </tr></thead>
+        <tbody>
+          <tr><th>#1 Reveal · Hackensack</th><td>—*</td><td>9–6</td><td>9–6</td><td>9–6</td><td>9–6</td><td class="satcol">10–5</td><td class="closed">—*</td></tr>
+          <tr><th>#2 The Walcott · Hackensack</th><td>10–6</td><td>10–6</td><td>10–6</td><td>10–6</td><td>10–6</td><td class="satcol">10–5</td><td class="closed">Closed</td></tr>
+          <tr><th>#3 EVO · Englewood</th><td>9–6</td><td>9–6</td><td>11–6</td><td>9–6</td><td>8–5</td><td class="satcol">10–5</td><td class="closed">Closed</td></tr>
+          <tr><th>#4 Volair · Wood-Ridge</th><td>9–5</td><td>9–7</td><td>9–5</td><td>9–7</td><td>9–5</td><td class="satcol closed">Closed</td><td class="closed">Closed</td></tr>
+          <tr><th>#5 The Forte · Hackensack</th><td>9–6</td><td>9–6</td><td>9–6</td><td>9–6</td><td>9–6</td><td class="satcol">9–6</td><td>9–6</td></tr>
+          <tr><th>#6 The Monarch · E. Rutherford</th><td>10–6</td><td>10–6</td><td>10–6</td><td>10–6</td><td>10–6</td><td class="satcol">10–6</td><td>10–6</td></tr>
+          <tr><th>#7 The Delford · Rochelle Park</th><td>9–5:30</td><td>9–5:30</td><td>9–5:30</td><td>9–5:30</td><td>9–5:30</td><td class="satcol closed">Closed</td><td class="closed">Closed</td></tr>
+          <tr><th>#8 Highlands · Westwood</th><td>9–5</td><td>9–5</td><td>9–5</td><td>9–5</td><td>9–5</td><td class="satcol closed">Closed</td><td class="closed">Closed</td></tr>
+          <tr><th>#9 140 Mayhill · Saddle Brook</th><td>9–5</td><td>9–5</td><td>9–5</td><td>9–5</td><td>9–5</td><td class="satcol">9–5</td><td class="closed">Closed</td></tr>
+          <tr><th>#10 Parkview at Polifly · Hackensack</th><td class="closed">?</td><td class="closed">?</td><td class="closed">?</td><td class="closed">?</td><td class="closed">?</td><td class="satcol closed">?</td><td class="closed">?</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note" style="margin:0 2px 22px;font-size:11.5px;color:var(--ink-soft);font-style:italic">*Reveal's office is staffed Tue–Sat for guided tours, but self-guided tours run all seven days. Parkview at Polifly publishes no office hours anywhere — call 201-567-5755 before building a slot around it. Hours are as posted August 2026 and shift; confirm when you book.</p>
+
+    <div class="mkt-grid">
+      <div class="mkt">
+        <h4>Thursday 8/6 · weekday-only + confirmed</h4>
+        <div class="who">The Delford, Volair, Reveal, Highlands — 9am–5pm window</div>
+        <ul>
+          <li><b>9:00 AM–12:00 PM · open</b><span>flex block — see note below</span></li>
+          <li><b>12:30 PM · The Delford</b><span>Rochelle Park · closed Saturdays</span></li>
+          <li><b>2:00 PM · Volair Wesmont</b><span>Wood-Ridge · CONFIRMED</span></li>
+          <li><b>3:15 PM · Reveal Hackensack</b><span>414 Hackensack Ave · CONFIRMED</span></li>
+          <li><b>4:10 PM · Highlands at Westwood</b><span>closed Saturdays · closes 5:00</span></li>
+        </ul>
+        <div class="callout" style="margin-top:14px"><b>Why this order:</b> a straight south-to-north sweep is not possible Thursday — Volair sits south of Reveal, so the day runs as a V. The Delford to Volair is a 20-minute backtrack south on Route 17, which is the cost of fitting both weekday-only offices into the one weekday available. <b>Highlands at 4:10 is the tightest link:</b> it closes at 5:00, and Reveal publishes no hours to verify the 3:15 will run a clean 30 minutes. If Reveal runs long, Highlands is what falls off. Route 17 north to 287 from Westwood.</div>
+      </div>
+      <div class="mkt">
+        <h4>Saturday 8/8 · south to north</h4>
+        <div class="who">Everything with weekend availability — six stops</div>
+        <ul>
+          <li><b>10:00 AM · The Monarch</b><span>East Rutherford · southernmost · opens 10</span></li>
+          <li><b>11:00 AM · Parkview at Polifly</b><span>Hackensack · confirm hours first</span></li>
+          <li><b>12:00 PM · The Forte</b><span>95 Anderson St · open 7 days</span></li>
+          <li><b>12:45 PM · The Walcott</b><span>435 Main St · 2 min from The Forte</span></li>
+          <li><b>1:45 PM · EVO</b><span>Englewood · eastern outlier</span></li>
+          <li><b>2:45 PM · 140 Mayhill</b><span>Saddle Brook · closes 5:00</span></li>
+        </ul>
+        <div class="callout" style="margin-top:14px"><b>Why this order:</b> runs clean south to north from East Rutherford up through Hackensack and out to Saddle Brook, ending at the 80/17 junction for a straight shot up Route 17 to 287. The Forte and The Walcott sit two minutes apart, so that pair goes back to back. EVO is the only real detour — a 15-minute jog east and back. If Parkview does not confirm, that 11:00 slot absorbs any overrun elsewhere.</div>
+      </div>
+    </div>
+
+    <div class="callout" style="margin-top:16px"><b>Bottom line for the calendar:</b> Thursday 8/6 covers four (two already booked), with the morning open if anyone wants to add a stop. Saturday 8/8 clears the remaining six in one pass, roughly 10:00am to 3:15pm. Together that is all ten across two outings without anyone spending a vacation day on the Saturday leg. Call each office a day ahead to lock times and confirm a unit in the target layout will be available to walk — particularly the den and loft plans at Reveal, The Walcott and EVO.</div>
+  </section>
+
+  <!-- MAP -->
+  <section class="panel" id="map">
+    <h2 class="sec-title">Where they sit relative to each other</h2>
+    <p class="sec-sub">All ten sit in Bergen County, spanning about 13 miles from East Rutherford in the south to Westwood in the north. Four cluster in and around downtown Hackensack — The Forte, The Walcott, Parkview at Polifly and Reveal — with The Forte and The Walcott two minutes apart. Volair Wesmont anchors the southwest in Wood-Ridge; The Monarch is the southernmost point in East Rutherford; Saddle Brook and Rochelle Park sit west on the Route 17 corridor; EVO is the eastern outlier in Englewood; Highlands at Westwood is the northern end and the closest to 287. Pins are colored by rank; positions are scaled from real coordinates (schematic, not a to-scale street map).</p>
+    <div class="mapcard">
+      <svg viewBox="0 0 820 640" xmlns="http://www.w3.org/2000/svg" font-family="Archivo, sans-serif">
+        <defs>
+          <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbf8ef"/><stop offset="1" stop-color="#eef3ec"/></linearGradient>
+          <marker id="arrow" markerWidth="10" markerHeight="10" refX="6" refY="3" orient="auto"><path d="M0,0 L6,3 L0,6 Z" fill="#7d8a80"/></marker>
+        </defs>
+        <rect x="0" y="0" width="820" height="640" rx="14" fill="url(#bg)"/>
+        <path d="M520,40 C512,130 520,220 512,320 C506,410 516,490 508,570" fill="none" stroke="#bcd4e6" stroke-width="10" stroke-linecap="round" opacity=".85"/>
+        <text x="527" y="50" font-size="11" fill="#7596ad" font-style="italic">Hackensack R.</text>
+        <path d="M300,60 C310,160 300,260 312,360 C320,450 310,520 318,590" fill="none" stroke="#d8cdb0" stroke-width="7" stroke-linecap="round" opacity=".7"/>
+        <text x="252" y="56" font-size="11" fill="#a3946a" font-style="italic">Route 17 corridor</text>
+        <line x1="120" y1="66" x2="172" y2="66" stroke="#8a857a" stroke-width="2"/>
+        <line x1="120" y1="62" x2="120" y2="70" stroke="#8a857a" stroke-width="2"/>
+        <line x1="172" y1="62" x2="172" y2="70" stroke="#8a857a" stroke-width="2"/>
+        <text x="146" y="58" font-size="10.5" fill="#8a857a" text-anchor="middle">2 mi</text>
+        <circle cx="700" cy="300" r="6" fill="#7d8a80"/>
+        <text x="700" y="286" font-size="11" fill="#5e6a60" text-anchor="middle" font-weight="600">GW Bridge</text>
+        <line x1="694" y1="311" x2="640" y2="560" stroke="#7d8a80" stroke-width="2" marker-end="url(#arrow)"/>
+        <text x="640" y="578" font-size="11" fill="#5e6a60" text-anchor="middle" font-weight="600">Manhattan ~12 mi</text>
+        <text x="300" y="42" font-size="11" fill="#5e6a60" font-weight="600">↑ I-287 via Rt 17 N</text>
+
+        <!-- 8 Highlands at Westwood (northernmost) -->
+        <g><circle cx="392" cy="78" r="11" fill="#8a7f9c" stroke="#fff" stroke-width="2.5"/><text x="392" y="82" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">8</text>
+          <text x="409" y="75" font-size="12.5" fill="#1f4332" font-weight="700">Highlands at Westwood</text><text x="409" y="89" font-size="10" fill="#6b746c">Westwood · 1BR $2,755+ · den only in 2BR</text></g>
+        <!-- 7 The Delford -->
+        <g><circle cx="286" cy="216" r="11" fill="#6c8f6f" stroke="#fff" stroke-width="2.5"/><text x="286" y="220" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">7</text>
+          <text x="269" y="212" font-size="12.5" fill="#1f4332" font-weight="700" text-anchor="end">The Delford</text><text x="269" y="226" font-size="10" fill="#6b746c" text-anchor="end">Rochelle Park · 1BR $2,400+ · 4.8★</text></g>
+        <!-- 1 Reveal -->
+        <g><circle cx="470" cy="246" r="14" fill="#1f4332" stroke="#fff" stroke-width="3"/><text x="470" y="250" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">1</text>
+          <text x="488" y="244" font-size="13.5" fill="#1f4332" font-weight="700">Reveal Hackensack</text><text x="488" y="258" font-size="10" fill="#6b746c">Hackensack · den + loft plans · CONFIRMED 8/6 3:15</text></g>
+        <!-- 9 140 Mayhill -->
+        <g><circle cx="248" cy="290" r="11" fill="#b56a4e" stroke="#fff" stroke-width="2.5"/><text x="248" y="294" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">9</text>
+          <text x="231" y="286" font-size="12.5" fill="#1f4332" font-weight="700" text-anchor="end">140 Mayhill</text><text x="231" y="300" font-size="10" fill="#6b746c" text-anchor="end">Saddle Brook · 20 lb / 1-pet limit</text></g>
+        <!-- 5 The Forte -->
+        <g><circle cx="452" cy="332" r="11" fill="#4f7a8a" stroke="#fff" stroke-width="2.5"/><text x="452" y="336" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">5</text>
+          <text x="435" y="328" font-size="12.5" fill="#1f4332" font-weight="700" text-anchor="end">The Forte</text><text x="435" y="342" font-size="10" fill="#6b746c" text-anchor="end">Hackensack · 4.6★ · open 7 days</text></g>
+        <!-- 2 The Walcott -->
+        <g><circle cx="466" cy="366" r="13" fill="#b8893b" stroke="#fff" stroke-width="3"/><text x="466" y="370" font-size="11" fill="#fff" text-anchor="middle" font-weight="700">2</text>
+          <text x="484" y="364" font-size="13" fill="#1f4332" font-weight="700">The Walcott</text><text x="484" y="378" font-size="10" fill="#6b746c">Hackensack · lofts + townhomes · 2 pets / 75 lb</text></g>
+        <!-- 3 EVO -->
+        <g><circle cx="642" cy="352" r="12" fill="#3f6b4f" stroke="#fff" stroke-width="2.5"/><text x="642" y="356" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">3</text>
+          <text x="659" y="349" font-size="12.5" fill="#1f4332" font-weight="700">EVO</text><text x="659" y="363" font-size="10" fill="#6b746c">Englewood · 1BR+Den $3,083</text></g>
+        <!-- 10 Parkview at Polifly -->
+        <g><circle cx="416" cy="412" r="10" fill="#9c9187" stroke="#fff" stroke-width="2.5"/><text x="416" y="416" font-size="9.5" fill="#fff" text-anchor="middle" font-weight="700">10</text>
+          <text x="399" y="408" font-size="12" fill="#1f4332" font-weight="700" text-anchor="end">Parkview at Polifly</text><text x="399" y="422" font-size="10" fill="#6b746c" text-anchor="end">Hackensack · 1967 build · 2.6★</text></g>
+        <!-- 4 Volair -->
+        <g><circle cx="238" cy="468" r="12" fill="#2c5a44" stroke="#fff" stroke-width="2.5"/><text x="238" y="472" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">4</text>
+          <text x="255" y="465" font-size="12.5" fill="#1f4332" font-weight="700">Volair Wesmont</text><text x="255" y="479" font-size="10" fill="#6b746c">Wood-Ridge · NJ Transit on site · CONFIRMED 8/6 2:00</text></g>
+        <!-- 6 The Monarch (southernmost) -->
+        <g><circle cx="262" cy="556" r="11" fill="#a2803f" stroke="#fff" stroke-width="2.5"/><text x="262" y="560" font-size="10" fill="#fff" text-anchor="middle" font-weight="700">6</text>
+          <text x="279" y="553" font-size="12.5" fill="#1f4332" font-weight="700">The Monarch</text><text x="279" y="567" font-size="10" fill="#6b746c">East Rutherford · cheapest 1BR $2,280 · southernmost</text></g>
+      </svg>
+      <div class="mlegend">
+        <span><i class="mdot" style="background:#1f4332"></i> #1 Reveal</span>
+        <span><i class="mdot" style="background:#b8893b"></i> #2 The Walcott</span>
+        <span><i class="mdot" style="background:#3f6b4f"></i> #3 EVO</span>
+        <span><i class="mdot" style="background:#2c5a44"></i> #4 Volair</span>
+        <span><i class="mdot" style="background:#4f7a8a"></i> #5 The Forte</span>
+        <span><i class="mdot" style="background:#a2803f"></i> #6 The Monarch</span>
+        <span><i class="mdot" style="background:#6c8f6f"></i> #7 The Delford</span>
+        <span><i class="mdot" style="background:#8a7f9c"></i> #8 Highlands</span>
+        <span><i class="mdot" style="background:#b56a4e"></i> #9 140 Mayhill</span>
+        <span><i class="mdot" style="background:#9c9187"></i> #10 Parkview</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- COMMUTE & AREA -->
+  <section class="panel" id="markets">
+    <h2 class="sec-title">Commute &amp; area — all ten</h2>
+    <p class="sec-sub">Driving estimates only. These are guesstimates that depend heavily on George Washington Bridge traffic — verify in a maps app for the actual departure window before each walkthrough. Grocery detail below covers only the Hackensack cluster, which was researched in the prior round; the newer towns on this list have not been checked yet.</p>
+
+    <table class="commute">
+      <thead><tr><th>From</th><th>→ Yonkers, NY (3 Odell Plaza)</th><th>→ I-287 at Mahwah</th></tr></thead>
+      <tbody>
+        <tr><th>Reveal · Hackensack</th><td><b>~25–38 min</b><br><span>~9–13 mi · via GWB</span></td><td><b>~25–30 min</b><br><span>Rt 17 N</span></td></tr>
+        <tr><th>The Walcott · Hackensack</th><td><b>~25–38 min</b><br><span>~9–13 mi · via GWB</span></td><td><b>~28–33 min</b><br><span>Rt 4 W → 17 N</span></td></tr>
+        <tr><th>The Forte · Hackensack</th><td><b>~25–38 min</b><br><span>~9–13 mi · via GWB</span></td><td><b>~28–33 min</b><br><span>Rt 4 W → 17 N</span></td></tr>
+        <tr><th>Parkview at Polifly · Hackensack</th><td><b>~28–40 min</b><br><span>~10–14 mi · via GWB</span></td><td><b>~28–33 min</b><br><span>Rt 17 N</span></td></tr>
+        <tr><th>EVO · Englewood</th><td><b>~22–35 min</b><br><span>~8–11 mi · closest to GWB</span></td><td><b>~35–42 min</b><br><span>Rt 4 W → 17 N</span></td></tr>
+        <tr><th>The Delford · Rochelle Park</th><td><b>~30–42 min</b><br><span>~12–15 mi · via GWB</span></td><td><b>~20–25 min</b><br><span>at the 17/4 interchange</span></td></tr>
+        <tr><th>140 Mayhill · Saddle Brook</th><td><b>~32–45 min</b><br><span>~14–17 mi · via GWB</span></td><td><b>~22–27 min</b><br><span>at the 80/17 junction</span></td></tr>
+        <tr><th>Highlands · Westwood</th><td><b>~35–48 min</b><br><span>~15–18 mi · via GWB</span></td><td><b>~18–22 min</b><br><span>closest to 287</span></td></tr>
+        <tr><th>Volair · Wood-Ridge</th><td><b>~30–45 min</b><br><span>~12–16 mi · on-site NJ Transit (~31 min NYC)</span></td><td><b>~30–35 min</b><br><span>Rt 17 N</span></td></tr>
+        <tr><th>The Monarch · East Rutherford</th><td><b>~35–50 min</b><br><span>~16–19 mi · shuttle to Secaucus Jct</span></td><td><b>~35–40 min</b><br><span>Rt 17 N</span></td></tr>
+      </tbody>
+    </table>
+
+    <div class="mkt-grid">
+      <div class="mkt">
+        <h4>Hackensack</h4>
+        <div class="who">Serves Reveal, The Walcott, The Forte, Parkview</div>
+        <ul>
+          <li><b>Aldi</b> · 492 Main St<span>~0.2 mi from The Walcott / The Forte</span></li>
+          <li><b>Giant Farmer's Market</b><span>~0.4 mi</span></li>
+          <li><b>Costco Business Center</b> · S River St<span>~2.3 mi</span></li>
+          <li><b>BJ's Wholesale</b> · Paramus<span>~2.3–3 mi</span></li>
+          <li><b>Trader Joe's</b> · Paramus<span>~3.5–4.7 mi</span></li>
+          <li><b>H Mart</b> · Paramus &amp; Little Ferry<span>~2.3–3 mi</span></li>
+          <li><b>G Mart</b> (Asian) · Rt 17<span>~1.6 mi</span></li>
+        </ul>
+      </div>
+      <div class="mkt">
+        <h4>Route 17 corridor</h4>
+        <div class="who">Serves The Delford, 140 Mayhill</div>
+        <ul>
+          <li><b>Westfield Garden State Plaza</b><span>adjacent to The Delford</span></li>
+          <li><b>Acme</b><span>across the street from 140 Mayhill</span></li>
+          <li><b>Saddle Brook Commons</b><span>~0.8 mi from Mayhill</span></li>
+          <li><em>Remaining grocery detail not yet researched for this corridor</em><span>verify before the tours</span></li>
+        </ul>
+      </div>
+      <div class="mkt">
+        <h4>Southern &amp; eastern</h4>
+        <div class="who">Serves Volair, The Monarch, EVO, Highlands</div>
+        <ul>
+          <li><b>On-site retail incl. Dunkin'</b><span>Volair, Wood-Ridge</span></li>
+          <li><b>The Shoppes on Dean</b><span>~0.6 mi from EVO</span></li>
+          <li><b>Palisades Court</b><span>10-min walk from EVO</span></li>
+          <li><em>Grocery detail not yet researched for East Rutherford or Westwood</em><span>verify before the tours</span></li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout">
+      <b>Worth noting:</b> the Hackensack cluster runs closest to Yonkers, while Highlands at Westwood, The Delford and 140 Mayhill sit closest to 287 — the two ends of the list pull in opposite directions depending on which drive matters more. Volair is the only community here with an NJ Transit station on site (Wesmont, ~31 min to NYC); The Forte sits roughly 0.1 miles from Anderson Street Station; The Monarch runs a shuttle to Secaucus Junction.
+    </div>
+  </section>
+
+  <!-- AMENITIES -->
+  <section class="panel" id="amen">
+    <h2 class="sec-title">Amenities matrix</h2>
+    <p class="sec-sub">Quick scan of what each community advertises. Green ● = present; gray dash = not offered or not advertised. The four rows at the bottom — <b>pet policy, parking, utilities included and flood zone</b> — carry detail rather than a checkmark, since the specifics matter more than a yes/no. <b>Flood zone could not be verified from listings for any of the ten</b>, so every entry is marked to ask on site; the notes flag which addresses sit near water so you know where to press hardest. Amenity data for Parkview at Polifly is thin — its listings publish very little, which is itself a signal.</p>
+    <div class="matrix-wrap"><table class="matrix" id="matrix"></table></div>
+  </section>
+
+  <footer>
+    Version 20 · replaces the earlier five-finalist list. Amenities matrix reworked: on-site retail/transit and river/park access rows removed; pet policy, parking, utilities and flood zone added as detail rows. Flood zone is not published in any listing source and must be confirmed at each walkthrough. Prices are base rent from listing aggregators as of August 2026 and exclude parking, utilities, pet and amenity fees; aggregators contradicted each other on several properties, so ranges are shown where sources disagreed and every figure should be treated as a floor. Several communities run 1–2 months free or reduced-deposit promotions that lower effective rent. The ranking weighs den/loft availability under $2,800, resident rating, amenities, value, pet terms for two dogs, tour flexibility and commute. Commute estimates are driving guesstimates subject to traffic. Verify live pricing, den/loft availability, pet weight limits and lease terms with each leasing office before committing — particularly The Delford's pet policy, which one listing source shows as no pets at all.
+  </footer>
+</div>
+
+<script>
+const DATA = [
+  {
+    rank:1, score:86, name:"Reveal Hackensack", town:"Hackensack", ratingLabel:"4.3 ★ (164)", built:2013,
+    phone:"201-879-6968", site:"revealhackensack.com",
+    hours:"Guided Tue–Fri 9–6 · Sat 10–5", sat:"yes", hoursNote:"Self-guided tours run seven days a week — so any day works if you skip the guided walkthrough.",
+    pets:"2 pets · <b>no weight limit</b>", parking:"Covered garage · fee not published", utils:"<b>Ask</b> — not published", flood:"<b>Ask on site</b> · 414 Hackensack Ave sits near the Hackensack River",
+    area:"<b>Hackensack</b> · 414 Hackensack Ave, north end · walkable to the Shops at Riverside · shortest Yonkers commute on the list (~25–38 min) · four NJ Transit Pascack Valley stations within 3 miles. Flag: riverside site — check the block and the Hackensack River flood zone.",
+    why:"<b>Tour confirmed for Thursday 8/6 at 3:15.</b> The strongest layout answer on the list: Reveal is explicit that select floor plans include <b>dens and lofts</b> for extra work-from-home or lounging space, with one-bedrooms starting around <b>$2,595</b> — the only community here offering the flex layout at a price that starts under the cap. Amenities are deep: a resort-style pool with sun deck, outdoor grilling with al fresco dining, a clubhouse and lounge, a high-endurance fitness center, a <b>dog run</b> with direct pedestrian access to Hackensack River County Park, covered garage parking, and <b>no pet weight limit</b> — the friendliest terms here for two dogs. Running up to two months free. Main gaps: no EV charging, the 2 BR/2 BA is above cap at $3,413+, and the garage entry is a little tricky for night driving.",
+    units:{
+      den:{type:"1 BR + Den / Loft",detail:"select floor plans · confirm live availability",price:"from ~$2,595",note:"Den + loft plans offered; exact den pricing unpublished",status:"maybe",min:2595},
+      two:{type:"2 BR / 2 BA",detail:"from $3,413",price:"$3,413+",note:"Above cap",status:"over",min:3413}
+    },
+    amen:["Resort-style pool + sun deck","Outdoor grilling + al fresco dining","Resident clubhouse & lounge","High-endurance fitness center","Dog run","Pedestrian access to Hackensack River County Park","Covered garage parking","Granite countertops","Stainless steel appliances","Washer/dryer in unit","2 pets, no weight limit","NJ Transit Pascack Valley nearby","Self-guided tours 7 days","Den + loft layouts (select)"],
+    key:["Den + loft layouts (select)","Resort-style pool + sun deck","Dog run","2 pets, no weight limit","Self-guided tours 7 days"],
+    cardnote:"CONFIRMED Thu 8/6 at 3:15. The only community here offering dens AND lofts with a 1 BR entry under the cap (~$2,595). No pet weight limit — best terms on the list for two dogs. Resort pool + sun deck, grilling, clubhouse, fitness center, dog run, walk-to Hackensack River County Park, covered garage. Shortest Yonkers commute. Up to 2 months free running. No EV charging; 2/2 over cap at $3,413+; garage entry tricky at night. Ask for exact den and loft pricing at the walkthrough."
+  },
+  {
+    rank:2, score:81, name:"The Walcott Hackensack", town:"Hackensack", ratingLabel:"4.0 ★ (152)", built:2023,
+    phone:"833-281-0884", site:"thewalcotthackensack.com",
+    hours:"Mon–Fri 10–6 · Sat 10–5 · Sun closed", sat:"yes", hoursNote:"",
+    pets:"2 pets · <b>75 lb limit</b> · $500 non-refundable each + $50/mo", parking:"Garage · fees may apply", utils:"<b>None</b> — all utilities resident-paid", flood:"<b>Ask on site</b> · 435 Main St, downtown near the Hackensack River",
+    area:"<b>Hackensack</b> · 435 Main St, downtown core · NJ Transit bus at the door, Anderson Street Station a short walk · walkable downtown with Aldi and Johnson Park within 0.2 mi. Flag: check the block and the Hackensack River flood zone.",
+    why:"The best all-round combination of layout, newness and pet terms. The Walcott's mix runs studio, one- and two-bedroom apartments <b>plus loft homes and townhomes</b> — the widest layout menu here — with one-bedrooms from <b>$2,437</b> and the overall range topping out around $4,136. Built in 2023, so everything is new. Pet policy is the most accommodating on the list: <b>two pets up to 75 lbs each</b> ($500 non-refundable per pet, $50/mo pet rent) — the only community that comfortably fits two dogs without a size problem. Running <b>up to two months free</b>, with a move-in-by-August-15 sweepstakes attached, so the concession clock is live. Two minutes from The Forte, which makes the Saturday pairing efficient. Watch the fee stack: The Walcott quotes a \"total monthly leasing price\" above base rent.",
+    units:{
+      den:{type:"Loft home / townhome",detail:"loft + townhome layouts in the mix",price:"from ~$2,437 (1 BR)",note:"Lofts offered; loft-specific pricing unpublished — confirm",status:"maybe",min:2437},
+      two:{type:"2 BR / 2 BA",detail:"from $3,276 · to ~$4,136",price:"$3,276+",note:"Above cap",status:"over",min:3276}
+    },
+    amen:["Pool","Fitness center","Loft homes + townhomes","Garage parking","Washer/dryer in unit","2 pets up to 75 lbs","Downtown Hackensack walkability","NJ Transit bus at the door","Walk to Johnson Park","Aldi 0.2 mi","Built 2023","Up to 2 months free"],
+    key:["Loft homes + townhomes","2 pets up to 75 lbs","Up to 2 months free","Built 2023","Pool"],
+    cardnote:"Widest layout menu here — studio, 1 BR, 2 BR, loft homes and townhomes — with 1 BR from $2,437. Best pet terms on the list: two pets up to 75 lbs each, which is the cleanest fit for two dogs. Built 2023, so everything is new. Up to 2 months free with an Aug 15 move-in deadline attached. Two minutes from The Forte for an easy Saturday pairing. Confirm loft pricing and the total-monthly-leasing-price fee stack at the tour."
+  },
+  {
+    rank:3, score:75, name:"EVO Apartments", town:"Englewood", ratingLabel:"4.4 ★ (100)", built:2022,
+    phone:"201-535-4778", site:"evoenglewood.com",
+    hours:"Mon/Tue/Thu 9–6 · Wed 11–6 · Fri 8–5 · Sat 10–5 · Sun closed", sat:"yes", hoursNote:"Wednesday opens late at 11am — avoid that day if scheduling around it.",
+    pets:"2 dogs + 2 cats · $500 one-time + $50/mo each · confirm weight", parking:"Available · fees may apply", utils:"<b>None</b> — utility charges billed to resident", flood:"<b>Ask on site</b> · inland Englewood, away from the river",
+    area:"<b>Englewood</b> · 40 Bennett Rd, downtown · walk score 91 · closest of the ten to the GW Bridge, so the best Yonkers drive (~22–35 min) but the longest run to 287. The Shoppes on Dean ~0.6 mi, Palisades Court a 10-minute walk.",
+    why:"The only community on the list with a <b>dedicated, priced 1 BR + Den floor plan</b> — the B9, at 793–817 sf for <b>$3,083</b>. That is the clearest answer to the layout question, and also the reason it ranks third rather than first: it lands roughly $280 above the $2,800 cap. Standard one-bedrooms run $2,441–$2,726 base, so the den premium here is about $400–600. Built 2022 and managed by Bozzuto, with the highest rating in the top tier (4.4). Amenities include an outdoor pool, an outdoor bar with barbecue grills, a fitness center, in-home washer and dryer and oversized windows. Pets: two dogs and two cats permitted ($500 one-time, $50/mo each) — workable for two dogs, though confirm weight limits. Reviews flag move-in cleanliness and dog-park upkeep as recurring complaints.",
+    units:{
+      den:{type:"1 BR + Den (B9)",detail:"793–817 sf · available now",price:"$3,083",note:"Confirmed den plan, but above cap",status:"over",min:3083},
+      two:{type:"2 BR",detail:"996–1,059 sf",price:"$3,695–$4,045",note:"Above cap",status:"over",min:3695}
+    },
+    amen:["Outdoor swimming pool","Outdoor bar + barbecue grills","Fitness center","Dedicated 1 BR + Den plan","Washer/dryer in unit","Luxury plank flooring","Oversized windows","Parking","2 dogs + 2 cats permitted","Walk score 91","Built 2022","Downtown Englewood walkability"],
+    key:["Dedicated 1 BR + Den plan","Outdoor bar + barbecue grills","Outdoor swimming pool","Walk score 91","2 dogs + 2 cats permitted"],
+    cardnote:"The only priced 1 BR + Den on the list — the B9 at 793–817 sf, $3,083 — but that is ~$280 over the cap. Standard 1 BRs $2,441–$2,726 base, so the den premium runs $400–600. Built 2022, Bozzuto-managed, 4.4 rating, walk score 91, closest to the GW Bridge. Pool, outdoor bar + grills, fitness center. Two dogs permitted; confirm weight limits. Reviews flag move-in cleanliness and dog-park upkeep. Wednesday opens at 11am."
+  },
+  {
+    rank:4, score:72, name:"Volair Wesmont", town:"Wood-Ridge", ratingLabel:"4.1 ★ (570)", built:2013,
+    phone:"973-847-2828", site:"jcmliving.com",
+    hours:"Mon 9–5 · Tue 9–7 · Wed 9–5 · Thu 9–7 · Fri 9–5 · Sat–Sun closed", sat:"no", hoursNote:"Closed weekends. Thursday runs to 7pm, so the confirmed 2:00 slot has room behind it if things run long.",
+    pets:"Pet friendly · dog run · <b>confirm breed + weight limits</b>", parking:"Covered parking", utils:"<b>Trash</b> included · all others resident-paid", flood:"<b>Ask on site</b> · Wood-Ridge, near the Passaic River basin",
+    area:"<b>Wood-Ridge</b> · 100 Rosie Square, Wesmont Station development · the safest town on the list · on-site NJ Transit (~31 min to NYC) · quiet, southwest corner of the search area. Flag: built on a remediated former industrial site (Wesmont/Curtiss-Wright). Note: Rosera Wesmont is the sibling building at 200 Rosie Square, two minutes away.",
+    why:"<b>Tour confirmed for Thursday 8/6 at 2:00.</b> The best value entry on the list — one-bedrooms from roughly <b>$2,100–$2,229</b>, with the full range running $2,009 for a studio to $4,429 for a three-bedroom — and the only community with an <b>NJ Transit station on site</b> (Wesmont, ~31 min to NYC). A <b>loft layout</b> is offered on select units, though loft pricing is not published anywhere, so that is a direct question for the walkthrough. Amenities include a swimming pool with sundeck, a BBQ courtyard, work pods, a dog run, bike storage, covered parking, on-site retail including Dunkin', and 24/7 emergency maintenance. Largest standard one-bedroom is 871 sf. The 2 BR runs above cap. Some reviews flag slow maintenance response on major systems.",
+    units:{
+      den:{type:"1 BR + Loft (select units)",detail:"loft offered · base 1 BR to 871 sf",price:"$2,100+ (loft TBD)",note:"Loft layout listed; loft pricing unpublished — confirm at the 2:00 tour",status:"maybe",min:2100},
+      two:{type:"2 BR",detail:"range to $4,429 (3 BR)",price:"$3,000+",note:"Above cap — confirm",status:"over",min:3000}
+    },
+    amen:["Swimming pool + sundeck","BBQ courtyard","Fitness center","Resident lounge","Work pods","Dog run","Bike storage","Covered parking","On-site retail incl. Dunkin'","24/7 emergency maintenance","Washer/dryer in unit","Central air","Loft layout (select)","Keyless entry","NJ Transit at Wesmont Station","Cheapest 1 BR entry on the list"],
+    key:["Loft layout (select)","Swimming pool + sundeck","BBQ courtyard","Dog run","NJ Transit at Wesmont Station"],
+    cardnote:"CONFIRMED Thu 8/6 at 2:00. Cheapest entry on the list (1 BR from ~$2,100) and the only one with NJ Transit on site (Wesmont, ~31 min NYC). Pool + sundeck, BBQ courtyard, work pods, dog run, bike storage, covered parking, on-site retail, 24/7 maintenance. Loft offered on select units but pricing unpublished — ask directly at the tour. Safest town here. 2 BR above cap. Some reviews flag slow response on major maintenance."
+  },
+  {
+    rank:5, score:70, name:"The Forte", town:"Hackensack", ratingLabel:"4.6 ★ (22)", built:2025,
+    phone:"551-205-0105", site:"forte95.com",
+    hours:"Open 7 days · 9–6", sat:"yes", hoursNote:"The most flexible tour hours on the list — open every day of the week.",
+    pets:"Pet park on site · listing shows <b>cats OK</b> — confirm dogs", parking:"<b>Ask</b> — not published · bike storage on site", utils:"<b>Ask</b> — not published", flood:"<b>Ask on site</b> · 95 Anderson St, downtown near the Hackensack River",
+    area:"<b>Hackensack</b> · 95 Anderson St, downtown · roughly 0.1 mi from Anderson Street Station, the best rail access of the Hackensack group · Aldi 0.2 mi, Johnson Park 0.3 mi. Flag: newest building here with the thinnest review history (22 ratings).",
+    why:"The newest and highest-rated community on the list, though on a small sample — 4.6 stars across only 22 reviews. Everything is brand new, and the amenity package is strong for the price tier: rooftop deck and lounge, swimming pool, fitness center, coworking space, game room, office and conference rooms, bicycle storage, a pet park and building-wide wireless. One-bedrooms run <b>$2,356–$2,699</b> at 680–837 sf, comfortably under the cap. Running the deepest concession here: <b>one month free on a 12-month lease, two months free on 24</b>. The catch for this search is that there is <b>no den or loft layout</b> — the mix is studio, one- and two-bedroom only, and the largest one-bedroom is 837 sf. Aggregator pricing on this property was the most inconsistent of the ten, ranging from $1,928 to $3,149 depending on source, so treat the numbers as directional until confirmed.",
+    units:{
+      den:{type:"1 BR + den/loft",detail:"not offered",price:"—",note:"No den/loft layout — studio / 1 BR / 2 BR only",status:"none",min:0},
+      two:{type:"2 BR",detail:"to ~1,255 sf",price:"$4,499",note:"Well above cap",status:"over",min:4499}
+    },
+    amen:["Rooftop deck + lounge","Swimming pool","Fitness center","Coworking space","Game room","Office / conference room","Bicycle storage","Pet park","Building-wide wireless","Washer/dryer in unit","High ceilings + open plans","Steps from Anderson Street Station","Open 7 days","Built 2025","1–2 months free"],
+    key:["Rooftop deck + lounge","Swimming pool","Steps from Anderson Street Station","1–2 months free","Open 7 days"],
+    cardnote:"Newest building on the list (2025) and the highest rating, though on only 22 reviews. 1 BR $2,356–$2,699 at 680–837 sf, under cap. Deepest concession here: 1 month free on 12, 2 months free on 24. Rooftop deck, pool, fitness, coworking, game room, pet park. Steps from Anderson Street Station and two minutes from The Walcott. No den or loft layout at all — that is the disqualifier for the priority layout. Aggregator pricing ranged $1,928–$3,149; confirm live."
+  },
+  {
+    rank:6, score:67, name:"The Monarch", town:"East Rutherford", ratingLabel:"4.3 ★ (342)", built:2016,
+    phone:"833-809-4026", site:"themonarchnj.com",
+    hours:"Open 7 days · 10–6", sat:"yes", hoursNote:"Open every day, opening at 10 — which sets the Saturday start time.",
+    pets:"Cats + dogs welcome · confirm weight limits", parking:"Garage · <b>1 free space</b>, $100/mo for a second", utils:"<b>Ask</b> — not published", flood:"<b>Ask on site</b> · East Rutherford, Meadowlands edge — press on this one",
+    area:"<b>East Rutherford</b> · 100–120 Schindler Ct · the southernmost point on the list and the first stop Saturday · shuttle service to Secaucus Junction · car-dependent setting, limited walkability. Longest drive to both Yonkers and 287.",
+    why:"The value pick, and quietly the best answer for anyone who wants den-like space without paying a den premium: The Monarch's one-bedrooms run <b>693 to 1,120 square feet</b> at <b>$2,280–$2,415</b>. That 1,120 sf plan is den-sized in everything but name, and it is the cheapest entry point on the entire list. Managed by BNE Real Estate Group with a solid 4.3 across a large 342-review sample. Amenities include a swimming pool, BBQ and picnic area, a fire pit, an outdoor chessboard, a fitness center, business center, concierge and a shuttle to Secaucus Junction. Two-bedrooms start at $2,845 and run 1,120–1,272 sf — just above cap but the largest square footage per dollar here. Running one month free on select apartments. The trade-off is location: car-dependent, and the longest drive in both directions.",
+    units:{
+      den:{type:"1 BR + den/loft",detail:"not offered — but 1 BR runs to 1,120 sf",price:"$2,280–$2,415",note:"No named den; the largest 1 BR is den-sized without the premium",status:"none",min:2280},
+      two:{type:"2 BR",detail:"1,120–1,272 sf",price:"$2,845–$3,125",note:"Just above cap; best sq ft per dollar on the list",status:"over",min:2845}
+    },
+    amen:["Swimming pool","BBQ + picnic area","Fire pit","Outdoor chessboard","Fitness center","Group exercise","Business center","Concierge","Shuttle to Secaucus Junction","Garage parking (1 free space)","Washer/dryer in unit","9-foot ceilings","Hardwood floors","Stone counters + stainless","Pet friendly","Open 7 days","Cheapest 1 BR on the list"],
+    key:["Swimming pool","BBQ + picnic area","Fire pit","Shuttle to Secaucus Junction","Cheapest 1 BR on the list"],
+    cardnote:"Cheapest 1 BR entry here at $2,280, and one-bedrooms run up to 1,120 sf — den-sized space without the den premium, which makes this the sleeper value on the list. 4.3 across a large 342-review sample. Pool, BBQ + picnic area, fire pit, outdoor chessboard, fitness, concierge, one free garage space, shuttle to Secaucus Junction. 2 BR at $2,845–$3,125 for 1,120–1,272 sf is the best square footage per dollar here. Trade-off: car-dependent East Rutherford, longest drive both directions. 1 month free on select."
+  },
+  {
+    rank:7, score:65, name:"The Delford", town:"Rochelle Park", ratingLabel:"4.8 ★ (41)", built:2024,
+    phone:"201-371-4836", site:"thedelford.com",
+    hours:"Mon–Fri 9–5:30 · Sat–Sun closed", sat:"no", hoursNote:"Closed weekends — this is why it rides on Thursday rather than the Saturday sweep.",
+    pets:"<b>FLAG: one listing shows no pets</b> (service animals only) — call first", parking:"Available · contact property for details", utils:"<b>Trash</b> included · all others resident-paid", flood:"<b>Ask on site</b> · Rochelle Park, Village Center · pond on the property",
+    area:"<b>Rochelle Park</b> · 120 W Passaic St, Village Center · adjacent to Westfield Garden State Plaza · sits at the Route 17 / Route 4 interchange, so the closest of the southern group to 287 (~20–25 min). Quiet township setting.",
+    why:"The <b>highest-rated community on the list at 4.8</b>, and the newest apartment stock after The Forte — built 2024, 160 units across six stories. Amenities center on an outdoor pool, a fitness center with pool-deck views, a lush outdoor lounge and a landscaped pond, with the Garden State Plaza literally next door. One-bedrooms run <b>$2,400–$2,500</b> at 713 sf, well under cap; two-bedrooms $3,350–$3,500 with one month free running on select units. Two problems for this search. First, <b>no den or loft layout</b> — the mix is one- and two-bedroom only. Second and more serious: <b>one listing source shows The Delford as not allowing pets at all</b>. With two dogs that is a potential hard stop, and it is worth a phone call before spending the Thursday slot on it.",
+    units:{
+      den:{type:"1 BR + den/loft",detail:"not offered",price:"—",note:"No den/loft layout — 1 BR / 2 BR only",status:"none",min:0},
+      two:{type:"2 BR",detail:"to 1,105 sf · 1 month free on select",price:"$3,350–$3,500",note:"Above cap",status:"over",min:3350}
+    },
+    amen:["Outdoor pool","Fitness center with pool deck views","Outdoor lounge","Landscaped pond","Adjacent to Garden State Plaza","9-foot ceilings","Walk-in closets","Vented in-home washer & dryer","Balconies / patios (select)","Gourmet kitchens","Built 2024","Highest rating on the list (4.8)"],
+    key:["Outdoor pool","Fitness center with pool deck views","Adjacent to Garden State Plaza","Built 2024","Highest rating on the list (4.8)"],
+    cardnote:"Highest-rated here (4.8) and nearly the newest (2024, 160 units). 1 BR $2,400–$2,500 at 713 sf, under cap. Pool, fitness center with pool-deck views, outdoor lounge, pond; Garden State Plaza next door; closest southern option to 287. Two problems: no den or loft layout at all, and one listing source shows NO PETS — with two dogs, call before spending the Thursday slot. Closed weekends, which is why it lands on 8/6."
+  },
+  {
+    rank:8, score:58, name:"Highlands at Westwood", town:"Westwood", ratingLabel:"4.4 ★ (56)", built:1970,
+    phone:"201-594-9191", site:"jcmliving.com",
+    hours:"Mon–Fri 9–5 · Sat–Sun closed", sat:"no", hoursNote:"Closed weekends and closes at 5:00 — the hard backstop for the entire Thursday route.",
+    pets:"<b>2 pets per apartment</b> · dogs + cats · K9 Country Club", parking:"Surface / outdoor parking · confirm covered options", utils:"<b>Ask</b> — not published", flood:"<b>Ask on site</b> · Pascack Valley, inland suburban",
+    area:"<b>Westwood</b> · 7101 Cenrose Cir, Pascack Valley · the northernmost stop and <b>closest to I-287</b> (~18–22 min) · quiet, suburban, garden-style setting with landscaped courtyards. Longest drive to Yonkers of the ten.",
+    why:"Genuinely nice community, but the layout math works against it. Highlands markets <b>one bedroom, two bedroom, and two bedroom with den</b> — meaning the den exists, but only by stepping up to a two-bedroom at <b>$3,440+</b>. Its standard one-bedrooms are also the <b>most expensive on the list at $2,755–$2,920</b> (741–1,172 sf), so you pay a premium at both tiers. What you get for it: newly renovated units, individual patios or balconies, in-unit washer/dryer, stainless appliances, a fitness center, clubroom, yoga room, computer stations, a BBQ and picnic area, landscaped courtyards, and a <b>K9 Country Club</b> dog area with two pets allowed per apartment — good terms for two dogs. Running a summer special of $1,000 off first month. It is also the closest community to 287, which matters for the drive home.",
+    units:{
+      den:{type:"2 BR + Den only",detail:"no 1 BR + den offered",price:"$3,440+",note:"Den exists only in the 2 BR tier — above cap",status:"none",min:3440},
+      two:{type:"2 BR / 2 BA",detail:"to 1,172 sf · den version available",price:"$3,440+",note:"Above cap",status:"over",min:3440}
+    },
+    amen:["K9 Country Club dog area","Fitness center","Clubroom","Yoga room","Computer stations","BBQ + picnic area","Landscaped courtyards","Individual patios or balconies","Washer/dryer in unit","Stainless steel appliances","Newly renovated units","2 pets per apartment","2 BR with den layout","Closest to I-287"],
+    key:["K9 Country Club dog area","Yoga room","BBQ + picnic area","2 pets per apartment","Closest to I-287"],
+    cardnote:"The den here exists only in the 2 BR tier at $3,440+ — there is no 1 BR + den. Standard 1 BRs are also the most expensive on the list at $2,755–$2,920. Good pet terms (2 pets, K9 Country Club dog area) and a nice suburban garden-style setting with yoga room, clubroom, BBQ area and landscaped courtyards. Closest community to 287. $1,000 off first month running. Closed weekends and closes at 5:00 — the hard backstop for the Thursday route."
+  },
+  {
+    rank:9, score:50, name:"140 Mayhill", town:"Saddle Brook", ratingLabel:"4.4 ★ (27)", built:2016,
+    phone:"833-614-3892", site:"140mayhill.com",
+    hours:"Mon–Sat 9–5 · Sun closed", sat:"yes", hoursNote:"",
+    pets:"<b>ONE pet only · 20 lb limit</b> · $500 fee + $30–50/mo", parking:"<b>Indoor garage parking</b>", utils:"<b>Trash</b> included · all others resident-paid", flood:"<b>Ask on site</b> · Saddle Brook, near Saddle River",
+    area:"<b>Saddle Brook</b> · 140 Mayhill St · sits at the 80/17 junction, so a straight run up Route 17 to 287 (~22–27 min) · Acme across the street, Saddle Brook Commons ~0.8 mi. Ends the Saturday route.",
+    why:"<b>The pet policy is likely disqualifying.</b> 140 Mayhill permits <b>one pet per household with a 20 lb weight limit</b> — with two dogs, that fails on both counts before anything else is considered, and it is worth confirming by phone before spending a Saturday slot. Setting that aside, it is a decent community: 4.4 rating, one-bedrooms from <b>$2,550–$2,595</b> running 753 sf up to 1,300 sf on the larger plans (den-sized without the label), quartz countertops, walk-in closets, in-unit laundry, a fitness room with two Peloton bikes, a resident lounge, a BBQ patio and indoor garage parking. Two-bedrooms start around $3,350. No den or loft layout is advertised. Reviews carry a recurring theme about security-deposit deductions at move-out under the current management company — worth asking about directly.",
+    units:{
+      den:{type:"1 BR + den/loft",detail:"not offered — 1 BR runs to ~1,300 sf",price:"$2,550–$2,595",note:"No named den; larger plans are den-sized",status:"none",min:2550},
+      two:{type:"2 BR",detail:"to 1,300 sf",price:"$3,350–$3,375",note:"Above cap",status:"over",min:3350}
+    },
+    amen:["Fitness room with 2 Peloton bikes","Resident lounge","BBQ patio","Indoor garage parking","Fenced pet area","Washer/dryer in unit","Quartz countertops","Walk-in closets","Balcony on every unit","Hardwood flooring","9–11 ft ceilings","At the 80/17 junction","ONE pet only, 20 lb limit"],
+    key:["Fitness room with 2 Peloton bikes","BBQ patio","Indoor garage parking","Balcony on every unit","ONE pet only, 20 lb limit"],
+    cardnote:"PET FLAG: one pet per household, 20 lb weight limit — with two dogs this likely fails on both counts. Confirm by phone before spending a Saturday slot. Otherwise solid: 4.4 rating, 1 BR $2,550–$2,595 running 753 sf up to 1,300 sf (den-sized without the label), Peloton-equipped fitness room, resident lounge, BBQ patio, indoor garage parking, balcony on every unit. At the 80/17 junction for a clean run to 287. Reviews flag security-deposit deductions at move-out."
+  },
+  {
+    rank:10, score:38, name:"The Parkview at Polifly", town:"Hackensack", ratingLabel:"2.6 ★ (12)", built:1967,
+    phone:"201-567-5755", site:"ridgetop.com",
+    hours:"Not published", sat:"no", hoursNote:"No office hours published anywhere — call 201-567-5755 before building a Saturday slot around this one.",
+    pets:"Cats + dogs permitted · confirm weight limits", parking:"On-site + garages · <b>reviews flag a multi-year waitlist</b>", utils:"<b>Heat + water included</b> — best on the list", flood:"<b>Ask on site</b> · 70 Polifly Rd, Hackensack",
+    area:"<b>Hackensack</b> · 70 Polifly Rd · walking distance to Hackensack University Medical Center and Essex Street Station · CVS and Rite Aid down the street · criss-crossed by I-80, I-95, the Garden State Parkway and Route 17.",
+    why:"The cheapest and the weakest. One-bedrooms run <b>$1,795–$2,395</b> at 650 sf, with studios from 350–390 sf — the smallest units on the list by a wide margin, in a <b>building constructed in 1967</b>. Heat and water are included in rent and units have in-unit laundry and renovated layouts, which is genuinely good value at this price. But the resident rating is <b>2.6 across only twelve reviews</b>, and the complaints are structural rather than cosmetic: management responsiveness, noise transfer between units, multi-year parking waitlists and package theft. The office publishes no hours anywhere, which is its own signal about how the property is run. No den or loft layout. Included on the list for completeness and price comparison, but call before committing a Saturday slot to it.",
+    units:{
+      den:{type:"1 BR + den/loft",detail:"not offered",price:"—",note:"No den/loft layout — studio / 1 BR only at 650 sf max",status:"none",min:0},
+      two:{type:"2 BR",detail:"limited availability",price:"not published",note:"Pricing not published — confirm",status:"none",min:0}
+    },
+    amen:["Heat + water included in rent","In-unit washer & dryer","Custom closets","Renovated layouts","On-site parking + garages","Elevator building","Online rent payment","Online maintenance requests","24-hour emergency maintenance","Walk to Hackensack University Medical Center","Walk to Essex Street Station","Cats and dogs permitted","Cheapest rent on the list"],
+    key:["Heat + water included in rent","In-unit washer & dryer","Walk to Essex Street Station","Cats and dogs permitted","Cheapest rent on the list"],
+    cardnote:"Cheapest on the list ($1,795–$2,395 for 650 sf) with heat and water included, but a 1967 building with a 2.6 rating across only 12 reviews — complaints run to management responsiveness, noise transfer, multi-year parking waitlists and package theft. Publishes no office hours anywhere. Smallest units here and no den or loft layout. Walk to Hackensack University Medical Center and Essex Street Station. Call 201-567-5755 before committing a Saturday slot."
+  }
+];
+
+document.getElementById('recList').innerHTML = DATA.map(c=>`
+  <div class="rrow">
+    <div class="rrank">${c.rank}</div>
+    <div class="rmain">
+      <h4>${c.name} <small>· ${c.town}, NJ · ${c.ratingLabel}</small></h4>
+      <p>${c.why}</p>
+    </div>
+    <div class="rbar">
+      <div class="track"><div class="fill" style="width:${c.score}%"></div></div>
+      <div class="sval">Fit ${c.score}/100</div>
+    </div>
+  </div>`).join('');
+
+const grid=document.getElementById('grid');
+let filter='all', capOnly=false;
+const tagText=s=>({good:"Fits ≤ $2,800",maybe:"Confirm",over:"Above $2,800",none:"Not offered"}[s]);
+function visibleStatus(c){return filter==='den'?[c.units.den.status]:filter==='two'?[c.units.two.status]:[c.units.den.status,c.units.two.status];}
+function passesCap(c){if(!capOnly)return true;return visibleStatus(c).some(s=>s==='good'||s==='maybe');}
+function unitRow(u){return `<div class="urow"><div class="utype">${u.type}<span>${u.detail}</span></div><div class="uprice">${u.price}<small>${u.note}</small></div><div class="tag ${u.status}">${tagText(u.status)}</div></div>`;}
+function renderCards(){
+  grid.innerHTML=DATA.map(c=>{
+    const show=passesCap(c);
+    let rows = filter==='all'?unitRow(c.units.den)+unitRow(c.units.two):filter==='den'?unitRow(c.units.den):unitRow(c.units.two);
+    const chips=c.amen.map(a=>`<span class="chip ${c.key.includes(a)?'k':''}">${a}</span>`).join('');
+    return `<div class="card ${show?'':'hide'}">
+      <div class="card-top">
+        <div class="rank">#${c.rank}</div>
+        <div class="ident">
+          <h3>${c.name}</h3>
+          <div class="loc">📍 <b>${c.town}, NJ</b> · built ${c.built}</div>
+          <div class="badges">
+            <span class="pill score">Fit ${c.score}/100</span>
+            <span class="pill star">${c.ratingLabel}</span>
+          </div>
+        </div>
+        <div class="contact"><a href="https://${c.site}" target="_blank" rel="noopener">${c.site}</a>${c.phone?`<br><a href="tel:${c.phone}">${c.phone}</a>`:''}</div>
+      </div>
+      <div class="why">${c.why}</div>
+      <div class="area"><span class="area-h">Area &amp; access</span>${c.area}</div>
+      <div class="tourhrs"><span class="th-h">Tour hours</span><span class="hrs">${c.hours}</span><span class="satbadge ${c.sat}">${c.sat==='yes'?'Sat ✓':'No Sat'}</span>${c.hoursNote?`<span class="th-note">↳ ${c.hoursNote}</span>`:''}</div>
+      <div class="units">${rows}</div>
+      <div class="amen"><div class="h">Amenities</div><div class="chips">${chips}</div><div class="note">${c.cardnote}</div></div>
+    </div>`;
+  }).join('');
+  if(!DATA.some(c=>passesCap(c))) grid.innerHTML='<div class="card"><div class="amen"><div class="note">No communities match this layout under $2,800. Turn off the cap filter or switch layouts.</div></div></div>';
+}
+document.getElementById('seg').addEventListener('click',e=>{if(e.target.tagName!=='BUTTON')return;document.querySelectorAll('#seg button').forEach(b=>b.classList.remove('active'));e.target.classList.add('active');filter=e.target.dataset.f;renderCards();});
+document.getElementById('capToggle').addEventListener('change',e=>{capOnly=e.target.checked;renderCards();});
+
+const FEATURES=[
+  ["Pool", c=>c.amen.some(a=>/pool/i.test(a))],
+  ["Grill / BBQ area", c=>c.amen.some(a=>/grill|bbq|fire pit|fireside|outdoor bar/i.test(a))],
+  ["Fitness center", c=>c.amen.some(a=>/fitness|peloton/i.test(a))],
+  ["Dog run / pet area", c=>c.amen.some(a=>/dog run|pet area|K9|pet park|fenced pet/i.test(a))],
+  ["In-unit W/D", c=>c.amen.some(a=>/washer/i.test(a))],
+  ["Concierge / lounge", c=>c.amen.some(a=>/concierge|lounge|clubroom|clubhouse/i.test(a))],
+  ["WFH / coworking", c=>c.amen.some(a=>/coworking|work pod|business|conference|computer station|office/i.test(a))],
+  ["Saturday tours", c=>c.sat==='yes'],
+  ["Den / loft layout", c=>c.units.den.status!=='none'],
+  ["Pet policy", c=>c.pets, "detail"],
+  ["Parking", c=>c.parking, "detail"],
+  ["Utilities included", c=>c.utils, "detail"],
+  ["Flood zone", c=>c.flood, "detail"]
+];
+(function(){
+  const short={"Reveal Hackensack":"Reveal","The Walcott Hackensack":"Walcott","EVO Apartments":"EVO","Volair Wesmont":"Volair","The Forte":"Forte","The Monarch":"Monarch","The Delford":"Delford","Highlands at Westwood":"Highlands","140 Mayhill":"Mayhill","The Parkview at Polifly":"Parkview"};
+  const head='<thead><tr><th>Feature</th>'+DATA.map(c=>`<th>#${c.rank} ${short[c.name]}<br><small style="font-weight:400;opacity:.8">${c.town}</small></th>`).join('')+'</tr></thead>';
+  const cell=v=>v?'<span class="yes">\u25cf</span>':'<span class="no">\u2013</span>';
+  const body='<tbody>'+FEATURES.map(([l,fn,kind])=>{
+    if(kind==='detail'){
+      return '<tr class="detailrow"><th>'+l+'</th>'+DATA.map(c=>`<td class="detailcell">${fn(c)}</td>`).join('')+'</tr>';
+    }
+    return '<tr><th>'+l+'</th>'+DATA.map(c=>`<td>${cell(fn(c))}</td>`).join('')+'</tr>';
+  }).join('')+'</tbody>';
+  document.getElementById('matrix').innerHTML=head+body;
+})();
+
+document.getElementById('tabs').addEventListener('click',e=>{
+  if(e.target.tagName!=='BUTTON')return;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  e.target.classList.add('active');
+  document.getElementById(e.target.dataset.p).classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+});
+
+renderCards();
+</script>
+</body>
+</html>
